@@ -1,0 +1,10 @@
+<DataBase>
+  <Device>
+    <ChipInfo Vendor="BlueX" Name="Apollo_00_3V3" Core="JLINK_CORE_CORTEX_M0" WorkRAMAddr="0x00100000" WorkRAMSize="0x30000"/>
+    <FlashBankInfo Name="QSPI Flash" BaseAddr="0x800000" MaxSize="0x800000" Loader="BlueX/APOLLO_00_3V3.FLM" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+  </Device>
+  <Device>
+    <ChipInfo Vendor="BlueX" Name="Apollo_00_1V8" Core="JLINK_CORE_CORTEX_M0" WorkRAMAddr="0x00100000" WorkRAMSize="0x30000"/>
+    <FlashBankInfo Name="QSPI Flash" BaseAddr="0x800000" MaxSize="0x800000" Loader="BlueX/APOLLO_00_1V8.FLM" LoaderType="FLASH_ALGO_TYPE_OPEN" />
+  </Device>
+</DataBase>

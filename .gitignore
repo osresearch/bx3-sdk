@@ -1,0 +1,7 @@
+/*/*/*/project/mdk/*
+
+!/*/*/*/project/mdk/*.uvprojx
+!/*/*/*/project/mdk/*.uvoptx
+
+/tools/bluex/bootloader/*
+!/tools/bluex/bootloader/bootloader.hex

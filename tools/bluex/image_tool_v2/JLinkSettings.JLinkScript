@@ -1,0 +1,61 @@
+
+int AfterResetTarget()
+{
+    MEM_WriteU32(0x20201040, 0x2a8);
+    MEM_WriteU32(0x20201040, 0x154);
+    
+    MEM_WriteU32(0x20201004, 0x5555);
+    MEM_WriteU32(0x20201000, 0xe00081);
+    MEM_WriteU32(0x2020101c, 0x1a1c10);
+    
+    
+    MEM_WriteU32(0x20201008, 0x0);
+    MEM_WriteU32(0x2020100c, 0x0);
+    MEM_WriteU32(0x20201010, 0x7f07007f);
+    MEM_WriteU32(0x20201014, 0x8a51a10);
+    MEM_WriteU32(0x20201018, 0x680);
+
+    MEM_WriteU32(0x20201020, 0xf7f); 
+    MEM_WriteU32(0x20201024, 0x2aa00);
+    MEM_WriteU32(0x2020103c, 0x2);
+    MEM_WriteU32(0x20201044, 0x12c012c0);
+    MEM_WriteU32(0x20201048, 0x3);
+    MEM_WriteU32(0x2020104c, 0x3fffffff);
+    MEM_WriteU32(0x20201050, 0x3fffffff);
+    MEM_WriteU32(0x20201054, 0x3fffffff);
+    MEM_WriteU32(0x20201058, 0x3fffffff);
+    MEM_WriteU32(0x2020105c, 0x0);
+    MEM_WriteU32(0x20201060, 0x0);
+    MEM_WriteU32(0x20201064, 0x30000);
+    MEM_WriteU32(0x20201068, 0x0);
+    MEM_WriteU32(0x2020106c, 0x0);
+
+
+    MEM_WriteU32(0x20201070, 0x0);
+    MEM_WriteU32(0x20201074, 0x2000);
+    MEM_WriteU32(0x20201078, 0x0);
+    MEM_WriteU32(0x2020107c, 0x0);
+    MEM_WriteU32(0x20201080, 0x0);
+    MEM_WriteU32(0x20201084, 0x0);
+    MEM_WriteU32(0x20201088, 0x0);
+    MEM_WriteU32(0x2020108c, 0x0);
+    MEM_WriteU32(0x20201090, 0x0);
+    MEM_WriteU32(0x20201094, 0x0);
+    MEM_WriteU32(0x20201098, 0x0);
+    MEM_WriteU32(0x2020109c, 0x0);
+    MEM_WriteU32(0x202010a0, 0x0);
+    MEM_WriteU32(0x202010a4, 0x0);
+    MEM_WriteU32(0x202010a8, 0x0);
+    MEM_WriteU32(0x202010ac, 0x0);
+    
+    
+    
+    MEM_WriteU32(0x202010c0, 0x0);
+    MEM_WriteU32(0x202010c4, 0x0);
+    MEM_WriteU32(0x202010c8, 0x0);
+    MEM_WriteU32(0x202010cc, 0x111);
+    JLINK_TARGET_Halt();
+    JLINK_SYS_Report("AWO reseted.");
+    JLINK_SYS_MessageBox("AWO reseted.");
+    
+}
