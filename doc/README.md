@@ -1,1 +1,1 @@
-更多文档请查看 https://gitee.com/BXMicro/SDK3_DOC
+更多文档请查看[SDK3_DOC](https://gitee.com/BXMicro/SDK3_DOC)

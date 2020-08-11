@@ -142,7 +142,7 @@ extern "C" {
 #endif
   
 #ifndef RF_TX_POWER
-#define RF_TX_POWER                                     0x8
+#define RF_TX_POWER                                     0x5
 #endif
 
 /*------------- NVDS ---------- */

@@ -25,8 +25,8 @@ extern "C" {
 /* includes ------------------------------------------------------------------*/
 
 /* config --------------------------------------------------------------------*/
-#define BXKE_MSG_CONFIG_MAX_COUNT                       16
-#define BXKE_DELAY_MSG_CONFIG_MAX_COUNT                 32
+#define BXKE_MSG_CONFIG_MAX_COUNT                       128
+#define BXKE_DELAY_MSG_CONFIG_MAX_COUNT                 128
 
 #define BXKE_SERVICE_CONFIG_NAME_MAX_LEN                32
 #define BXKE_SERVICE_CONFIG_MAX_COUNT                   32
