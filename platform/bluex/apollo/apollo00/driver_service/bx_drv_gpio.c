@@ -258,23 +258,23 @@ static bx_err_t gpio_set_eit_mode( void * hdl, u8 pin_num, u8 mode )
     u32 trigger_mode = 0;
 
     switch( mode ) {
-        case BX_GPIO_MODE_IT_LOW:
+        case BX_GPIO_MODE_EIT_LOW:
             trigger_mode = 0;
             break;
 
-        case BX_GPIO_MODE_IT_HIGH:
+        case BX_GPIO_MODE_EIT_HIGH:
             trigger_mode = 1;
             break;
 
-        case BX_GPIO_MODE_IT_RISING:
+        case BX_GPIO_MODE_EIT_RISING:
             trigger_mode = 2;
             break;
 
-        case BX_GPIO_MODE_IT_FALLING:
+        case BX_GPIO_MODE_EIT_FALLING:
             trigger_mode = 3;
             break;
 
-        case BX_GPIO_MODE_IT_RISING_FALLING:
+        case BX_GPIO_MODE_EIT_RISING_FALLING:
             return BX_ERR_NOTSUP;
 
         default:

@@ -43,21 +43,21 @@ extern volatile u32 interrupt_disable_count;
 /* exported constants --------------------------------------------------------*/
 
 /* exported macros -----------------------------------------------------------*/
-#define GLOBAL_DISABLE_IRQ()                \
-    do{                                     \
-        interrupt_disable_count++;          \
-        __disable_irq();                    \
-    }while(0)
+#define GLOBAL_DISABLE_IRQ()                                \
+do{                                                         \
+    interrupt_disable_count++;                              \
+    __disable_irq();                                        \
+}while(0)
 
-#define GLOBAL_ENABLE_IRQ()                     \
-    do{                                         \
-        if( interrupt_disable_count > 0 ) {     \
-            interrupt_disable_count--;          \
-        }                                       \
-        if( interrupt_disable_count == 0 ) {    \
-            __enable_irq();                     \
-        }                                       \
-    }while(0)
+#define GLOBAL_ENABLE_IRQ()                                 \
+do{                                                         \
+    if( interrupt_disable_count > 0 ) {                     \
+        interrupt_disable_count--;                          \
+    }                                                       \
+    if( interrupt_disable_count == 0 ) {                    \
+        __enable_irq();                                     \
+    }                                                       \
+}while(0)
 /* exported functions --------------------------------------------------------*/
 
 #ifdef __cplusplus

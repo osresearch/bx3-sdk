@@ -26,14 +26,16 @@
 /* private typedef -----------------------------------------------------------*/
 
 struct bx_msg {
-    u32     dst;
+    s32     src;
+    s32     dst;
     u32     msg;
     u32     param0;
     u32     param1;
 };
 
 struct bx_delay_msg {
-    u32     dst;
+    s32     src;
+    s32     dst;
     u32     msg;
     u32     param0;
     u32     param1;
@@ -57,18 +59,15 @@ struct bx_service_handle {
     u32                 count;  /* always increase */
 };
 
-struct bx_async {
+struct bx_subject {
+    s32 src;
     s32 dst;
-    u32 prop;
-    u32 param0;
-    u32 param1;
-    async_callback cb_func;
+    u32 msg;
 };
 
-struct bx_async_handle {
+struct bx_subject_hub {
     u32 count;
-    u32 index;
-    struct bx_async hub[BX_ASYNC_MAX_COUNT];
+    struct bx_subject hub[BX_SUBSCIBE_MAX_COUNT];
 };
 
 
@@ -76,15 +75,14 @@ struct bx_async_handle {
 static struct   bx_msg_handle           msg_hdl;
 static struct   bx_delay_msg_handle     dly_msg_hdl;
 static struct   bx_service_handle       service_hdl;
+static struct   bx_subject_hub          subject_hub;
 
-static struct   bx_async_handle         async_hdl = {0};
-
-static s32      kernel_service_id = -1;
 //当前的服务
-static s32      current_service_id=0;
+static s32      current_service_id;
+static s32      current_msg_source_id;
+volatile u32    interrupt_disable_count;
 /* exported variables --------------------------------------------------------*/
-volatile u32    interrupt_disable_count = 0;
-volatile u32    kernel_time             = 0;
+
 /*============================= private function =============================*/
 
 /** ---------------------------------------------------------------------------
@@ -119,41 +117,41 @@ static struct bx_msg * get_next_msg( void )
     msg_hdl.count--;
     return &msg_hdl.hub[index];
 }
-
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t kernel_msg_handle(s32 srv, u32 msg, u32 param0, u32 param1 )
+static __inline u16 get_kernel_timer_id( u32 dst, u32 msg )
 {
-    struct bx_async * p_async = ( struct bx_async * )param0;
-    if( p_async == NULL ) {
-        return BX_ERR_EMPTY;
+    for( uint32_t i = 0 ; i < BXKE_DELAY_MSG_CONFIG_MAX_COUNT; i++ ) {
+        struct bx_delay_msg * pmsg = &dly_msg_hdl.hub[i];
+        if( pmsg->dst == dst && pmsg->msg == msg  ) {
+            return pmsg->bkt_id;
+        }
     }
-    bx_err_t  err = BX_OK;
-    switch( msg ) {
-        case BXM_KERNEL_ASET:
-            if( ! bx_set( p_async->dst, p_async->prop, p_async->param0, p_async->param1 ) ) {
-                err = BX_ERROR;
-            }
-            break;
-
-        case BXM_KERNEL_AGET:
-            if( ! bx_get( p_async->dst, p_async->prop, ( u8 * )p_async->param0, p_async->param1 ) ) {
-                err = BX_ERROR;
-            }
-            break;
-
-        default:
-            err = BX_ERROR;
-            break;
+    return 0;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static __inline bx_err_t post( s32 src, s32 dst, u32 msg, u32 param0, u32 param1 )
+{
+    struct bx_msg * pmsg = get_unused_msg();
+    if( !pmsg ) {
+        return BX_ERR_FULL;
     }
-    if( p_async->cb_func != NULL ) {
-        p_async->cb_func( err, p_async->prop, p_async->param0, p_async->param1 );
-    }
-    async_hdl.count--;
+    GLOBAL_DISABLE_IRQ();
+    pmsg->src = current_service_id;
+    pmsg->dst = dst;
+    pmsg->msg = msg;
+    pmsg->param0 = param0;
+    pmsg->param1 = param1;
+    GLOBAL_ENABLE_IRQ();
     return BX_OK;
 }
 /*========================= end of private function ==========================*/
@@ -173,15 +171,6 @@ void bx_kernel_init( void )
     memset( &dly_msg_hdl, 0, sizeof( struct bx_delay_msg_handle ) );
 
     bx_kernel_timer_init();
-
-    struct bx_service svc;
-    svc.msg_handle_func = kernel_msg_handle;
-    svc.name = "Kernel Name";
-    svc.prop_get_func = NULL;
-    svc.prop_set_func = NULL;
-    kernel_service_id = bx_register( &svc );
-
-    //bxs_init();
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -200,6 +189,7 @@ void bx_kernel_schedule( void )
 
         msg_handle_f func = service_hdl.hub[pmsg->dst].msg_handle_func ;
         current_service_id = pmsg->dst;
+        current_msg_source_id = pmsg->src;
         
         if( func == NULL ) {
             // do something to notify app
@@ -210,7 +200,7 @@ void bx_kernel_schedule( void )
             // do something to notify app
         } else if ( err == BX_ERR_BUSY ) {
             //把消息再扔进队列
-            bx_post( pmsg->dst, pmsg->msg, pmsg->param0, pmsg->param1 );
+            post( pmsg->src,pmsg->dst, pmsg->msg, pmsg->param0, pmsg->param1 );
         } else {
             // do something to notify app
         }
@@ -222,19 +212,9 @@ void bx_kernel_schedule( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bx_post( u32 dst, u32 msg, u32 param0, u32 param1 )
+bx_err_t bx_post( s32 dst, u32 msg, u32 param0, u32 param1 )
 {
-    struct bx_msg * pmsg = get_unused_msg();
-    if( !pmsg ) {
-        return false;
-    }
-    GLOBAL_DISABLE_IRQ();
-    pmsg->dst = dst;
-    pmsg->msg = msg;
-    pmsg->param0 = param0;
-    pmsg->param1 = param1;
-    GLOBAL_ENABLE_IRQ();
-    return true;
+    return post(current_service_id,dst,msg,param0,param1);
 }
 
 /** ---------------------------------------------------------------------------
@@ -243,47 +223,32 @@ bool bx_post( u32 dst, u32 msg, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-u16 get_kernel_timer_id( u32 dst, u32 msg )
+bx_err_t bx_defer( s32 dst, u32 msg, u32 param0, u32 param1, u32 time )
 {
-    for( uint32_t i = 0 ; i < BXKE_DELAY_MSG_CONFIG_MAX_COUNT; i++ ) {
-        struct bx_delay_msg * pmsg = &dly_msg_hdl.hub[i];
-        if( pmsg->dst == dst && pmsg->msg == msg  ) {
-            return pmsg->bkt_id;
-        }
-    }
-    return 0;
-}
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-bool bx_defer( u32 dst, u32 msg, u32 param0, u32 param1, u32 time )
-{
-    u16 id = get_kernel_timer_id( dst, msg );
-    if( id != 0 ) {
+    u16 tm_id = get_kernel_timer_id( dst, msg );
+    if( tm_id != 0 ) {
         //先取消原来的设置
-        bx_kernel_timer_stop( id );
+        bx_kernel_timer_stop( tm_id );
     }
 
     //重新设置时间
-    id = bx_kernel_timer_creat( time, 1 );
-    if( id == 0 ) {
-        return false;
+    tm_id = bx_kernel_timer_creat( time, 1 );
+    if( tm_id == 0 ) {
+        return BX_ERR_FULL;
     }
-    u16 index = bx_kernel_timer_id_to_array_index( id );
+    u16 index = bx_kernel_timer_id_to_array_index( tm_id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
 
     GLOBAL_DISABLE_IRQ();
+    pmsg->src = current_service_id;
     pmsg->dst = dst;
     pmsg->msg = msg;
     pmsg->param0 = param0;
     pmsg->param1 = param1;
-    pmsg->bkt_id = id;
+    pmsg->bkt_id = tm_id;
     pmsg->used = true;
     GLOBAL_ENABLE_IRQ();
-    return true;
+    return BX_OK;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -291,31 +256,32 @@ bool bx_defer( u32 dst, u32 msg, u32 param0, u32 param1, u32 time )
  * @param   : period unit ms
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bx_repeat( u32 dst, u32 msg, u32 param0, u32 param1, u32 period )
+bx_err_t bx_repeat( s32 dst, u32 msg, u32 param0, u32 param1, u32 period )
 {
-    u16 id = get_kernel_timer_id( dst, msg );
-    if( id != 0 ) {
+    u16 tm_id = get_kernel_timer_id( dst, msg );
+    if( tm_id != 0 ) {
         //先取消原来的设置
-        bx_kernel_timer_stop( id );
+        bx_kernel_timer_stop( tm_id );
     }
 
     //重新设置时间
-    id = bx_kernel_timer_creat( period, BX_FOREVER );
-    if( id == 0 ) {
-        return false;
+    tm_id = bx_kernel_timer_creat( period, BX_FOREVER );
+    if( tm_id == 0 ) {
+        return BX_ERR_FULL;
     }
-    u16 index = bx_kernel_timer_id_to_array_index( id );
+    u16 index = bx_kernel_timer_id_to_array_index( tm_id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
 
     GLOBAL_DISABLE_IRQ();
+    pmsg->src = current_service_id;
     pmsg->dst = dst;
     pmsg->msg = msg;
     pmsg->param0 = param0;
     pmsg->param1 = param1;
-    pmsg->bkt_id = id;
+    pmsg->bkt_id = tm_id;
     pmsg->used = true;
     GLOBAL_ENABLE_IRQ();
-    return true;
+    return BX_OK;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -323,31 +289,32 @@ bool bx_repeat( u32 dst, u32 msg, u32 param0, u32 param1, u32 period )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bx_repeatn( u32 dst, u32 msg, u32 param0, u32 param1, u32 period, s32 num )
+bx_err_t bx_repeatn( s32 dst, u32 msg, u32 param0, u32 param1, u32 period, s32 num )
 {
-    u16 id = get_kernel_timer_id( dst, msg );
-    if( id != 0 ) {
+    u16 tm_id = get_kernel_timer_id( dst, msg );
+    if( tm_id != 0 ) {
         //先取消原来的设置
-        bx_kernel_timer_stop( id );
+        bx_kernel_timer_stop( tm_id );
     }
 
     //重新设置时间
-    id = bx_kernel_timer_creat( period, num );
-    if( id == 0 ) {
-        return false;
+    tm_id = bx_kernel_timer_creat( period, num );
+    if( tm_id == 0 ) {
+        return BX_ERR_FULL;
     }
-    u16 index = bx_kernel_timer_id_to_array_index( id );
+    u16 index = bx_kernel_timer_id_to_array_index( tm_id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
 
     GLOBAL_DISABLE_IRQ();
+    pmsg->src = current_service_id;
     pmsg->dst = dst;
     pmsg->msg = msg;
     pmsg->param0 = param0;
     pmsg->param1 = param1;
-    pmsg->bkt_id = id;
+    pmsg->bkt_id = tm_id;
     pmsg->used = true;
     GLOBAL_ENABLE_IRQ();
-    return true;
+    return BX_OK;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -355,16 +322,17 @@ bool bx_repeatn( u32 dst, u32 msg, u32 param0, u32 param1, u32 period, s32 num )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void bx_cancel( u32 dst, u32 msg )
+bx_err_t bx_cancel( s32 dst, u32 msg )
 {
     u16 id = get_kernel_timer_id( dst, msg );
     if( id == 0 ) {
-        return;
+        return BX_ERR_EMPTY;
     }
     bx_kernel_timer_stop( id );
     u16 index = bx_kernel_timer_id_to_array_index( id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
     pmsg->used = false;
+    return BX_OK;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -388,27 +356,13 @@ s32 bx_register( struct bx_service * p_svc )
         return -1;
     }
 }
-
-struct bx_subject {
-    s32 src;
-    s32 dst;
-    u32 msg;
-};
-
-struct bx_subject_hub {
-    u32 count;
-    struct bx_subject hub[BX_SUBSCIBE_MAX_COUNT];
-};
-
-static struct bx_subject_hub subject_hub = {0};
-
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bx_subscibe( s32 dst, u32 msg, u32 param0, u32 param1 )
+bx_err_t bx_subscibe( s32 dst, u32 msg, u32 param0, u32 param1 )
 {
     if( subject_hub.count >= BX_SUBSCIBE_MAX_COUNT ) {
         return false;
@@ -423,7 +377,7 @@ bool bx_subscibe( s32 dst, u32 msg, u32 param0, u32 param1 )
             continue;
         }
         if( subject_hub.hub[i].msg == msg ) {
-            return true;
+            return BX_OK;
         }
     }
     
@@ -436,7 +390,7 @@ bool bx_subscibe( s32 dst, u32 msg, u32 param0, u32 param1 )
 
     GLOBAL_ENABLE_IRQ();
 
-    return true;
+    return BX_OK;
 }
 
 /** ---------------------------------------------------------------------------
@@ -445,7 +399,7 @@ bool bx_subscibe( s32 dst, u32 msg, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void bx_public(s32 src, u32 msg, u32 param0, u32 param1 )
+bx_err_t bx_public(s32 src, u32 msg, u32 param0, u32 param1 )
 {
     u32 count = subject_hub.count;
     for( u32 i = 0; i < count; i++ ) {
@@ -453,11 +407,10 @@ void bx_public(s32 src, u32 msg, u32 param0, u32 param1 )
             continue;
         }
         if( subject_hub.hub[i].msg == msg ) {
-            if( !bx_post( subject_hub.hub[i].src, msg, param0, param1 ) ) {
-                // do something to notify app
-            }
+            return post( src, subject_hub.hub[i].src, msg, param0, param1 );
         }
     }
+    return BX_ERR_EMPTY;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -501,58 +454,6 @@ bx_err_t bx_get( s32 dst, u32 prop, u8 * buff, u32 len )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bx_aset( s32 dst, u32 prop, u32 param0, u32 param1 )
-{
-    if( async_hdl.count >= BX_ASYNC_MAX_COUNT ) {
-        return false;
-    }
-
-    GLOBAL_DISABLE_IRQ();
-    u32 index = async_hdl.index;
-    async_hdl.hub[index].dst = dst;
-    async_hdl.hub[index].prop = prop;
-    async_hdl.hub[index].param0 = param0;
-    async_hdl.hub[index].param1 = param1;
-    //async_hdl.hub[index].cb_func = cb_func;
-    async_hdl.index++;
-    async_hdl.index %= BX_ASYNC_MAX_COUNT;
-    async_hdl.count++;
-    GLOBAL_ENABLE_IRQ();
-
-    return bx_post( kernel_service_id, BXM_KERNEL_ASET, ( u32 ) & ( async_hdl.hub[index] ), 0 );
-}
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-bool bx_aget( s32 dst, u32 prop, u8 * buff, u32 len )
-{
-    if( async_hdl.count >= BX_ASYNC_MAX_COUNT ) {
-        return false;
-    }
-
-    GLOBAL_DISABLE_IRQ();
-    u32 index = async_hdl.index;
-    async_hdl.hub[index].dst = dst;
-    async_hdl.hub[index].prop = prop;
-    async_hdl.hub[index].param0 = ( u32 )buff;
-    async_hdl.hub[index].param1 = len;
-    //async_hdl.hub[index].cb_func = cb_func;
-    async_hdl.index++;
-    async_hdl.index %= BX_ASYNC_MAX_COUNT;
-    async_hdl.count++;
-    GLOBAL_ENABLE_IRQ();
-
-    return bx_post( kernel_service_id, BXM_KERNEL_AGET, ( u32 ) & ( async_hdl.hub[index] ), 0 );
-}
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
 bx_err_t bx_call( s32 dst,u32 msg,u32 param0,u32 param1)
 {
 //    if( __get_IPSR() != 0 ) {
@@ -580,7 +481,7 @@ void bx_err(s32 svc, u32 msg,u32 param0,u32 param1, bx_err_t err )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-u32  bx_service_get_count( void )
+u32 bx_service_get_count( void )
 {
     return service_hdl.count;
 }
@@ -597,10 +498,27 @@ struct bx_service * bx_get_service( s32 id )
     }
     return &service_hdl.hub[id];
 }
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+s32 bx_get_current_msg_source( void )
+{
+    return current_msg_source_id;
+}
 /*========================= end of exported function =========================*/
 
 
 /*============================= import function ==============================*/
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 void bx_kernel_timer_timeout_callback( u16 id, bool end_of_repeat )
 {
     //bxs_logln( "id:%X %X", id, BKT_ID_TO_INDEX(id) );
@@ -610,7 +528,7 @@ void bx_kernel_timer_timeout_callback( u16 id, bool end_of_repeat )
 
     //bxs_logln("%08X:%08x",pmsg->dst,pmsg->msg);
     if( pmsg->used ) {
-        bx_post( pmsg->dst, pmsg->msg, pmsg->param0, pmsg->param1 );
+        post( pmsg->src,pmsg->dst, pmsg->msg, pmsg->param0, pmsg->param1 );
     }
     if( end_of_repeat ) {
         pmsg->used = false;
