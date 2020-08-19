@@ -47,11 +47,11 @@ extern "C" {
 
 /* exported functions --------------------------------------------------------*/
 
-bool     bxs_pm_init( void );
+bool     bxs_pm_register( void );
 s32      bxs_pm_id( void );
 bx_err_t bxs_pm_msg_handle(u32 msg, u32 param0, u32 param1);
 
-void     bx_pm_init( void );
+void     bx_pm_register( void );
 void     bx_pm_lock( u32 flag );
 void     bx_pm_unlock( u32 flag );
 bool     bx_pm_check( u32 flag );

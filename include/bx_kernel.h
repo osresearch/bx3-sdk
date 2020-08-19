@@ -38,7 +38,6 @@ extern "C" {
 
 typedef bx_err_t( *msg_handle_f )( s32 svc, u32 msg, u32 param0, u32 param1 );
 typedef bx_err_t( *prop_handle_f )( s32 svc, u32 prop, u32 param0, u32 param1 );
-typedef bx_err_t( *async_callback )( bx_err_t state, u32 prop, u32 param0, u32 param1 );
 
 struct bx_service {
     prop_handle_f   prop_set_func;
@@ -80,7 +79,7 @@ bx_err_t bx_get( s32 svc, u32 prop, u8 * buff, u32 len );
 
 u32                 bx_get_service_count( void );
 struct bx_service * bx_get_service( s32 id );
-s32                 bx_get_current_msg_source( void );
+s32                 bx_msg_source( void );
 
 #ifdef __cplusplus
 }

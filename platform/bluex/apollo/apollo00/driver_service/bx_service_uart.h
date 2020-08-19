@@ -58,7 +58,7 @@ enum bx_msg_uart{
 
 /* exported functions --------------------------------------------------------*/
 
-bool     bxs_uart_init( void );
+bool     bxs_uart_register( void );
 s32      bxs_uart0_id( void );
 s32      bxs_uart1_id( void );
 

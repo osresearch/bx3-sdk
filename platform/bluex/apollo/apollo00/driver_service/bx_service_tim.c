@@ -132,7 +132,7 @@ static bx_err_t tim_property_get( s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bxs_tim_init( void )
+bool bxs_tim_register( void )
 {
     struct bx_service svc;
     svc.name = "tim0 service";

@@ -40,37 +40,37 @@
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bxs_init( void )
+bx_err_t bxs_register( void )
 {
-    if( bxs_gpio_init() != BX_OK ) {
+    if( bxs_gpio_register() != BX_OK ) {
         return BX_ERROR;
     }
 
-    if( bxs_tim_init() != BX_OK ) {
+    if( bxs_tim_register() != BX_OK ) {
         return BX_ERROR;
     }
 
-    if( bxs_pwm_init() != BX_OK ) {
+    if( bxs_pwm_register() != BX_OK ) {
         return BX_ERROR;
     }
 
-    if( bxs_wdt_init() != BX_OK ) {
+    if( bxs_wdt_register() != BX_OK ) {
         return BX_ERROR;
     }
 
-    if( bxs_iic_init() != BX_OK ) {
+    if( bxs_iic_register() != BX_OK ) {
         return BX_ERROR;
     }
     
-    if( bxs_uart_init() != BX_OK ) {
+    if( bxs_uart_register() != BX_OK ) {
         return BX_ERROR;
     }
         
-    if( bxs_adc_init() != BX_OK ) {
+    if( bxs_adc_register() != BX_OK ) {
         return BX_ERROR;
     }
     
-    if( bxs_spim_init() != BX_OK ) {
+    if( bxs_spim_register() != BX_OK ) {
         return BX_ERROR;
     }
 

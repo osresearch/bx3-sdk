@@ -52,7 +52,7 @@ enum bx_msg_iic{
 
 /* exported functions --------------------------------------------------------*/
 
-bx_err_t bxs_iic_init( void );
+bx_err_t bxs_iic_register( void );
 s32      bxs_iic0_id( void );
 s32      bxs_iic1_id( void );
 

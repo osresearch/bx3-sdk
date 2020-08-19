@@ -37,7 +37,7 @@ static u32 pm_state;
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void bx_pm_init( void )
+void bx_pm_register( void )
 {
     pm_state = 0;
 }

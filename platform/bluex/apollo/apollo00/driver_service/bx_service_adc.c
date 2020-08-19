@@ -126,7 +126,7 @@ static bx_err_t adc_property_get(s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bxs_adc_init( void )
+bool bxs_adc_register( void )
 {
     struct bx_service svc;
     svc.name = "adc service";

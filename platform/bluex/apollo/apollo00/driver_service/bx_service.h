@@ -58,7 +58,7 @@ extern "C" {
 
 /* exported functions --------------------------------------------------------*/
 
-bx_err_t bxs_init(void);
+bx_err_t bxs_register(void);
 
 
 #ifdef __cplusplus

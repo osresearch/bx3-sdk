@@ -58,7 +58,7 @@ enum bx_msg_spim{
 
 /* exported functions --------------------------------------------------------*/
 
-bx_err_t    bxs_spim_init( void );
+bx_err_t    bxs_spim_register( void );
 s32         bxs_spim0_id( void );
 s32         bxs_spim1_id( void );
 

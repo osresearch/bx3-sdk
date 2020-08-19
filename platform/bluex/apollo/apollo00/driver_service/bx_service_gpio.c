@@ -141,7 +141,7 @@ static bx_err_t gpio_property_get( s32 id, u32 property, u32 param0, u32 param1 
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bxs_gpio_init( void )
+bx_err_t bxs_gpio_register( void )
 {
     memset( &gpioa_svc, 0, sizeof( struct bx_gpio_service ) );
     struct bx_service svc;

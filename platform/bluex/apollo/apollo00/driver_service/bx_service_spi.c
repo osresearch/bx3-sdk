@@ -148,7 +148,7 @@ static bx_err_t spim_property_get(s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bxs_spim_init( void )
+bx_err_t bxs_spim_register( void )
 {
     struct bx_service svc;
     svc.name = "spim0 service";

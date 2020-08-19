@@ -204,7 +204,7 @@ static bx_err_t iic_svc_property_get(s32 id, u32 property, u32 param0, u32 param
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bxs_iic_init( void )
+bx_err_t bxs_iic_register( void )
 {
     struct bx_service svc;
     svc.name = "iic0 service";

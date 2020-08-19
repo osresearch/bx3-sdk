@@ -56,7 +56,7 @@ enum bx_msg_gpio {
 
 /* exported functions --------------------------------------------------------*/
 
-bx_err_t bxs_gpio_init( void );
+bx_err_t bxs_gpio_register( void );
 s32      bxs_gpio_a_id( void );
 
 #ifdef __cplusplus

@@ -51,7 +51,7 @@ enum bx_msg_tim{
 
 /* exported functions --------------------------------------------------------*/
 
-bool     bxs_tim_init( void );
+bool     bxs_tim_register( void );
 s32      bxs_tim0_id( void );
 s32      bxs_tim1_id( void );
 

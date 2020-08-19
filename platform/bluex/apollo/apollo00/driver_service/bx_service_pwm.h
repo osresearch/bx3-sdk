@@ -51,7 +51,7 @@ enum bx_msg_pwm{
 
 /* exported functions --------------------------------------------------------*/
 
-bool     bxs_pwm_init( void );
+bool     bxs_pwm_register( void );
 s32      bxs_pwm0_id( void );
 s32      bxs_pwm1_id( void );
 s32      bxs_pwm2_id( void );

@@ -146,7 +146,7 @@ static __inline bx_err_t post( s32 src, s32 dst, u32 msg, u32 param0, u32 param1
         return BX_ERR_FULL;
     }
     GLOBAL_DISABLE_IRQ();
-    pmsg->src = current_service_id;
+    pmsg->src = src;
     pmsg->dst = dst;
     pmsg->msg = msg;
     pmsg->param0 = param0;
@@ -505,7 +505,7 @@ struct bx_service * bx_get_service( s32 id )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-s32 bx_get_current_msg_source( void )
+s32 bx_msg_source( void )
 {
     return current_msg_source_id;
 }

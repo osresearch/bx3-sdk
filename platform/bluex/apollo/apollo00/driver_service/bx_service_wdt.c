@@ -138,7 +138,7 @@ static bx_err_t wdt_property_get( s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bxs_wdt_init( void )
+bx_err_t bxs_wdt_register( void )
 {
     struct bx_service svc;
     svc.name = "wdt service";

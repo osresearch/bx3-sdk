@@ -52,7 +52,7 @@ enum bx_msg_wdt{
 
 /* exported functions --------------------------------------------------------*/
 
-bx_err_t bxs_wdt_init( void );
+bx_err_t bxs_wdt_register( void );
 s32      bxs_wdt_id( void );
 
 #ifdef __cplusplus

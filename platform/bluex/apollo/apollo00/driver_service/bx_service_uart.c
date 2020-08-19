@@ -160,7 +160,7 @@ static bx_err_t uart_property_get(s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bool bxs_uart_init( void )
+bool bxs_uart_register( void )
 {
     struct bx_service svc;
     svc.name = "uart0 service";

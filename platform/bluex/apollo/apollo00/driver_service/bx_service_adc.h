@@ -54,7 +54,7 @@ enum bx_msg_adc{
 
 /* exported functions --------------------------------------------------------*/
 
-bool     bxs_adc_init( void );
+bool     bxs_adc_register( void );
 s32      bxs_adc_id( void );
 
 #ifdef __cplusplus
