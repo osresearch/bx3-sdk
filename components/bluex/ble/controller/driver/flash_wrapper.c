@@ -189,6 +189,7 @@ periph_err_t flash_erase( uint32_t offset, erase_t type )
         case Page_Erase:
             cmd = FLASH_PAGE_ERASE;
             whole_chip = false;
+            break;
         case Sector_Erase:
             cmd = FLASH_SECTOR_ERASE;
             whole_chip = false;

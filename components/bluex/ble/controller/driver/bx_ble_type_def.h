@@ -3,7 +3,7 @@
   * @file   :   .h
   * @version:
   * @author :
-  * @brief  :
+  * @brief  :   Define common ble types 
   ******************************************************************************
   * @attention
   *
@@ -15,21 +15,36 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SYSCTRL_H__
-#define __SYSCTRL_H__
+#ifndef __BX_BLE_TYPE_DEF_H__
+#define __BX_BLE_TYPE_DEF_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* includes ------------------------------------------------------------------*/
-#include <stdint.h>
-#include <stdbool.h>
-
-/* exported define -----------------------------------------------------------*/
+#include "bx_type_def.h"
 
 /* exported types ------------------------------------------------------------*/
 
+
+struct ble_adv_data {
+    u8 adv_data_len;
+    u8 adv_data[28];
+    u8 scan_rsp_data_len;
+    u8 scan_rsp_data[31];
+};
+
+struct whitelist_data{
+	u8 addr_type; 			
+	u8 addr[6];
+};
+
+struct ble_notify_data {
+    u16 hdl;
+    u16 len;
+    u8 * data;
+};
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/
@@ -38,17 +53,12 @@ extern "C" {
 
 /* exported functions --------------------------------------------------------*/
 
-void sysctrl_pwr_3v2_drv_capability_maintain(bool enable);
-bool sysctrl_pwr_pwm_2_sleep_en_get(void);
-void sysctrl_io_init(void);
-void sysctrl_awo_init(void);
-void sysctrl_32k_clk_init(void);
-void sysctrl_set_ahb_apb_blemac_clk(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SYSCTRL_H__ */
+#endif /* __BX_BLE_TYPE_DEF_H__ */
 
 /******************** (C) COPYRIGHT BLUEX **********************END OF FILE****/
+

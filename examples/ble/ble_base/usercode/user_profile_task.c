@@ -36,7 +36,8 @@
 #include "co_utils.h"
 
 #include "bx_shell.h"
-
+#include "bx_kernel.h"
+#include "bx_service_ble.h"
 /*
  *  GLUCOSE PROFILE ATTRIBUTES
  ****************************************************************************************
@@ -76,20 +77,7 @@ static int gattc_write_req_ind_handler(ke_msg_id_t const msgid,
         cfm->handle = param->handle;
         cfm->status = status;
         ke_msg_send(cfm);
-
-        for( uint32_t i=0;i< param->length;i++ ) {
-            bxsh_logln("%02x ",param->value[i]);
-        }
         
-        static uint16_t notify_seq_num = 0;   
-        struct gattc_send_evt_cmd *cmd = KE_MSG_ALLOC_DYN(GATTC_SEND_EVT_CMD,src_id,dest_id,gattc_send_evt_cmd,2);
-        cmd->operation = GATTC_NOTIFY;
-        cmd->seq_num = notify_seq_num++;
-        cmd->handle = param->handle + 2;
-        cmd->length = 2;
-        cmd->value[0]= (param->value[0] + 0x80 ) & 0xFF;
-        cmd->value[1]= 1;      
-        ke_msg_send(cmd);
     }
     return (KE_MSG_CONSUMED);
 }

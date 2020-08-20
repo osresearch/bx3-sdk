@@ -1141,6 +1141,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_wdt.c</FilePath>
             </File>
+            <File>
+              <FileName>bx_drv_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\bx_drv_ble.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1198,6 +1203,13 @@
         </Group>
         <Group>
           <GroupName>user/service</GroupName>
+          <Files>
+            <File>
+              <FileName>bx_service_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\usercode\bx_service_ble.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>user/app</GroupName>
@@ -2478,6 +2490,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_wdt.c</FilePath>
             </File>
+            <File>
+              <FileName>bx_drv_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\bx_drv_ble.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2811,6 +2828,13 @@
               </Aads>
             </GroupArmAds>
           </GroupOption>
+          <Files>
+            <File>
+              <FileName>bx_service_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\usercode\bx_service_ble.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>user/app</GroupName>

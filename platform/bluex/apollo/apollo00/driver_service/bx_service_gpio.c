@@ -196,12 +196,54 @@ void GPIO_IRQHandler( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+u32 ext_int_stat_2_pin_state(u32 ext_int_stat)
+{
+    u32 ret = 0;
+    u32 temp = 0;
+    for(u32 i=0;i<5;i++) {
+        if( ext_int_stat & (0x01<<i) ){
+            switch( i ){
+                case 0:
+                    temp = 0x01<<15;
+                    break;
+                
+                case 1:
+                    temp = 0x01<<16;
+                    break;
+                
+                case 2:
+                    temp = 0x01<<17;
+                    break;
+                
+                case 3:
+                    temp = 0x01<<22;
+                    break;
+                
+                case 4:
+                    temp = 0x01<<23;
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+        ret |= temp;
+    }
+    return ret;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 void EXT_INTR_IRQHandler( void )
 {
     uint8_t ext_int_stat = BX_FIELD_RD( BX_AWO->EIVAL, AWO_EIVAL_VAL ) ;
     BX_AWO->EICLR |= ext_int_stat;
-
-    bx_public( gpioa_svc.id, BXM_GPIO_EXT_INTR, ext_int_stat, 0 );
+    u32 pin_state = ext_int_stat_2_pin_state(ext_int_stat);
+    
+    bx_public( gpioa_svc.id, BXM_GPIO_EXT_INTR, pin_state, 0 );
 }
 /*========================= end of interrupt function ========================*/
 

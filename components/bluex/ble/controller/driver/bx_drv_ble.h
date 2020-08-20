@@ -14,20 +14,21 @@
   ******************************************************************************
   */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SYSCTRL_H__
-#define __SYSCTRL_H__
+
+#ifndef __BX_DRV_BLE_H__
+#define __BX_DRV_BLE_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /* includes ------------------------------------------------------------------*/
-#include <stdint.h>
-#include <stdbool.h>
 
-/* exported define -----------------------------------------------------------*/
-
+#include "lld.h"
+#include "llm.h"
+#include "gap.h"
+#include "gapm_task.h"
+#include "bx_ble_type_def.h"
 /* exported types ------------------------------------------------------------*/
 
 /* exported variables --------------------------------------------------------*/
@@ -38,17 +39,24 @@ extern "C" {
 
 /* exported functions --------------------------------------------------------*/
 
-void sysctrl_pwr_3v2_drv_capability_maintain(bool enable);
-bool sysctrl_pwr_pwm_2_sleep_en_get(void);
-void sysctrl_io_init(void);
-void sysctrl_awo_init(void);
-void sysctrl_32k_clk_init(void);
-void sysctrl_set_ahb_apb_blemac_clk(void);
+bx_err_t ble_scan_stop( void );
+bx_err_t ble_bonding_pair(void);
+bx_err_t ble_advtising_stop( void );
+bx_err_t ble_connect_stop(void);
+bx_err_t ble_bonding_pair_request( void );
+bx_err_t ble_indication_enabled(u16 handle);
+bx_err_t ble_notifaction_enabled(u16 handle);
+bx_err_t ble_advtising_start(struct ble_adv_data *p_new_advdata_buf,bool default_adv_flag);
+bx_err_t ble_advtining_advdata_update( struct ble_adv_data *p_new_advdata_buf,bool adv_update,bool scan_rsp_update);
+bx_err_t ble_advertising_whitelist_set(struct whitelist_data *white_list, u8 addr_cnt);
+
+bx_err_t ble_notify(struct ble_notify_data * p_data );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SYSCTRL_H__ */
+#endif  /* __BX_DRV_BLE_H__ */
 
-/******************** (C) COPYRIGHT BLUEX **********************END OF FILE****/
+
+

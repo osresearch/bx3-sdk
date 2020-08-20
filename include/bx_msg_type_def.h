@@ -34,6 +34,8 @@ extern "C" {
 
 
 enum bx_message {
+    BXM_SYS_READY,
+    
     //“ª∞„œ˚œ¢
     BXM_OPEN,
     BXM_CLOSE,

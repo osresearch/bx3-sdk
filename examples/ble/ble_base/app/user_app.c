@@ -18,7 +18,6 @@
 
 #include "bx_kernel.h"
 #include "user_app.h"
-
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
@@ -53,7 +52,7 @@ void user_init( void )
 -----------------------------------------------------------------------------*/
 void user_app( void )
 {
-    bx_repeat( user_service_id, USM_TEST, 0, 0, 1000 );
+
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -61,8 +60,9 @@ void user_app( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t user_msg_handle_func(s32 id, u32 msg,u32 param0,u32 param1 )
+bx_err_t user_msg_handle_func(s32 svc, u32 msg,u32 param0,u32 param1 )
 {
+
     return BX_OK;
 }
 /*========================= end of exported function =========================*/

@@ -32,7 +32,6 @@ extern "C" {
 #define BXKE_SERVICE_CONFIG_MAX_COUNT                   32
 
 #define BX_SUBSCIBE_MAX_COUNT                           32
-#define BX_ASYNC_MAX_COUNT                              32
 
 /* exported paras ------------------------------------------------------------*/
 

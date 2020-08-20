@@ -75,23 +75,17 @@ N_XIP_SECTION void qspi_pin_cfg( app_qspi_inst_t * inst, uint8_t pin_num, uint32
     switch( pin_role ) {
         case QSPI_CLK_PIN:
             hwp_sysc_cpu->pin_share_en.bit_field.qspi_en = 3;
-            sysctrl_io_config( 25, QSPI_CLK );
             break;
         case QSPI_D0_PIN:
-            sysctrl_io_config( 26, QSPI_D0 );
             break;
         case QSPI_D1_PIN:
-            sysctrl_io_config( 27, QSPI_D1 );
             break;
         case QSPI_D2_PIN:
             hwp_sysc_cpu->pin_share_en.bit_field.qspi_en = 0xf;
-            sysctrl_io_config( 28, QSPI_D2 );
             break;
         case QSPI_D3_PIN:
-            sysctrl_io_config( 29, QSPI_D3 );
             break;
         case QSPI_CS0_PIN:
-            sysctrl_io_config( 24, QSPI_CS );
             break;
         default:
             BX_ASSERT( 0 );

@@ -15,8 +15,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USER_SERVICE_LED_H__
-#define __USER_SERVICE_LED_H__
+#ifndef __USER_SERVICE_XXX_H__
+#define __USER_SERVICE_XXX_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,11 +24,21 @@ extern "C" {
 
 /* includes ------------------------------------------------------------------*/
 #include "bx_type_def.h"
+#include "bx_msg_type_def.h"
+#include "bx_property_type_def.h"
 
 /* exported paras ------------------------------------------------------------*/
 
 /* exported types ------------------------------------------------------------*/
+enum user_property_XXX {
+    USP_XXX_FIRST = BXP_FIRST_USER_PROP,
+    
+};
 
+enum user_msg_XXX{
+    USM_XXX_FIRST = BXM_FIRST_USER_MSG,
+    
+};
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/
@@ -37,13 +47,13 @@ extern "C" {
 
 /* exported functions --------------------------------------------------------*/
 
-bool     user_service_led_init( void );
-s32      user_service_led_id( void );
+bool     us_xxx_register( void );
+s32      us_xxx_id( void );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __USER_SERVICE_LED_H__ */
+#endif /* __USER_SERVICE_XXX_H__ */
 
 /******************** (C) COPYRIGHT BLUEX **********************END OF FILE****/

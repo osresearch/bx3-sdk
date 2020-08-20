@@ -172,6 +172,7 @@ void bx_kernel_init( void )
 
     bx_kernel_timer_init();
 }
+#include "bx_pm.h"
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
