@@ -35,6 +35,13 @@
 /* private variables ---------------------------------------------------------*/
 static bool pwr_pwm_2 = false;
 
+io_mngt_t io_mngt = {
+    .active_ie = 0x3,
+#if (defined(DEBUGGER_ATTACHED)&&(DEBUGGER_ATTACHED==1))
+    .deep_sleep_ie = 0x3,
+#endif
+};
+
 /* exported variables --------------------------------------------------------*/
 
 /* private macros ------------------------------------------------------------*/
@@ -65,6 +72,54 @@ void sysctrl_pwr_3v2_drv_capability_maintain( bool enable )
 N_XIP_SECTION bool sysctrl_pwr_pwm_2_sleep_en_get()
 {
     return pwr_pwm_2;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION void sysctrl_io_config_mask( uint32_t mask, uint32_t config )
+{
+    GLOBAL_INT_DISABLE();
+    if( config & NORMAL_MODE_IE ) {
+        io_mngt.active_ie |= mask;
+    } else {
+        io_mngt.active_ie &= ~mask;
+    }
+    if( config & SLEEP_MODE_IE ) {
+        io_mngt.deep_sleep_ie |= mask;
+    } else {
+        io_mngt.deep_sleep_ie &= ~mask;
+    }
+    if( config & UTILITY_IO_EN ) {
+        io_mngt.util_io_mask |= mask;
+    } else {
+        io_mngt.util_io_mask &= ~mask;
+    }
+    if( config & SLEEP_RET_OUT_EN ) {
+        io_mngt.util_io_ret_dir |= mask;
+    } else {
+        io_mngt.util_io_ret_dir &= ~mask;
+    }
+    if( config & SLEEP_RET_OUT_H ) {
+        io_mngt.util_io_ret_val |= mask;
+    } else {
+        io_mngt.util_io_ret_val &= ~mask;
+    }
+
+    sysc_awo_gpio_ie_set( io_mngt.active_ie );
+    GLOBAL_INT_RESTORE();
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION void sysctrl_io_config( uint8_t num, uint32_t config )
+{
+    sysctrl_io_config_mask( 1 << num, config );
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

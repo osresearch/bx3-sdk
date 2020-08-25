@@ -44,6 +44,8 @@
 /* private typedef -----------------------------------------------------------*/
 
 /* private variables ---------------------------------------------------------*/
+static uint32_t io_retention_val;
+static uint32_t io_retention_dir;
 
 /* exported variables --------------------------------------------------------*/
 
@@ -113,6 +115,21 @@ N_XIP_SECTION static void close_32m_xtal()
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+N_XIP_SECTION static void deep_sleep_io_state_set()
+{
+    io_retention_val = io_out_read_all() & ( ~io_mngt.util_io_mask ) | io_mngt.util_io_ret_val;
+    io_retention_dir = io_dir_read_all() & ( ~io_mngt.util_io_mask ) | io_mngt.util_io_ret_dir;
+    io_write_all( io_retention_val );
+    io_dir_write_all_noie( io_retention_dir );
+    pshare_reset_to_gpio();
+    hwp_sysc_awo->gpio_ie.val = io_mngt.deep_sleep_ie;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 N_XIP_SECTION static void pwr_pwm_setting_for_sleep()
 {
     if( sysctrl_pwr_pwm_2_sleep_en_get() ) {
@@ -151,7 +168,10 @@ N_XIP_SECTION static void deepsleep_prepare()
     hwp_sysc_awo->reg_io_state.bit_field.io_stat_ret_pmu = 1;
     SCB->SCR |= ( 1 << 2 );
 #endif
+    //BX_GPIOA->OD |=  GPIO_PIN_2 ;//93.6 117 104.8 77.6 
+    deep_sleep_io_state_set();
     sync_with_ble_sleep( 2 );
+    //BX_GPIOA->OD |=  GPIO_PIN_2 ;//102 98 106 136 133 158
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -173,6 +193,9 @@ N_XIP_SECTION static uint32_t config_and_enable_32m_xtal()
 -----------------------------------------------------------------------------*/
 N_XIP_SECTION static void gpio_status_restore()
 {
+    io_write_all( io_retention_val );
+    io_dir_write_all_noie( io_retention_dir );
+    sysc_awo_gpio_ie_set( io_mngt.active_ie );
     pshare_reset_to_gpio();
     sysc_awo_io_ctrl_sel_setf( 0 ); //restore from IO retention
 }

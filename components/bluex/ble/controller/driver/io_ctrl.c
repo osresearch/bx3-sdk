@@ -70,6 +70,36 @@ static uint8_t ext_int_idx_get( uint8_t pin_num )
     }
     return idx;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static void io_ext_int_ctrl( uint8_t pin_num, bool enable, bool int_mask_ctrl )
+{
+    GLOBAL_INT_DISABLE();
+    uint8_t idx = ext_int_idx_get( pin_num );
+    BX_ASSERT( idx != 0xff );
+    uint32_t ext_int_cfg = sysc_awo_ext_inrp_config_get();
+    if( enable ) {
+        sysctrl_io_config( pin_num, EXTERNAL_INTR_IO );
+        sysc_awo_ext_inrp_clr_set( 1 << idx );
+        ext_int_cfg |= 1 << ( idx + 20 );
+        if( int_mask_ctrl ) {
+            ext_int_cfg |= 1 << idx;
+        }
+        sysc_awo_ext_inrp_config_set( ext_int_cfg );
+    } else {
+        ext_int_cfg &= ~( 1 << ( idx + 20 ) );
+        if( int_mask_ctrl ) {
+            ext_int_cfg &= ~( 1 << idx );
+        }
+        sysc_awo_ext_inrp_config_set( ext_int_cfg );
+        sysctrl_io_config( pin_num, 0 );
+    }
+    GLOBAL_INT_RESTORE();
+}
 
 /*========================= end of private function ==========================*/
 
@@ -149,6 +179,7 @@ N_XIP_SECTION void io_dir_write_all_noie( uint32_t dir )
 void io_dir_write_all( uint32_t dir )
 {
     GLOBAL_INT_DISABLE();
+    sysctrl_io_config_mask( 0xffffffff, GENERAL_PURPOSE_IO );
     app_gpio_port_dir_write( &app_gpio_inst.inst, dir );
     GLOBAL_INT_RESTORE();
 }
@@ -161,6 +192,7 @@ void io_dir_write_all( uint32_t dir )
 void io_dir_output_set( uint32_t output_mask )
 {
     GLOBAL_INT_DISABLE();
+    sysctrl_io_config_mask( output_mask, GENERAL_PURPOSE_IO );
     app_gpio_port_dir_output_set( &app_gpio_inst.inst, output_mask );
     GLOBAL_INT_RESTORE();
 }
@@ -173,6 +205,7 @@ void io_dir_output_set( uint32_t output_mask )
 void io_dir_input_set( uint32_t input_mask )
 {
     GLOBAL_INT_DISABLE();
+    sysctrl_io_config_mask( input_mask, GENERAL_PURPOSE_IO );
     app_gpio_port_dir_input_set( &app_gpio_inst.inst, input_mask );
     GLOBAL_INT_RESTORE();
 }
@@ -185,6 +218,7 @@ void io_dir_input_set( uint32_t input_mask )
 void io_cfg_output( uint8_t pin_num )
 {
     GLOBAL_INT_DISABLE();
+    sysctrl_io_config_mask( 1 << pin_num, GENERAL_PURPOSE_IO );
     app_gpio_port_dir_output_set( &app_gpio_inst.inst, 1 << pin_num );
     GLOBAL_INT_RESTORE();
 }
@@ -199,9 +233,11 @@ void io_cfg_input( uint8_t pin_num )
     GLOBAL_INT_DISABLE();
     uint8_t ext_int_id = ext_int_idx_get( pin_num );
     if( ext_int_id == 0xff ) {
+        sysctrl_io_config_mask( 1 << pin_num, GENERAL_PURPOSE_IO );
     } else {
         uint32_t ext_int_cfg = sysc_awo_ext_inrp_config_get();
         if( ( ext_int_cfg & 1 << ext_int_id + 20 ) == 0 ) {
+            sysctrl_io_config_mask( 1 << pin_num, GENERAL_PURPOSE_IO );
         }
     }
     app_gpio_port_dir_input_set( &app_gpio_inst.inst, 1 << pin_num );
@@ -360,7 +396,7 @@ io_pull_type_t io_pin_pull_read( uint8_t pin_num )
 -----------------------------------------------------------------------------*/
 void ext_set_touch_cb( void ( *cb )( void ) )
 {
-//    touch_cb = cb;
+    //touch_cb = cb;
 }
 
 /** ---------------------------------------------------------------------------
@@ -375,7 +411,7 @@ void io_ext_int_cfg( uint8_t pin_num, ext_int_mode_t mode, void ( *callback )() 
     uint8_t idx = ext_int_idx_get( pin_num );
     BX_ASSERT( idx != 0xff );
     uint32_t ext_int_cfg = sysc_awo_ext_inrp_config_get();
-//    ext_int_cb[idx] = callback;
+    //ext_int_cb[idx] = callback;
     ext_int_cfg &= ~( 0x3 << ( 2 * idx + 8 ) );
     ext_int_cfg |=  mode << ( 2 * idx + 8 );
     sysc_awo_ext_inrp_config_set( ext_int_cfg );
@@ -391,7 +427,7 @@ void io_ext_int_cfg( uint8_t pin_num, ext_int_mode_t mode, void ( *callback )() 
 -----------------------------------------------------------------------------*/
 void io_ext_int_en( uint8_t pin_num, bool enable )
 {
-    //io_ext_int_ctrl( pin_num, enable, true );
+    io_ext_int_ctrl( pin_num, enable, true );
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -401,7 +437,7 @@ void io_ext_int_en( uint8_t pin_num, bool enable )
 -----------------------------------------------------------------------------*/
 void io_ext_int_pin_en( uint8_t pin_num, bool enable )
 {
-//    io_ext_int_ctrl( pin_num, enable, false );
+    io_ext_int_ctrl( pin_num, enable, false );
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
