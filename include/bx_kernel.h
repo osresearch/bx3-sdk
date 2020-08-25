@@ -71,6 +71,7 @@ bx_err_t bx_repeatn( s32 svc, u32 msg, u32 param0, u32 param1, u32 period, s32 n
 bx_err_t bx_cancel( s32 svc, u32 msg );
 
 bx_err_t bx_subscibe( s32 svc, u32 msg, u32 param0, u32 param1 );
+bx_err_t bx_subscibeex( s32 src, s32 dst, u32 msg );
 bx_err_t bx_public( s32 svc, u32 msg, u32 param0, u32 param1 );
 void     bx_err( s32 svc, u32 msg, u32 param0, u32 param1, bx_err_t err );
 

@@ -393,6 +393,42 @@ bx_err_t bx_subscibe( s32 dst, u32 msg, u32 param0, u32 param1 )
 
     return BX_OK;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t bx_subscibeex( s32 src, s32 dst, u32 msg )
+{
+    if( subject_hub.count >= BX_SUBSCIBE_MAX_COUNT ) {
+        return false;
+    }
+    
+    u32 count = subject_hub.count;
+    for( u32 i = 0; i < count; i++ ) {
+        if( subject_hub.hub[i].src != src ) {
+            continue;
+        }
+        if( subject_hub.hub[i].dst != dst ) {
+            continue;
+        }
+        if( subject_hub.hub[i].msg == msg ) {
+            return BX_OK;
+        }
+    }
+    
+    GLOBAL_DISABLE_IRQ();
+
+    subject_hub.hub[subject_hub.count].src = src;
+    subject_hub.hub[subject_hub.count].dst = dst;
+    subject_hub.hub[subject_hub.count].msg = msg;
+    subject_hub.count++;
+
+    GLOBAL_ENABLE_IRQ();
+
+    return BX_OK;
+}
 
 /** ---------------------------------------------------------------------------
  * @brief   :

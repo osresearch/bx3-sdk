@@ -418,10 +418,13 @@ static void config_init( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static uint32_t adc_val_to_volt( uint32_t adc_val )
+static uint32_t adc_val_to_volt( int32_t adc_val )
 {
     uint32_t temp, quotient, reminder;
     uint32_t adc_value_volt = 0;
+
+    adc_val = ( adc_val > 0 ? adc_val : 0 );
+
     if( adc_val <= 0 ) {
         adc_val = 0;
     }

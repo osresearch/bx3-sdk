@@ -338,7 +338,7 @@
               <MiscControls>--bss_threshold=0</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\app;..\..\config;..\..\usercode;..\..\..\..\..\include;..\..\..\..\..\platform\cmsis;..\..\..\..\..\platform\bluex\apollo\common;..\..\..\..\..\platform\bluex\apollo\typedef;..\..\..\..\..\platform\bluex\apollo\apollo00;..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service;..\..\..\..\..\components\bluex\ble\app;..\..\..\..\..\components\bluex\ble\common;..\..\..\..\..\components\bluex\ble\dbg;..\..\..\..\..\components\bluex\bxfs;..\..\..\..\..\components\bluex\ble\profiles;..\..\..\..\..\components\bluex\ble\controller;..\..\..\..\..\components\bluex\ble\controller\patch;..\..\..\..\..\components\bluex\ble\controller\driver;..\..\..\..\..\components\bluex\ble\controller\driver\reg;..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6;..\..\..\..\..\components\bluex\fifo;..\..\..\..\..\components\bluex\shell</IncludePath>
+              <IncludePath>..\..\app;..\..\config;..\..\usercode;..\..\..\..\..\include;..\..\..\..\..\platform\cmsis;..\..\..\..\..\platform\bluex\apollo\common;..\..\..\..\..\platform\bluex\apollo\typedef;..\..\..\..\..\platform\bluex\apollo\apollo00;..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service;..\..\..\..\..\components\bluex\ble\app;..\..\..\..\..\components\bluex\ble\common;..\..\..\..\..\components\bluex\ble\dbg;..\..\..\..\..\components\bluex\bxfs;..\..\..\..\..\components\bluex\ble\profiles;..\..\..\..\..\components\bluex\ble\controller;..\..\..\..\..\components\bluex\ble\controller\patch;..\..\..\..\..\components\bluex\ble\controller\driver;..\..\..\..\..\components\bluex\ble\controller\driver\reg;..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6;..\..\..\..\..\components\bluex\fifo;..\..\..\..\..\components\bluex\shell;..\..\..\..\..\components\3rdparty\cm_backtrace</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1052,6 +1052,11 @@
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_adc.c</FilePath>
             </File>
             <File>
+              <FileName>bx_drv_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\bx_drv_ble.c</FilePath>
+            </File>
+            <File>
               <FileName>bx_drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_gpio.c</FilePath>
@@ -1140,11 +1145,6 @@
               <FileName>bx_service_wdt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_wdt.c</FilePath>
-            </File>
-            <File>
-              <FileName>bx_drv_ble.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\bx_drv_ble.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2401,6 +2401,11 @@
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_adc.c</FilePath>
             </File>
             <File>
+              <FileName>bx_drv_ble.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\bx_drv_ble.c</FilePath>
+            </File>
+            <File>
               <FileName>bx_drv_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_gpio.c</FilePath>
@@ -2489,11 +2494,6 @@
               <FileName>bx_service_wdt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_wdt.c</FilePath>
-            </File>
-            <File>
-              <FileName>bx_drv_ble.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\bx_drv_ble.c</FilePath>
             </File>
           </Files>
         </Group>
