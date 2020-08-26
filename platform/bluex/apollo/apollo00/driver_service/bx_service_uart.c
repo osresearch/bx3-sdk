@@ -39,8 +39,8 @@ static struct bx_uart_service uart1_svc = { 0 };
 do{                                                             \
     if( ( svc_id ) == uart0_svc.id ) {                          \
         p_svc = &uart0_svc;                                     \
-    } else if( ( svc_id ) == uart0_svc.id ) {                   \
-        p_svc = &uart0_svc;                                     \
+    } else if( ( svc_id ) == uart1_svc.id ) {                   \
+        p_svc = &uart1_svc;                                     \
     } else {                                                    \
         return BX_ERR_NOTSUP;                                   \
     }                                                           \
@@ -65,7 +65,7 @@ static bx_err_t uart_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
             return bx_drv_uart_open(p_svc->handle);
         
         case BXM_CLOSE:
-            return bx_drv_uart_open(p_svc->handle);
+            return bx_drv_uart_close(p_svc->handle);
         
         case BXM_READ:
             return bx_drv_uart_read(p_svc->handle,(u8 *)param0,param1);

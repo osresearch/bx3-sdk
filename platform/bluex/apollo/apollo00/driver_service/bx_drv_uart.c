@@ -235,15 +235,15 @@ bx_err_t bx_drv_uart_set_stop_bit( void * hdl, u8 stop_bit )
 {
     CHECK_HANDLE( hdl );
     CHECK_STOP_BIT( stop_bit );
-//    reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
+    reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
     
     switch(stop_bit){
         case BX_UART_SB_ONE:
-            BX_CLR_BIT( BX_UART0->LC, UART_LC_STOP_BIT );
+            BX_CLR_BIT( BX_UARTx->LC, UART_LC_STOP_BIT );
             break;
         case BX_UART_SB_ONE_POINT_FIVE://only when databit = 5B
         case BX_UART_SB_TWO:
-            BX_SET_BIT( BX_UART0->LC, UART_LC_STOP_BIT );
+            BX_SET_BIT( BX_UARTx->LC, UART_LC_STOP_BIT );
             break;
         default:
             return BX_ERR_NOTSUP;
@@ -276,29 +276,29 @@ bx_err_t bx_drv_uart_set_parity( void * hdl, u8 parity )
 {
     CHECK_HANDLE( hdl );
     CHECK_PARITY( parity );
-//    reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
+    reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
 
     switch( parity ) {
         case BX_UART_PARITY_NONE:
-            BX_CLR_BIT( BX_UART0->LC, UART_LC_PARITY_EN );
+            BX_CLR_BIT( BX_UARTx->LC, UART_LC_PARITY_EN );
             break;
         
         case BX_UART_PARITY_ODD:
-            BX_SET_BIT( BX_UART0->LC, UART_LC_PARITY_EN );
-            BX_CLR_BIT( BX_UART0->LC, UART_LC_EVEN_PARITY_EN );
+            BX_SET_BIT( BX_UARTx->LC, UART_LC_PARITY_EN );
+            BX_CLR_BIT( BX_UARTx->LC, UART_LC_EVEN_PARITY_EN );
             break;
         
         case BX_UART_PARITY_EVEN:
-            BX_SET_BIT( BX_UART0->LC, UART_LC_PARITY_EN );
-            BX_SET_BIT( BX_UART0->LC, UART_LC_EVEN_PARITY_EN );
+            BX_SET_BIT( BX_UARTx->LC, UART_LC_PARITY_EN );
+            BX_SET_BIT( BX_UARTx->LC, UART_LC_EVEN_PARITY_EN );
             break;
         
 //        case BX_UART_PARITY_MARK:
-//            BX_SET_BIT( BX_UART0->LC, UART_LC_PARITY_EN );
+//            BX_SET_BIT( BX_UARTx->LC, UART_LC_PARITY_EN );
 //            break;
 //        
 //        case BX_UART_PARITY_SPACE:
-//            BX_SET_BIT( BX_UART0->LC, UART_LC_PARITY_EN );
+//            BX_SET_BIT( BX_UARTx->LC, UART_LC_PARITY_EN );
 //            break;
         
         default:
@@ -340,11 +340,12 @@ bx_err_t bx_drv_uart_set_rx_pin( void * hdl, u8 pin_num )
     CHECK_HANDLE( hdl );
     CHECK_PIN_NUM( pin_num );
     reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
-
+    
+    BX_GPIOA->DIR &= ~( 0x01 << pin_num );
+    BX_AWO->GPIOIS |= ( 0x01 << pin_num );
+    BX_AWO->GPIOIE |= ( 0x01 << pin_num );
+    
     if( BX_UARTx == BX_UART0 ) {
-        BX_GPIOA->DIR &= ~( 0x01 << pin_num );
-        BX_AWO->GPIOIS |= ( 0x01 << pin_num );
-        BX_AWO->GPIOIE |= ( 0x01 << pin_num );
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_UART0_RX );
     } else if( BX_UARTx == BX_UART1 ) {
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_UART1_RX );
