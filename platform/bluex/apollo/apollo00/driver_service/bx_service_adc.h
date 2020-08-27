@@ -49,6 +49,14 @@ enum bx_property_adc {
 enum bx_msg_adc{
     BXM_ADC_FIRST = BXM_FIRST_USER_MSG,
     
+    BXM_ADC_VOLT,
+    BXM_ADC_BATTERY,
+    BXM_ADC_TEMPERATURE,
+
+	BXM_ADV_VOLT_DATA_UPDATE,
+	BXM_ADV_TEMP_DATA_UPDATE,
+	BXM_ADV_BAT_DATA_UPDATE,
+    
 };
 /* exported macros -----------------------------------------------------------*/
 

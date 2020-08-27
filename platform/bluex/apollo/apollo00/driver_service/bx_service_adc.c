@@ -50,19 +50,41 @@ do{                                                             \
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+u32 temp_data;
 static bx_err_t adc_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
 {
     struct bx_adc_service * p_svc;
     GET_ADC_SERVICE_BY_ID( p_svc, id );
-    
+
+	bx_err_t bx_err = BX_OK;
     switch( msg ) {
         case BXM_OPEN:
             return bx_drv_adc_open(p_svc->handle);
-        
+
+		case BXM_CLOSE:
+            return bx_drv_adc_close(p_svc->handle);
+
+		case BXM_ADC_VOLT:
+			bx_err = bx_drv_adc_get_volt(p_svc->handle,param0,(u32*)param1);
+			bx_public(id, BXM_ADV_VOLT_DATA_UPDATE, param0, *( u32 * )param1);
+			break;
+
+
+		case BXM_ADC_BATTERY:
+			bx_err = bx_drv_adc_get_battery(p_svc->handle,(u32*)param0);
+			bx_public(id, BXM_ADV_BAT_DATA_UPDATE,*( u32 * )param0, param1);
+			break;
+		
+		case BXM_ADC_TEMPERATURE:
+			bx_err = bx_drv_adc_get_chip_temperature(p_svc->handle,(u32*)param0);
+			bx_public(id, BXM_ADV_TEMP_DATA_UPDATE, *( u32 * )param0, param1);
+			
+			break;
+
         default:
             return BX_ERR_NOTSUP;
     }
-//    return BX_OK;
+    return bx_err;
 }
 
 /** ---------------------------------------------------------------------------
@@ -137,6 +159,8 @@ bool bxs_adc_register( void )
     if( adc_svc.id == -1 ) {
         return false;
     }
+
+	adc_svc.handle = BX_ADC;
     return true;
 }
 /** ---------------------------------------------------------------------------

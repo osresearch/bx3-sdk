@@ -20,6 +20,7 @@
 #include "flash_wrapper.h"
 #include <stdlib.h>
 
+
 /* config --------------------------------------------------------------------*/
 #define SG_END_VAL_HIGH                                 1023000
 #define SG_END_VAL_LOW                                  0
@@ -423,8 +424,8 @@ static uint32_t adc_val_to_volt( int32_t adc_val )
     uint32_t temp, quotient, reminder;
     uint32_t adc_value_volt = 0;
 
-    adc_val = ( adc_val > 0 ? adc_val : 0 );
-
+	adc_val = ( adc_val  > 0 ? (uint32_t)adc_val : 0);
+		
     if( adc_val <= 0 ) {
         adc_val = 0;
     }
@@ -636,7 +637,8 @@ bx_err_t bx_drv_adc_get_volt( void * hdl, u8 channel, u32 * value_mv )
     if( err != BX_OK ) {
         return err;
     }
-    * value_mv = adc_val_to_volt( adc_value );
+    * value_mv = adc_val_to_volt(adc_value);
+
     return BX_OK;
 }
 /** ---------------------------------------------------------------------------
