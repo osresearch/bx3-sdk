@@ -28,7 +28,15 @@ extern "C" {
 #include "apollo_00_reg.h"
 
 /* exported types ------------------------------------------------------------*/
-
+enum bx_intr_id_uart{
+	BX_UART_IRQ_MS = 0,     // modem status
+	BX_UART_IRQ_NIP = 1,    // no interrupt pending
+	BX_UART_IRQ_TE = 2,     // THR empty
+	BX_UART_IRQ_RDA = 4,    // received data available
+	BX_UART_IRQ_RLS = 6,    // receiver line status    
+	BX_UART_IRQ_BD = 7,     // busy detect
+	BX_UART_IRQ_CT = 12,    // character timeout
+};
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/
@@ -51,6 +59,10 @@ bx_err_t    bx_drv_uart_close( void * hdl );
 
 bx_err_t    bx_drv_uart_read( void * hdl, u8 * buff, u32 len );
 bx_err_t    bx_drv_uart_write( void * hdl, u8 * buff, u32 len );
+
+
+bx_err_t    bx_drv_uart_intr_write_start( void * hdl );
+bx_err_t    bx_drv_uart_intr_read_start( void * hdl );
 
 #ifdef __cplusplus
 }

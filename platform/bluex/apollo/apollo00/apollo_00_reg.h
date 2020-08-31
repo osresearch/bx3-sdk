@@ -169,11 +169,11 @@ typedef enum IRQn {
 #define BX_UART0                                        ( ( reg_uart_t * ) REG_UART0_BASE )
 #define BX_UART1                                        ( ( reg_uart_t * ) REG_UART1_BASE )
 
-#define BX_PWM0                                         ( ( reg_pwm_t * ) REG_PWM_BASE + REG_PWM0_ADDR_OFFSET )
-#define BX_PWM1                                         ( ( reg_pwm_t * ) REG_PWM_BASE + REG_PWM1_ADDR_OFFSET )
-#define BX_PWM2                                         ( ( reg_pwm_t * ) REG_PWM_BASE + REG_PWM2_ADDR_OFFSET )
-#define BX_PWM3                                         ( ( reg_pwm_t * ) REG_PWM_BASE + REG_PWM3_ADDR_OFFSET )
-#define BX_PWM4                                         ( ( reg_pwm_t * ) REG_PWM_BASE + REG_PWM4_ADDR_OFFSET )
+#define BX_PWM0                                         ( ( reg_pwm_t * ) ( REG_PWM_BASE + REG_PWM0_ADDR_OFFSET ) )
+#define BX_PWM1                                         ( ( reg_pwm_t * ) ( REG_PWM_BASE + REG_PWM1_ADDR_OFFSET ) )
+#define BX_PWM2                                         ( ( reg_pwm_t * ) ( REG_PWM_BASE + REG_PWM2_ADDR_OFFSET ) )
+#define BX_PWM3                                         ( ( reg_pwm_t * ) ( REG_PWM_BASE + REG_PWM3_ADDR_OFFSET ) )
+#define BX_PWM4                                         ( ( reg_pwm_t * ) ( REG_PWM_BASE + REG_PWM4_ADDR_OFFSET ) )
 
 #define BX_TIM0                                         ( ( reg_timer_t * ) ( REG_TIMER_BASE + REG_TIMER0_ADDR_OFFSET ) )
 #define BX_TIM1                                         ( ( reg_timer_t * ) ( REG_TIMER_BASE + REG_TIMER1_ADDR_OFFSET ) )
@@ -195,13 +195,13 @@ typedef enum IRQn {
 #define BX_SPIM0                                        ( ( reg_spim_t * ) REG_SPIM_0_BASE )
 #define BX_SPIM1                                        ( ( reg_spim_t * ) REG_SPIM_1_BASE )
 
-#define BX_DMAC0                                        ( ( reg_dmac_t * ) REG_DMA_BASE + REG_DMA_CHANNEL0_ADDR_OFFSET )
-#define BX_DMAC1                                        ( ( reg_dmac_t * ) REG_DMA_BASE + REG_DMA_CHANNEL1_ADDR_OFFSET )
-#define BX_DMAC2                                        ( ( reg_dmac_t * ) REG_DMA_BASE + REG_DMA_CHANNEL2_ADDR_OFFSET )
-#define BX_DMAC3                                        ( ( reg_dmac_t * ) REG_DMA_BASE + REG_DMA_CHANNEL3_ADDR_OFFSET )
-#define BX_DMAC4                                        ( ( reg_dmac_t * ) REG_DMA_BASE + REG_DMA_CHANNEL4_ADDR_OFFSET )
-#define BX_DMAC5                                        ( ( reg_dmac_t * ) REG_DMA_BASE + REG_DMA_CHANNEL5_ADDR_OFFSET )
-#define BX_DMAX                                         ( ( reg_dmax_t * ) REG_DMA_BASE + REG_DMAX_ADDR_OFFSET )
+#define BX_DMAC0                                        ( ( reg_dmac_t * ) ( REG_DMA_BASE + REG_DMA_CHANNEL0_ADDR_OFFSET ) )
+#define BX_DMAC1                                        ( ( reg_dmac_t * ) ( REG_DMA_BASE + REG_DMA_CHANNEL1_ADDR_OFFSET ) )
+#define BX_DMAC2                                        ( ( reg_dmac_t * ) ( REG_DMA_BASE + REG_DMA_CHANNEL2_ADDR_OFFSET ) )
+#define BX_DMAC3                                        ( ( reg_dmac_t * ) ( REG_DMA_BASE + REG_DMA_CHANNEL3_ADDR_OFFSET ) )
+#define BX_DMAC4                                        ( ( reg_dmac_t * ) ( REG_DMA_BASE + REG_DMA_CHANNEL4_ADDR_OFFSET ) )
+#define BX_DMAC5                                        ( ( reg_dmac_t * ) ( REG_DMA_BASE + REG_DMA_CHANNEL5_ADDR_OFFSET ) )
+#define BX_DMAX                                         ( ( reg_dmax_t * ) ( REG_DMA_BASE + REG_DMAX_ADDR_OFFSET ) )
 
 #ifdef __cplusplus
 }

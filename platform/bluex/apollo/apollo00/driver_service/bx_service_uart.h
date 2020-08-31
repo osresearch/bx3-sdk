@@ -26,7 +26,7 @@ extern "C" {
 #include "bx_type_def.h"
 #include "bx_msg_type_def.h"
 #include "bx_property_type_def.h"
-
+#include "bx_uart_type_def.h"
 /* exported paras ------------------------------------------------------------*/
 
 /* exported types ------------------------------------------------------------*/
@@ -45,14 +45,18 @@ enum bx_property_uart {
     
     BXP_UART_PARITY,
     BXP_UART_STOP_BIT,
-    
     BXP_UART_115200_8_1_N,
+
+    BXP_UART_RXBUFF,
+    BXP_UART_TXBUFF,
     
 };
 
 enum bx_msg_uart{
     BXM_UART_FIRST = BXM_FIRST_USER_MSG,
     
+    
+    BXM_UART_RECEIVED_DATA,
 };
 /* exported macros -----------------------------------------------------------*/
 

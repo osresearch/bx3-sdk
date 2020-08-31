@@ -47,11 +47,15 @@ enum bx_message {
     BXM_START,
     BXM_STOP,
     
+    
     BXM_PREPARE_SLEEP,
     BXM_WAKEUP,
     
+    BXM_READ_START,
+    BXM_WRITE_START,
     
-    //可发布/订阅消息
+    BXM_DATA_RECEIVED,
+    
     BXM_READ_DONE,
     BXM_WRITE_DONE,
     BXM_DATA_UPDATE,
