@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #ifndef BX_DEEP_SLEEP
-#define BX_DEEP_SLEEP                                   1
+#define BX_DEEP_SLEEP                                   0
 #endif
 
 #if ( BX_DEEP_SLEEP > 0 )

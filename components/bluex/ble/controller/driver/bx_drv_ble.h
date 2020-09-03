@@ -35,6 +35,8 @@ extern "C" {
 
 /* exported constants --------------------------------------------------------*/
 
+
+bx_err_t send_data_notify(uint8_t *data,uint8_t length,uint16_t handle);
 /* exported macros -----------------------------------------------------------*/
 
 /* exported functions --------------------------------------------------------*/
@@ -51,6 +53,8 @@ bx_err_t ble_advtining_advdata_update( struct ble_adv_data *p_new_advdata_buf,bo
 bx_err_t ble_advertising_whitelist_set(struct whitelist_data *white_list, u8 addr_cnt);
 
 bx_err_t ble_notify(struct ble_notify_data * p_data );
+
+bx_err_t ble_scan_start( uint8_t filter_duplic, uint8_t filt_policy, uint8_t scan_mode );
 
 #ifdef __cplusplus
 }

@@ -18,6 +18,8 @@
 #include "bx_drv_pwm.h"
 #include "bx_drv_io_mux.h"
 
+#include "bx_drv_gpio.h"
+
 /* includes ------------------------------------------------------------------*/
 #define PWM_MAX_FREQUENCY_HZ                    16000000
 
@@ -62,8 +64,15 @@ do{                                                         \
 }while(0)
 
 /* private typedef -----------------------------------------------------------*/
+struct bx_pwm_drv {
+    void * handle;
+
+    u8 pin_num;
+	u8 pin_type;
+};
 
 /* private variables ---------------------------------------------------------*/
+static struct bx_pwm_drv pwm_drv[5] = { 0 };
 
 /* exported variables --------------------------------------------------------*/
 
@@ -89,14 +98,29 @@ bx_err_t bx_drv_pwm_set_pin( void * hdl, u8 pin_num )
     reg_pwm_t * BX_PWMx = ( reg_pwm_t * )hdl;
 
     if( BX_PWMx == BX_PWM0 ) {
+		pwm_drv[0].handle = BX_PWMx;
+		pwm_drv[0].pin_num = pin_num;
+		pwm_drv[0].pin_type = BX_PIN_TYPE_PWM0;
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_PWM0 );
     } else if ( BX_PWMx == BX_PWM1 ) {
+		pwm_drv[1].handle = BX_PWMx;
+		pwm_drv[1].pin_num = pin_num;
+		pwm_drv[1].pin_type = BX_PIN_TYPE_PWM1;
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_PWM1 );
     } else if ( BX_PWMx == BX_PWM2 ) {
+		pwm_drv[2].handle = BX_PWMx;
+		pwm_drv[2].pin_num = pin_num;
+		pwm_drv[2].pin_type = BX_PIN_TYPE_PWM2;
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_PWM2 );
     } else if ( BX_PWMx == BX_PWM3 ) {
+		pwm_drv[3].handle = BX_PWMx;
+		pwm_drv[3].pin_num = pin_num;
+		pwm_drv[3].pin_type = BX_PIN_TYPE_PWM3;
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_PWM3 );
     } else if ( BX_PWMx == BX_PWM4 ) {
+		pwm_drv[4].handle = BX_PWMx;
+		pwm_drv[4].pin_num = pin_num;
+		pwm_drv[4].pin_type = BX_PIN_TYPE_PWM4;
         return bx_drv_iomux_set_pin_type( pin_num, BX_PIN_TYPE_PWM4 );
     } else {
         return BX_ERR_INVAL;
@@ -194,23 +218,65 @@ bx_err_t bx_drv_pwm_start( void * hdl, u32 freq, u8 duty )
     CHECK_DUTY( duty );
     reg_pwm_t * BX_PWMx = ( reg_pwm_t * )hdl;
 
+
     uint32_t high_time;
     uint32_t low_time;
+	u32 pin_mask ;
+	
     if( duty == 0 ) {
-        high_time = 0;
-        low_time  = ( 1600000 / freq );
+		for(u8 i = 0; i < 5; i++)
+		{
+			if(pwm_drv[i].handle == BX_PWMx)
+			{
+			    BX_PWMx->EN = 0;
+			    bx_drv_iomux_set_pin_type(pwm_drv[i].pin_num,BX_PIN_TYPE_GENERAL_IO);
+				
+			    BX_PER->CLKG1 |= PER_CLKG1_SET_GPIO;
+				pin_mask =  0x01UL << pwm_drv[i].pin_num;
+				BX_GPIOA->DIR |= ( pin_mask );
+				BX_GPIOA->OD &= ~( 0x01UL << pwm_drv[i].pin_num );
+				break;
+			}
+		}
     } else if( duty == 100 ) {
-        high_time = ( 16000000 / freq );
-        low_time = 0;
+    	for(u8 i = 0; i < 5; i++)
+		{
+			if(pwm_drv[i].handle == BX_PWMx)
+			{
+			    BX_PWMx->EN = 0;
+			    bx_drv_iomux_set_pin_type(pwm_drv[i].pin_num,BX_PIN_TYPE_GENERAL_IO);
+				
+			    BX_PER->CLKG1 |= PER_CLKG1_SET_GPIO;
+				pin_mask =  0x01UL << pwm_drv[i].pin_num;
+				BX_GPIOA->DIR |= ( pin_mask );
+				BX_GPIOA->OD |= ( 0x01UL << pwm_drv[i].pin_num );
+				break;
+			}
+		}
     } else {
         high_time = ( ( 160000 ) * duty ) / ( freq );
         low_time  = ( ( 160000 ) * ( 100 - duty ) ) / ( freq );
+
+    	for(u8 i = 0; i < 5; i++)
+		{
+			if(pwm_drv[i].handle == BX_PWMx)
+			{
+				u32 value = pwm_drv[i].pin_type - BX_PIN_TYPE_UART0_TX;
+			    u8 af_enable = pwm_drv[i].pin_num - 2 + FUNC_IO_EN00;
+			    bx_drv_iomux_af_enable( af_enable );
+
+			    u32 addr = 0x20132030 + ( pwm_drv[i].pin_num / 8 ) * 4;
+
+			    *( u32 * ) addr |= value << ( ( ( pwm_drv[i].pin_num - 2 ) % 8 ) * 4 );
+				break;
+			}
+		}
+		
+		BX_PWMx->EN = 0;
+		BX_PWMx->PS = ( ( uint32_t )high_time << 16 ) | low_time;
+		BX_PWMx->EN = 1;
+
     }
-
-    BX_PWMx->EN = 0;
-    BX_PWMx->PS = ( ( uint32_t )high_time << 16 ) | low_time;
-    BX_PWMx->EN = 1;
-
 
     return BX_OK;
 }

@@ -46,6 +46,8 @@ enum bx_property_tim {
 enum bx_msg_tim{
     BXM_TIM_FIRST = BXM_FIRST_USER_MSG,
     
+    BXM_TIM0_INTR,
+    BXM_TIM1_INTR,
 };
 /* exported macros -----------------------------------------------------------*/
 

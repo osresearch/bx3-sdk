@@ -143,7 +143,8 @@ N_XIP_SECTION void __aeabi_assert(const char *expr,const char *file,int line)
 -----------------------------------------------------------------------------*/
 N_XIP_SECTION void rwip_assert_c( uint32_t lvl, uint32_t param0, uint32_t param1, uint32_t lr )
 {
-    LOG( lvl, "lvl:%x,lr=0x%08x,param0=0x%x,param1=0x%x\n", lvl, lr, param0, param1 );
+    //LOG( lvl, "lvl:%x,lr=0x%08x,param0=0x%x,param1=0x%x\n", lvl, lr, param0, param1 );
+    printf("lvl:%x,lr=0x%08x,param0=0x%x,param1=0x%x\n", lvl, lr, param0, param1 );
     if( lvl == LVL_ERROR ) {
         GLOBAL_INT_STOP();
         while( 1 );

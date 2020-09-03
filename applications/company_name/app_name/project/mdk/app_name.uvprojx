@@ -338,7 +338,7 @@
               <MiscControls>--bss_threshold=0</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\app;..\..\config;..\..\usercode;..\..\..\..\..\include;..\..\..\..\..\platform\cmsis;..\..\..\..\..\platform\bluex\apollo\common;..\..\..\..\..\platform\bluex\apollo\typedef;..\..\..\..\..\platform\bluex\apollo\apollo00;..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service;..\..\..\..\..\components\bluex\ble\app;..\..\..\..\..\components\bluex\ble\common;..\..\..\..\..\components\bluex\ble\dbg;..\..\..\..\..\components\bluex\bxfs;..\..\..\..\..\components\bluex\ble\profiles;..\..\..\..\..\components\bluex\ble\controller;..\..\..\..\..\components\bluex\ble\controller\patch;..\..\..\..\..\components\bluex\ble\controller\driver;..\..\..\..\..\components\bluex\ble\controller\driver\reg;..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6;..\..\..\..\..\components\bluex\fifo;..\..\..\..\..\components\bluex\shell;..\..\..\..\..\components\3rdparty\cm_backtrace</IncludePath>
+              <IncludePath>..\..\app;..\..\config;..\..\usercode;..\..\..\..\..\include;..\..\..\..\..\platform\cmsis;..\..\..\..\..\platform\bluex\apollo\common;..\..\..\..\..\platform\bluex\apollo\typedef;..\..\..\..\..\platform\bluex\apollo\apollo00;..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service;..\..\..\..\..\components\bluex\ble\common;..\..\..\..\..\components\bluex\ble\dbg;..\..\..\..\..\components\bluex\bxfs;..\..\..\..\..\components\bluex\ble\profiles;..\..\..\..\..\components\bluex\ble\controller;..\..\..\..\..\components\bluex\ble\controller\patch;..\..\..\..\..\components\bluex\ble\controller\driver;..\..\..\..\..\components\bluex\ble\controller\driver\reg;..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6;..\..\..\..\..\components\bluex\fifo;..\..\..\..\..\components\bluex\shell;..\..\..\..\..\components\3rdparty\cm_backtrace</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -392,16 +392,6 @@
               <FileName>startup_apollo00_ble.s</FileName>
               <FileType>2</FileType>
               <FilePath>..\..\app\startup_apollo00_ble.s</FilePath>
-            </File>
-            <File>
-              <FileName>app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\app\app.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\app\app_task.c</FilePath>
             </File>
             <File>
               <FileName>bx_kernel.c</FileName>
@@ -1162,11 +1152,6 @@
           <GroupName>user/profiles</GroupName>
           <Files>
             <File>
-              <FileName>app_dis.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\app\app_dis.c</FilePath>
-            </File>
-            <File>
               <FileName>diss.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\profiles\diss.c</FilePath>
@@ -1195,6 +1180,21 @@
               <FileName>user_profile_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\usercode\user_profile_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\app.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_dis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\app_dis.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\app_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1714,16 +1714,6 @@
               <FilePath>..\..\app\startup_apollo00_ble.s</FilePath>
             </File>
             <File>
-              <FileName>app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\app\app.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\app\app_task.c</FilePath>
-            </File>
-            <File>
               <FileName>bx_kernel.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\kernel\bx_kernel.c</FilePath>
@@ -2649,11 +2639,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>app_dis.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\app\app_dis.c</FilePath>
-            </File>
-            <File>
               <FileName>diss.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\profiles\diss.c</FilePath>
@@ -2682,6 +2667,21 @@
               <FileName>user_profile_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\usercode\user_profile_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\app.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_dis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\app_dis.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\app_task.c</FilePath>
             </File>
           </Files>
         </Group>

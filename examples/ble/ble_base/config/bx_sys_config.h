@@ -151,7 +151,7 @@ extern "C" {
 #endif
 
 #ifndef BX_MAC_ADDR
-#define BX_MAC_ADDR                                     {0x44,0x55,0x66,0xAB,0xCD,0xEF}
+#define BX_MAC_ADDR                                     {0x44,0x55,0x66,0x77,0x88,0x99}
 #endif
 
 #ifndef BLE_SOFT_WAKEUP_TIME

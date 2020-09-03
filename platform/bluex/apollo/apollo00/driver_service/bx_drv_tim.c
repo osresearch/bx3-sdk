@@ -129,12 +129,13 @@ bx_err_t bx_drv_timer_start( void * hdl, u32 periode_us )
     // Hz = 32M(31+1)/BX_TIM0->LCR
     BX_TIMx->LC = periode_us * 16 - 1;
 
-    BX_CPU->CLKG1 |= CPU_CLKG1_SET_TIM0;
-
     BX_MODIFY_REG( BX_TIMx->CTRL, TIM_CTRL_MODE, TIM_CTRL_MODE_T_USER_DEFINED );
     //BX_SET_BIT(BX_TIM0->CTRL,TIM_CTRL_MODE);
     BX_CLR_BIT( BX_TIMx->CTRL, TIM_CTRL_IM );
     BX_SET_BIT( BX_TIMx->CTRL, TIM_CTRL_EN );
+
+    NVIC_ClearPendingIRQ( TIMER_IRQn );
+    NVIC_EnableIRQ( TIMER_IRQn );
 
     return BX_OK;
 }

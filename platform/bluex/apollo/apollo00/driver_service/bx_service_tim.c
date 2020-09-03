@@ -186,6 +186,27 @@ s32 bxs_tim1_id( void )
 
 /*============================ interrupt function ============================*/
 
+void TIMER_IRQHandler( void )
+{
+	uint32_t timer_isr_status0 , timer_isr_status1;
+	uint32_t timer_isr_eoi0 , timer_isr_eoi1;
+	
+	timer_isr_status0 = BX_TIM0->IS & 0x01;
+	timer_isr_status1 = BX_TIM1->IS & 0x01;
+
+	if(timer_isr_status0) {
+		timer_isr_eoi0 = BX_TIM0->EOI;
+		
+		bx_public(tim0_svc.id, BXM_TIM0_INTR, 0, 0);
+	}
+
+	if(timer_isr_status1) {
+		timer_isr_eoi1 = BX_TIM1->EOI;
+		
+		bx_public(tim1_svc.id, BXM_TIM1_INTR, 0, 0);
+	}
+}
+
 /*========================= end of interrupt function ========================*/
 
 

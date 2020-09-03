@@ -54,9 +54,9 @@
 #define DEFAULT_ADDR_TYPE                               0
 
 
-#define DEFAULT_SCAN_INTERVAL                           200
+#define DEFAULT_SCAN_INTERVAL                           48
 
-#define DEFAULT_SCAN_WINDOW                             4000
+#define DEFAULT_SCAN_WINDOW                             48
 
 #define DEFAULT_SCAN_MODE                               GAP_GEN_DISCOVERY
 
@@ -472,7 +472,27 @@ bx_err_t ble_notify( struct ble_notify_data * p_data )
     notify_cmd->handle = p_data->hdl;
 
     memcpy( notify_cmd->value, p_data->data, p_data->len );
+		
+    ke_msg_send( notify_cmd );
+    return BX_OK;
+}
 
+
+
+bx_err_t send_data_notify(uint8_t *data,uint8_t length,uint16_t handle)
+{
+    struct gattc_send_evt_cmd * notify_cmd = KE_MSG_ALLOC_DYN( GATTC_SEND_EVT_CMD,
+											TASK_GATTC, TASK_APP,
+											gattc_send_evt_cmd,length);
+
+    static uint16_t notify_seq_num = 0;
+    notify_cmd->operation = GATTC_NOTIFY;
+    notify_cmd->seq_num = notify_seq_num++;
+    notify_cmd->length = length;
+    notify_cmd->handle = handle;
+
+    memcpy( notify_cmd->value,data, length );
+		
     ke_msg_send( notify_cmd );
     return BX_OK;
 }

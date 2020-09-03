@@ -604,7 +604,8 @@ bx_err_t bx_drv_adc_get_value( void * hdl, u8 channel, int32_t * value )
     BX_MODIFY_REG( BX_ADC->DLY, ADC_DLY_LDO, ( uint32_t ) ( 8 << ADC_DLY_LDO_POS ) ); //LDO on/off delay of ADC
     BX_MODIFY_REG( BX_ADC->DLY, ADC_DLY_CHANNEL, ( uint32_t ) ( 8 << ADC_DLY_CHANNEL_POS ) ); //LDO on/off delay of ADC
     BX_CLR_BIT( BX_ADC->CTRL, ADC_CTRL_DMA_EN ); //dma disable. High means the hardware handshake signals between the DAMC and ADC will be active. Then system can move the ADC data from the ADC FIFO to the system SRAM through DMAC.
-
+    config_init();
+    
     for( uint8_t i = 0; i < 4; i++ ) {
         BX_MODIFY_REG( BX_ADC->SSM, ADC_SSM_CH_NUM, ( uint32_t ) ( channel << ADC_SSM_CH_NUM_POS ) );
         BX_SET_BIT( BX_ADC->SSM, ADC_SSM_START );
@@ -735,8 +736,8 @@ bx_err_t bx_drv_adc_open( void * hdl )
 {
     CHECK_HANDLE( hdl );
 
-    clk_init();
-    config_init();
+    //clk_init();
+    
 
     bx_drv_adc_get_ro();
 

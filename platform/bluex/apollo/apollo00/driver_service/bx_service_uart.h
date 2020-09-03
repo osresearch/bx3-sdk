@@ -37,26 +37,27 @@ extern "C" {
 
 enum bx_property_uart {
     BXP_UART_FIRST = BXP_FIRST_USER_PROP,
-    
+
     BXP_UART_TX_PIN,
     BXP_UART_RX_PIN,
     BXP_UART_CTS_PIN,
     BXP_UART_RTS_PIN,
-    
+
     BXP_UART_PARITY,
     BXP_UART_STOP_BIT,
     BXP_UART_115200_8_1_N,
 
     BXP_UART_RXBUFF,
     BXP_UART_TXBUFF,
-    
+
 };
 
-enum bx_msg_uart{
+enum bx_msg_uart {
     BXM_UART_FIRST = BXM_FIRST_USER_MSG,
-    
-    
+
+
     BXM_UART_RECEIVED_DATA,
+    BXM_DATA_RECEIVED_TIMEOUT,
 };
 /* exported macros -----------------------------------------------------------*/
 
