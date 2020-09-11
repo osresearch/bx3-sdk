@@ -53,6 +53,7 @@ enum bx_msg_spim{
     BXM_SPIM_FIRST = BXM_FIRST_USER_MSG,
     
     BXM_SPIM_TXRX_START,
+	BXM_SPIM_SENSOR_TEST,
 };
 /* exported macros -----------------------------------------------------------*/
 
@@ -61,6 +62,7 @@ enum bx_msg_spim{
 bx_err_t    bxs_spim_register( void );
 s32         bxs_spim0_id( void );
 s32         bxs_spim1_id( void );
+
 
 #ifdef __cplusplus
 }

@@ -46,6 +46,8 @@ enum bx_property_iic {
 
 enum bx_msg_iic{
     BXM_IIC_FIRST = BXM_FIRST_USER_MSG,
+	
+	BXM_IIC_TEST,
     
 };
 /* exported macros -----------------------------------------------------------*/
