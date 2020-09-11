@@ -27,13 +27,29 @@ extern "C" {
 
 /* exported types ------------------------------------------------------------*/
 
-
-struct ble_adv_data {
-    u8 adv_data_len;
-    u8 adv_data[28];
-    u8 scan_rsp_data_len;
-    u8 scan_rsp_data[31];
+struct ble_gapc_conn_param
+{
+    /// Connection interval minimum
+    u16 intv_min;
+    /// Connection interval maximum
+    u16 intv_max;
+    /// Latency
+    u16 latency;
+    /// Supervision timeout
+    u16 time_out;
 };
+
+struct ble_adv_data{
+    u16 adv_intv_min;
+	u16 adv_intv_max;
+	u8 op_code;
+	u8 adv_mode;
+	u8 adv_filt_policy;
+	u8 adv_data_len;
+	u8 adv_data[28];
+	u8 scan_rsp_data_len;
+	u8 scan_rsp_data[31];
+}; 
 
 struct whitelist_data{
 	u8 addr_type; 			

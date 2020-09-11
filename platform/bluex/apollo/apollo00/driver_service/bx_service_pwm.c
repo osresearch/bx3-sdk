@@ -19,13 +19,14 @@
 #include "bx_kernel.h"
 #include "bx_service_pwm.h"
 #include "bx_drv_pwm.h"
-
+#include "bx_pm.h"
 /* config --------------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
 struct bx_pwm_service {
     s32 id;
     void * handle;
+    u32 open_count;
 
     u8 pin_num;
 };
@@ -66,19 +67,29 @@ do{                                                     \
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t pwm_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
+static bx_err_t pwm_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 {
     struct bx_pwm_service * p_svc;
     GET_PWM_SERVICE_BY_ID( p_svc, id );
-    
-    switch( msg ) {
-        case BXM_OPEN :
-            bx_drv_pwm_open( p_svc->handle );
-            break;
 
-        case BXM_CLOSE :
-            bx_drv_pwm_close( p_svc->handle );
+    switch( msg ) {
+        case BXM_OPEN : {
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                bx_pm_lock( BX_PM_PWM );
+                return bx_drv_pwm_open( p_svc->handle );
+            }
             break;
+        }
+
+        case BXM_CLOSE : {
+            p_svc->open_count++;
+            if( p_svc->open_count == 0 ) {
+                bx_pm_unlock( BX_PM_PWM );
+                return bx_drv_pwm_close( p_svc->handle );
+            }
+            break;
+        }
 
         case BXM_START :
             bx_drv_pwm_start( p_svc->handle, param0, param1 );
@@ -100,19 +111,19 @@ static bx_err_t pwm_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t pwm_property_set(s32 id, u32 property, u32 param0, u32 param1 )
+static bx_err_t pwm_property_set( s32 id, u32 property, u32 param0, u32 param1 )
 {
     struct bx_pwm_service * p_svc;
     GET_PWM_SERVICE_BY_ID( p_svc, id );
     bx_err_t err = BX_OK;
     switch( property ) {
         case BXP_PIN:
-            err = bx_drv_pwm_set_pin(p_svc->handle,param0);
+            err = bx_drv_pwm_set_pin( p_svc->handle, param0 );
             if( err == BX_OK ) {
                 p_svc->pin_num = param0;
             }
             break;
-        
+
         default:
             return BX_ERR_NOTSUP;
     }
@@ -125,16 +136,16 @@ static bx_err_t pwm_property_set(s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t pwm_property_get(s32 id, u32 property, u32 param0, u32 param1 )
+static bx_err_t pwm_property_get( s32 id, u32 property, u32 param0, u32 param1 )
 {
     struct bx_pwm_service * p_svc;
     GET_PWM_SERVICE_BY_ID( p_svc, id );
 
     switch( property ) {
         case BXP_PIN:
-            *(u8 *)param0 = p_svc->pin_num;
+            *( u8 * )param0 = p_svc->pin_num;
             break;
-            
+
         default:
             return BX_ERR_NOTSUP;
     }
@@ -165,7 +176,7 @@ bool bxs_pwm_register( void )
         return false;
     }
     pwm0_svc.handle = BX_PWM0;
-    
+
     svc.name = "pwm1 service";
     svc.msg_handle_func = pwm_msg_handle;
     svc.prop_get_func = pwm_property_get;
@@ -175,7 +186,7 @@ bool bxs_pwm_register( void )
         return false;
     }
     pwm1_svc.handle = BX_PWM1;
-    
+
     svc.name = "pwm2 service";
     svc.msg_handle_func = pwm_msg_handle;
     svc.prop_get_func = pwm_property_get;
@@ -185,7 +196,7 @@ bool bxs_pwm_register( void )
         return false;
     }
     pwm2_svc.handle = BX_PWM2;
-    
+
     svc.name = "pwm3 service";
     svc.msg_handle_func = pwm_msg_handle;
     svc.prop_get_func = pwm_property_get;
@@ -195,7 +206,7 @@ bool bxs_pwm_register( void )
         return false;
     }
     pwm3_svc.handle = BX_PWM3;
-    
+
     svc.name = "pwm3 service";
     svc.msg_handle_func = pwm_msg_handle;
     svc.prop_get_func = pwm_property_get;
@@ -205,7 +216,7 @@ bool bxs_pwm_register( void )
         return false;
     }
     pwm4_svc.handle = BX_PWM4;
-    
+
     return true;
 }
 /** ---------------------------------------------------------------------------

@@ -20,13 +20,12 @@
 #include "gapc_task.h"
 #include "gattc_task.h"
 #include "nvds_typedef.h"
-#include "app_task.h"
-#include "app.h"
+#include "user_ble_task.h"
+#include "user_ble.h"
 #include "ke_timer.h"
 #include "bx_sys_config.h"
 #include "co_error.h"
-
-#include "bx_type_def.h"
+#include "bx_shell.h"
 
 /* private define ------------------------------------------------------------*/
 
@@ -35,42 +34,33 @@
 /* config --------------------------------------------------------------------*/
 
 #define APP_ADV_CHMAP                                   0x07
-#define SWAP(X,Y)                                       { (X)= (X)^(Y);(Y)= (X)^(Y);(X)= (X)^(Y);}
 
+#define DEFAULT_ADV_INT_MIN                             160 // ( 160 * 0.625 = 100ms )
+#define DEFAULT_ADV_INT_MAX                             160 // ( 160 * 0.625 = 100ms )
 
-#define ADV_INTERVAL                                    160
-
-#define min_interval                                    80
-#define max_interval                                    800
-
-#define APP_ADV_INT_MIN                                 64
-#define APP_ADV_INT_MAX                                 64
-
-#define DEFAULT_con_latency                             6
-#define DEFAULT_TIME_OUT                                1000
-#define DEFAUT_CE_LEN_MIN                               5
-#define DEFAULT_CE_LEN_MAX                              10
-#define DEFAULT_nb_peers                                1
+#define DEFAULT_CNT_INTV_MIN                            400 // (400* 1.25 ms = 1000ms)
+#define DEFAULT_CNT_INTV_MAX                            400 // (400* 1.25 ms = 1000ms)
+#define DEFAULT_CON_LATENCY                             0
+#define DEFAULT_TIME_OUT                                300
+#define DEFAUT_CE_LEN_MIN                               0
+#define DEFAULT_CE_LEN_MAX                              0
+#define DEFAULT_NB_PEERS                                1
 #define DEFAULT_ADDR_TYPE                               0
 
 
 #define DEFAULT_SCAN_INTERVAL                           48
-
 #define DEFAULT_SCAN_WINDOW                             48
-
 #define DEFAULT_SCAN_MODE                               GAP_GEN_DISCOVERY
-
 #define DEFAULT_SCAN_OPERATION                          GAPM_SCAN_ACTIVE
-
 #define DEFAULT_GAPM_ADDR                               GAPM_STATIC_ADDR
-
 #define DEFAULT_GATT_DISC                               GATTC_SDP_DISC_SVC_ALL
 
-#define DEFAULT_GAPM_CONNECT                            GAPM_CONNECTION_GENERAL
+#define DEFAULT_GAPM_CONNECT                            GAPM_CONNECTION_DIRECT
 #define DEFAULT_GAPM_ADDR                               GAPM_STATIC_ADDR
+
 /* private variables ---------------------------------------------------------*/
 
-static uint16_t w_seqnum = 0;
+static u16 w_seqnum = 0;
 /* exported variables --------------------------------------------------------*/
 
 
@@ -87,41 +77,38 @@ do{                                                         \
 
 
 /*============================= exported function ============================*/
-bx_err_t ble_advtising_start( struct ble_adv_data * p_new_advdata_buf, bool default_adv_flag )
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_advtising_start( struct ble_adv_data * p_new_advdata_buf )
 {
+
     ke_state_set( TASK_APP, APPM_ADVERTISING );
     // Prepare the GAPM_START_ADVERTISE_CMD message
     struct gapm_start_advertise_cmd * adv_cmd = KE_MSG_ALLOC( GAPM_START_ADVERTISE_CMD,
             TASK_GAPM, TASK_APP,
             gapm_start_advertise_cmd );
-	
-	CHECK_POINTER(adv_cmd);
+
+    CHECK_POINTER( adv_cmd );
 
     adv_cmd->op.addr_src    = GAPM_STATIC_ADDR;
     adv_cmd->channel_map    = APP_ADV_CHMAP;
 
-    adv_cmd->intv_max   = APP_ADV_INT_MIN;
-    adv_cmd->intv_min   = APP_ADV_INT_MIN;
-    adv_cmd->op.code    = GAPM_ADV_UNDIRECT;
-    adv_cmd->info.host.mode = DEFAULT_SCAN_MODE;
-    adv_cmd->info.host.adv_data_len       = ADV_DATA_LEN - 3;
-    adv_cmd->info.host.scan_rsp_data_len  = SCAN_RSP_DATA_LEN;
+    adv_cmd->intv_max   = p_new_advdata_buf->adv_intv_max;
+    adv_cmd->intv_min   = p_new_advdata_buf->adv_intv_min;
+    adv_cmd->op.code    = p_new_advdata_buf->op_code;
+    adv_cmd->info.host.mode = p_new_advdata_buf->adv_mode;
+    adv_cmd->info.host.adv_data_len       = p_new_advdata_buf->adv_data_len;
+    adv_cmd->info.host.scan_rsp_data_len  = p_new_advdata_buf->scan_rsp_data_len;
 
-    adv_cmd->info.host.adv_filt_policy = ADV_ALLOW_SCAN_ANY_CON_WLST;
+    adv_cmd->info.host.adv_filt_policy = p_new_advdata_buf->adv_filt_policy;
 
-    if( default_adv_flag ) {
-        uint8_t avail_space;
-        avail_space = ( ADV_DATA_LEN - 3 ) - adv_cmd->info.host.adv_data_len - 2;
-        if ( avail_space > 2 ) {
-            avail_space = co_min( avail_space, app_env.dev_name_len );
-            adv_cmd->info.host.adv_data[0] = avail_space + 1;
-            adv_cmd->info.host.adv_data[1] = ( avail_space == app_env.dev_name_len ) ? '\x08' : '\x09';
-            memcpy( &adv_cmd->info.host.adv_data[2], app_env.dev_name, avail_space );
-        }
-    } else {
-        memcpy( adv_cmd->info.host.adv_data, p_new_advdata_buf->adv_data, ( ADV_DATA_LEN - 3 ) );
-        memcpy( adv_cmd->info.host.scan_rsp_data, p_new_advdata_buf->scan_rsp_data, SCAN_RSP_DATA_LEN );
-    }
+
+    memcpy( adv_cmd->info.host.adv_data, p_new_advdata_buf->adv_data, p_new_advdata_buf->adv_data_len );
+    memcpy( adv_cmd->info.host.scan_rsp_data, p_new_advdata_buf->scan_rsp_data, p_new_advdata_buf->scan_rsp_data_len );
 
     ke_msg_send( adv_cmd );
     return BX_OK;
@@ -133,25 +120,17 @@ bx_err_t ble_advtising_start( struct ble_adv_data * p_new_advdata_buf, bool defa
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_advtining_advdata_update( struct ble_adv_data * p_new_advdata_buf, bool adv_update, bool scan_rsp_update )
+bx_err_t ble_advtising_advdata_update( struct ble_adv_data * p_new_advdata_buf )
 {
     struct gapm_update_advertise_data_cmd * update_cmd = KE_MSG_ALLOC( GAPM_UPDATE_ADVERTISE_DATA_CMD,
             TASK_GAPM, TASK_APP,
             gapm_update_advertise_data_cmd );
-	
-	CHECK_POINTER(update_cmd);
-    if( adv_update ) {
-        for( uint8_t i = 0; i < 28; i++ ) {
-            update_cmd->adv_data[i] = 0x00;
-        }
-        memcpy( update_cmd->adv_data, p_new_advdata_buf->adv_data, p_new_advdata_buf->adv_data_len );
-    }
-    if( scan_rsp_update ) {
-        for( uint8_t i = 0; i < 30; i++ ) {
-            update_cmd->scan_rsp_data[i] = 0x00;
-        }
-        memcpy( update_cmd->scan_rsp_data, p_new_advdata_buf->scan_rsp_data, p_new_advdata_buf->scan_rsp_data_len );
-    }
+
+    CHECK_POINTER( update_cmd );
+
+    memcpy( update_cmd->adv_data, p_new_advdata_buf->adv_data, p_new_advdata_buf->adv_data_len );
+    memcpy( update_cmd->scan_rsp_data, p_new_advdata_buf->scan_rsp_data, p_new_advdata_buf->scan_rsp_data_len );
+
     update_cmd->operation = GAPM_UPDATE_ADVERTISE_DATA;
     update_cmd->adv_data_len = p_new_advdata_buf->adv_data_len;
 
@@ -231,7 +210,7 @@ bx_err_t ble_advtising_stop( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_scan_start( uint8_t filter_duplic, uint8_t filt_policy, uint8_t scan_mode )
+bx_err_t ble_scan_start( u8 filter_duplic, u8 filt_policy, u8 scan_mode )
 {
 
     struct gapm_start_scan_cmd * cmd = KE_MSG_ALLOC( GAPM_START_SCAN_CMD,
@@ -275,7 +254,7 @@ bx_err_t ble_scan_stop( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_advertising_whitelist_set( struct whitelist_data *white_list, uint8_t addr_cnt )
+bx_err_t ble_whitelist_set( struct whitelist_data *white_list, u8 addr_cnt )
 {
 
 	struct gapm_white_list_mgt_cmd * whitelist_cmd = KE_MSG_ALLOC_DYN(GAPM_WHITE_LIST_MGT_CMD,TASK_GAPM,TASK_APP,gapm_white_list_mgt_cmd,6);
@@ -324,11 +303,9 @@ bx_err_t ble_connect_stop( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_connect_start( uint8_t * addr )
+bx_err_t ble_connect_start( u8 * addr )
 {
-    struct gapm_start_connection_cmd * connect_cmd = KE_MSG_ALLOC( GAPM_START_CONNECTION_CMD,
-            TASK_GAPM, TASK_APP,
-            gapm_start_connection_cmd );
+	struct gapm_start_connection_cmd * connect_cmd=KE_MSG_ALLOC_DYN(GAPM_START_CONNECTION_CMD,TASK_GAPM,TASK_APP,gapm_start_connection_cmd,1);
 
 	CHECK_POINTER(connect_cmd);
     connect_cmd->op.code = DEFAULT_GAPM_CONNECT;
@@ -336,16 +313,17 @@ bx_err_t ble_connect_start( uint8_t * addr )
     connect_cmd->op.state = 0;
     connect_cmd->scan_interval = DEFAULT_SCAN_INTERVAL;
     connect_cmd->scan_window = DEFAULT_SCAN_WINDOW;
-    connect_cmd->con_intv_min = min_interval;
-    connect_cmd->con_intv_max = max_interval;
-    connect_cmd->con_latency = DEFAULT_con_latency;
+    connect_cmd->con_intv_min = DEFAULT_CNT_INTV_MIN;
+    connect_cmd->con_intv_max = DEFAULT_CNT_INTV_MAX;
+    connect_cmd->con_latency = DEFAULT_CON_LATENCY;
     connect_cmd->superv_to = DEFAULT_TIME_OUT;
     connect_cmd->ce_len_min = DEFAUT_CE_LEN_MIN;
     connect_cmd->ce_len_max = DEFAULT_CE_LEN_MAX;
-
-    connect_cmd->peers->addr_type = DEFAULT_ADDR_TYPE;
-    memcpy( connect_cmd->peers->addr.addr, addr, 6 );
-
+	connect_cmd->nb_peers=1;
+	
+	connect_cmd->peers[0].addr_type=DEFAULT_ADDR_TYPE;
+	memcpy(connect_cmd->peers[0].addr.addr, addr, 6);
+	
     ke_msg_send( connect_cmd );
     return BX_OK;
 }
@@ -355,7 +333,7 @@ bx_err_t ble_connect_start( uint8_t * addr )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t update_conn_params( struct gapc_conn_param * conn_param )
+bx_err_t update_conn_params( struct ble_gapc_conn_param * conn_param )
 {
     struct gapc_param_update_cmd * param_cmd = KE_MSG_ALLOC( GAPC_PARAM_UPDATE_CMD,
             KE_BUILD_ID( TASK_GAPC, app_env.conidx ), TASK_APP,
@@ -374,41 +352,13 @@ bx_err_t update_conn_params( struct gapc_conn_param * conn_param )
     ke_msg_send( param_cmd );
     return BX_OK;
 }
-
-///** ---------------------------------------------------------------------------
-// * @brief   :
-// * @note    :
-// * @param   :
-// * @retval  :
-//-----------------------------------------------------------------------------*/
-//bx_err_t ble_discover_start( struct ble_discover * discover, uint8_t uuid_len )
-//{
-//    static uint8_t dis_seq_num;
-//    struct gattc_disc_cmd * cover_cmd = KE_MSG_ALLOC( GATTC_DISC_CMD,
-//                                        TASK_GATTC, TASK_APP,
-//                                        gattc_disc_cmd );
-
-//    cover_cmd->operation = DEFAULT_GATT_DISC;
-//    cover_cmd->seq_num = dis_seq_num++;
-//    cover_cmd->start_hdl = discover->start_hdl;
-//    cover_cmd->end_hdl = discover->end_hdl;
-//    cover_cmd->uuid_len = uuid_len;
-//    if( uuid_len == 4 ) {
-//        memcpy( cover_cmd->uuid, discover->uuid, uuid_len );
-//    } else {
-//        memcpy( cover_cmd->uuid, discover->uuid, uuid_len );
-//    }
-
-//    ke_msg_send( cover_cmd );
-//    return BX_OK;
-//}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_notifaction_enabled( uint16_t handle )
+bx_err_t ble_notifaction_enabled( u16 handle )
 {
     struct gattc_write_cmd * notify_cmd = KE_MSG_ALLOC_DYN(GATTC_WRITE_CMD,TASK_GATTC,TASK_APP,gattc_write_cmd,2);
 
@@ -433,7 +383,7 @@ bx_err_t ble_notifaction_enabled( uint16_t handle )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_indication_enabled( uint16_t handle )
+bx_err_t ble_indication_enabled( u16 handle )
 {
     struct gattc_write_cmd * indic_cmd = KE_MSG_ALLOC_DYN(GATTC_WRITE_CMD,TASK_GATTC,TASK_APP,gattc_write_cmd,2);
 
@@ -449,7 +399,6 @@ bx_err_t ble_indication_enabled( uint16_t handle )
     indic_cmd->value[0] = 0x02;
     indic_cmd->value[1] = 0x00;
 
-	
     ke_msg_send( indic_cmd );
     return BX_OK;
 }
@@ -459,33 +408,13 @@ bx_err_t ble_indication_enabled( uint16_t handle )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_notify( struct ble_notify_data * p_data )
-{
-    struct gattc_send_evt_cmd * notify_cmd = KE_MSG_ALLOC_DYN( GATTC_SEND_EVT_CMD,
-            TASK_GATTC, TASK_APP,
-            gattc_send_evt_cmd,p_data->len);
-
-    static uint16_t notify_seq_num = 0;
-    notify_cmd->operation = GATTC_NOTIFY;
-    notify_cmd->seq_num = notify_seq_num++;
-    notify_cmd->length = p_data->len;
-    notify_cmd->handle = p_data->hdl;
-
-    memcpy( notify_cmd->value, p_data->data, p_data->len );
-		
-    ke_msg_send( notify_cmd );
-    return BX_OK;
-}
-
-
-
-bx_err_t send_data_notify(uint8_t *data,uint8_t length,uint16_t handle)
+bx_err_t ble_send_data_notify(u8 *data,u8 length,u16 handle)
 {
     struct gattc_send_evt_cmd * notify_cmd = KE_MSG_ALLOC_DYN( GATTC_SEND_EVT_CMD,
 											TASK_GATTC, TASK_APP,
 											gattc_send_evt_cmd,length);
-
-    static uint16_t notify_seq_num = 0;
+	CHECK_POINTER(notify_cmd);
+    static u16 notify_seq_num = 0;
     notify_cmd->operation = GATTC_NOTIFY;
     notify_cmd->seq_num = notify_seq_num++;
     notify_cmd->length = length;
@@ -495,6 +424,108 @@ bx_err_t send_data_notify(uint8_t *data,uint8_t length,uint16_t handle)
 		
     ke_msg_send( notify_cmd );
     return BX_OK;
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_get_dev_rssi(void)
+{
+	
+	struct gapc_get_info_cmd * rssi_cmd = KE_MSG_ALLOC( GAPC_GET_INFO_CMD,
+														TASK_GAPC, TASK_APP,
+														gapc_get_info_cmd );
+	CHECK_POINTER(rssi_cmd);
+	rssi_cmd->operation=GAPC_GET_CON_RSSI;
+	ke_msg_send( rssi_cmd );
+    
+    return BX_OK;
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_gatt_write(u8 operation,u8 length,u8 handle,u8 *pdata)
+{
+	static u16 write_seq_num = 0;
+    struct gattc_write_cmd* write_cmd  = KE_MSG_ALLOC_DYN(GATTC_WRITE_CMD, TASK_GATTC,TASK_APP, gattc_write_cmd, length);
+	
+	CHECK_POINTER(write_cmd);
+	write_cmd->operation=operation;
+	write_cmd->auto_execute=1;
+	write_cmd->seq_num=write_seq_num++;
+	write_cmd->handle=handle;
+	write_cmd->offset=0;
+	write_cmd->length=length;
+	memcpy(write_cmd->value, pdata, length);
+
+	ke_msg_send(write_cmd);
+	return BX_OK;
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_gatt_read(u8 operation,u8 length,u8 handle)
+{
+	static u16 read_seq_num = 0;
+    struct gattc_read_cmd* read_cmd  = KE_MSG_ALLOC( GATTC_READ_CMD,TASK_GATTC, TASK_APP,gattc_read_cmd );
+	
+	CHECK_POINTER(read_cmd);
+	read_cmd->operation=operation;
+	read_cmd->nb=0;
+	read_cmd->seq_num=read_seq_num++;
+	read_cmd->req.simple.handle=handle;
+	read_cmd->req.simple.offset=0;
+	read_cmd->req.simple.length=length;
+		
+	ke_msg_send(read_cmd);
+	return BX_OK;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_exchange_mtu(void)
+{
+	static u16 mtu_seq_num = 0;
+	struct gattc_exc_mtu_cmd *mtu_cmd = KE_MSG_ALLOC(GATTC_EXC_MTU_CMD, TASK_GATTC,TASK_APP, gattc_exc_mtu_cmd);
+	CHECK_POINTER(mtu_cmd);
+	
+	mtu_cmd->operation=GATTC_MTU_EXCH;
+	mtu_cmd->seq_num=mtu_seq_num++;
+	
+	ke_msg_send(mtu_cmd);
+	return BX_OK;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_set_phy(u8 rx_rate,u8 tx_rate)
+{
+	struct gapc_set_phy_cmd *phy_cmd = KE_MSG_ALLOC(GAPC_SET_PHY_CMD, TASK_GAPC,TASK_APP, gapc_set_phy_cmd);
+
+	CHECK_POINTER(phy_cmd);
+	phy_cmd->operation=GAPC_SET_PHY;
+	phy_cmd->rx_rates=rx_rate;
+	phy_cmd->tx_rates=tx_rate;
+	
+	ke_msg_send(phy_cmd);
+	return BX_OK;
 }
 
 /*========================= end of exported function =========================*/

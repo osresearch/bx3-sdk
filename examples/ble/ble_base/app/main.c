@@ -46,13 +46,13 @@ int main( void )
 {
     ble_init();
     bx_kernel_init();
-    
+
     struct bx_service svc;
     svc.prop_set_func = NULL;
     svc.prop_get_func = NULL;
     svc.msg_handle_func = user_msg_handle_func;
     svc.name = "user service";
-    user_service_id = bx_register(&svc);
+    user_service_id = bx_register( &svc );
 
     user_init();
     user_app();

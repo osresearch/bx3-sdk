@@ -351,43 +351,13 @@ static uint8_t adc_bonding_RO_array[32] = {
     [14] = 21,
 };
 
-uint32_t cp_ro = 0;
 
 /* exported variables --------------------------------------------------------*/
-
+extern int32_t adc_cp_RO;
 
 
 /*============================= private function =============================*/
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-static void clk_init( void )
-{
-    BX_MODIFY_REG( BX_AWO->MISC, AWO_MISC_CS_HBUS0, ( uint32_t ) 1 );
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_CLR_AHB_32M_DIV );
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_CLR_AHB_PLL_DIV );
 
-    BX_MODIFY_REG( BX_AWO->MISC, AWO_MISC_CS_HBUS0, ( uint32_t ) 4 );
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_CLR_AHB_32M_DIV );
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_CLR_AHB_PLL_DIV );
-
-    BX_MODIFY_REG( BX_AWO->MISC, AWO_MISC_CS_HBUS0, ( uint32_t ) 1 );
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_CLR_AHB_32M_DIV );
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_CLR_AHB_PLL_DIV );
-
-    BX_MODIFY_REG( BX_AWO->MISC, AWO_MISC_AHB_CDP, ( uint32_t ) ( 2 << AWO_MISC_AHB_CDP_POS ) );
-    //BX_MODIFY_REG(BX_AWO->MISC,AWO_MISC_CS_HBUS1,(uint32_t) (0<<AWO_MISC_CS_HBUS1_POS));
-
-    BX_SET_BIT( BX_AWO->CLKG, AWO_CLKG_SET_AHB_32M_DIV );
-
-    BX_MODIFY_REG( BX_AWO->MISC, AWO_MISC_CS_HBUS0, ( uint32_t ) ( 2 << AWO_MISC_CS_HBUS0_POS ) );
-
-    //BX_MODIFY_REG(BX_AWO->MISC,AWO_MISC_AHB_CDP,(uint32_t) (2<<AWO_MISC_AHB_CDP_POS));
-    //BX_SET_BIT(BX_AWO->CLKG1,AWO_CLKG1_APB_CDP_UP);
-}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -488,8 +458,8 @@ static int adc_comparator( const void * a, const void * b )
 -----------------------------------------------------------------------------*/
 static uint32_t app_adc_2_battery_volt( uint32_t adc_val )
 {
-    uint32_t k = m_adc_2_bat_k[cp_ro] + 10667;
-    uint32_t base = m_adc_2_bat_base[cp_ro];
+    uint32_t k = m_adc_2_bat_k[adc_cp_RO] + 10667;
+    uint32_t base = m_adc_2_bat_base[adc_cp_RO];
     uint32_t adc_minus_320_mult_1000 = adc_val - 250;
     uint32_t adc_minus_320 = adc_minus_320_mult_1000;//adc_minus_320_mult_1000 >> 10;
 
@@ -542,45 +512,6 @@ static void rf_setting_tempSensor_init( void )
 
 /*============================= exported function ============================*/
 
-bx_err_t bx_drv_adc_get_ro( void )
-{
-    uint16_t adc_val[8];
-    int32_t adc_val_cal = 0;
-
-    if( flash_read_security_reg( 1, 0, 1, ( uint8_t * )&cp_ro ) != 0 ) {
-        return BX_ERR_INVAL;
-    }
-
-    if( 0xff == ( uint8_t )cp_ro ) {
-        uint8_t temp_bonding = 0;
-        BX_SET_BIT( BX_ADC->CTRL, ADC_CTRL_LDO_FORCE_ON ); //high will force the ADC LDO to be power up
-        BX_MODIFY_REG( BX_ADC->DLY, ADC_DLY_LDO, ( uint32_t ) ( 8 << ADC_DLY_LDO_POS ) ); //LDO on/off delay of ADC
-        BX_MODIFY_REG( BX_ADC->DLY, ADC_DLY_CHANNEL, ( uint32_t ) ( 8 << ADC_DLY_CHANNEL_POS ) ); //LDO on/off delay of ADC
-        BX_CLR_BIT( BX_ADC->CTRL, ADC_CTRL_DMA_EN ); //dma disable. High means the hardware handshake signals between the DAMC and ADC will be active. Then system can move the ADC data from the ADC FIFO to the system SRAM through DMAC.
-
-        config_init();
-
-        for( uint8_t i = 1; i < 6; i++ ) {
-            adc_val_cal = 0;
-            for( uint8_t j = 0; j < 8; j++ ) {
-                BX_MODIFY_REG( BX_ADC->SSM, ADC_SSM_CH_NUM, ( uint32_t ) ( i << ADC_SSM_CH_NUM_POS ) );
-                BX_SET_BIT( BX_ADC->SSM, ADC_SSM_START );
-
-                while( BX_READ_BIT( BX_ADC->SSM, ADC_SSM_START ) >> ADC_SSM_START_POS );
-
-                adc_val[j] = ( BX_READ_BIT( BX_ADC->SSM, ADC_SSM_DATA ) >> ADC_SSM_DATA_POS );
-                adc_val_cal += adc_val[j];
-            }
-            temp_bonding |= ( ( adc_val_cal / 8 ) < 675 ? 1 : 0 ) << ( i - 1 );
-        }
-        cp_ro = adc_bonding_RO_array[temp_bonding];
-
-    }
-
-    return BX_OK;
-
-}
-
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :需要注意实际芯片中是否有对应的IO口
@@ -598,7 +529,7 @@ bx_err_t bx_drv_adc_get_value( void * hdl, u8 channel, int32_t * value )
 
     int32_t adc_val_sum = 0;
 
-    cal_param = g_beta_offset_904[cp_ro] + GPADC_BASE_VAL;
+    cal_param = g_beta_offset_904[adc_cp_RO] + GPADC_BASE_VAL;
 
     BX_SET_BIT( BX_ADC->CTRL, ADC_CTRL_LDO_FORCE_ON ); //high will force the ADC LDO to be power up
     BX_MODIFY_REG( BX_ADC->DLY, ADC_DLY_LDO, ( uint32_t ) ( 8 << ADC_DLY_LDO_POS ) ); //LDO on/off delay of ADC
@@ -718,7 +649,7 @@ bx_err_t bx_drv_adc_get_chip_temperature( void * hdl, u32 * temp_value )
 
     adc_val_16 = AvgArray( adc_val );
 
-    adc_val_cal = ( int32_t )adc_val_16 * ( m_bat[cp_ro] + M_BAT_BASE );
+    adc_val_cal = ( int32_t )adc_val_16 * ( m_bat[adc_cp_RO] + M_BAT_BASE );
     //adc_temp_value = (adc_val_cal - 448230)/720;
     adc_temp_value = ( adc_val_cal - 448230 ) / 72;
 
@@ -735,11 +666,6 @@ bx_err_t bx_drv_adc_get_chip_temperature( void * hdl, u32 * temp_value )
 bx_err_t bx_drv_adc_open( void * hdl )
 {
     CHECK_HANDLE( hdl );
-
-    //clk_init();
-    
-
-    bx_drv_adc_get_ro();
 
     return BX_OK;
 }

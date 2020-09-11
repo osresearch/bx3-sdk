@@ -19,15 +19,17 @@
 #include "bx_kernel.h"
 #include "bx_service_uart.h"
 #include "bx_drv_uart.h"
+#include "bx_pm.h"
 
 #include "bx_fifo.h"
-#include "bx_shell.h"
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
 struct bx_uart_service {
     s32 id;
     void * handle;
+    u32 open_count;
+
     struct bx_fifo rx_fifo;
     struct bx_fifo tx_fifo;
 };
@@ -64,12 +66,22 @@ static bx_err_t uart_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
     GET_UART_SERVICE_BY_ID( p_svc, id );
 
     switch( msg ) {
-        case BXM_OPEN:
-            return bx_drv_uart_open( p_svc->handle );
-
-        case BXM_CLOSE:
-            return bx_drv_uart_close( p_svc->handle );
-
+        case BXM_OPEN: {
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                bx_pm_lock( BX_PM_UART );
+                return bx_drv_uart_open( p_svc->handle );
+            }
+            break;
+        }
+        case BXM_CLOSE: {
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                bx_pm_unlock( BX_PM_UART );
+                return bx_drv_uart_close( p_svc->handle );
+            }
+            break;
+        }
         case BXM_READ:
             return bx_drv_uart_read( p_svc->handle, ( u8 * )param0, param1 );
 

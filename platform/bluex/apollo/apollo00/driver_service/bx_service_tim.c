@@ -19,13 +19,14 @@
 #include "bx_kernel.h"
 #include "bx_service_tim.h"
 #include "bx_drv_tim.h"
-
+#include "bx_pm.h"
 /* config --------------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
 struct bx_timer_service {
     s32 id;
     void * handle;
+    u32 open_count;
 };
 /* private variables ---------------------------------------------------------*/
 static struct bx_timer_service tim0_svc = { 0 };
@@ -60,13 +61,23 @@ static bx_err_t tim_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
     GET_TIM_SERVICE_BY_ID( p_svc, id );
 
     switch( msg ) {
-        case BXM_OPEN :
-            bx_drv_timer_open( p_svc->handle );
+        case BXM_OPEN : {
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                bx_pm_lock( BX_PM_TIM );
+                return bx_drv_timer_open( p_svc->handle );
+            }
             break;
+        }
 
-        case BXM_CLOSE :
-            bx_drv_timer_close( p_svc->handle );
+        case BXM_CLOSE : {
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                bx_pm_unlock( BX_PM_TIM );
+                return bx_drv_timer_close( p_svc->handle );
+            }
             break;
+        }
 
         case BXM_START :
             bx_drv_timer_start( p_svc->handle, param0 );
@@ -185,26 +196,28 @@ s32 bxs_tim1_id( void )
 
 
 /*============================ interrupt function ============================*/
-
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 void TIMER_IRQHandler( void )
 {
-	uint32_t timer_isr_status0 , timer_isr_status1;
-	uint32_t timer_isr_eoi0 , timer_isr_eoi1;
-	
-	timer_isr_status0 = BX_TIM0->IS & 0x01;
-	timer_isr_status1 = BX_TIM1->IS & 0x01;
+    uint32_t timer_isr_status0, timer_isr_status1;
 
-	if(timer_isr_status0) {
-		timer_isr_eoi0 = BX_TIM0->EOI;
-		
-		bx_public(tim0_svc.id, BXM_TIM0_INTR, 0, 0);
-	}
+    timer_isr_status0 = BX_TIM0->IS & 0x01;
+    timer_isr_status1 = BX_TIM1->IS & 0x01;
 
-	if(timer_isr_status1) {
-		timer_isr_eoi1 = BX_TIM1->EOI;
-		
-		bx_public(tim1_svc.id, BXM_TIM1_INTR, 0, 0);
-	}
+    if( timer_isr_status0 ) {
+        BX_READ_REG( BX_TIM0->EOI);
+        bx_public( tim0_svc.id, BXM_TIM0_INTR, 0, 0 );
+    }
+
+    if( timer_isr_status1 ) {
+        BX_READ_REG( BX_TIM0->EOI);
+        bx_public( tim1_svc.id, BXM_TIM1_INTR, 0, 0 );
+    }
 }
 
 /*========================= end of interrupt function ========================*/

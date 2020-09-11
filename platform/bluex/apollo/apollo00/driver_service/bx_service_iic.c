@@ -19,13 +19,14 @@
 #include "bx_kernel.h"
 #include "bx_service_iic.h"
 #include "bx_drv_iic.h"
-
+#include "bx_pm.h"
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
 struct bx_iic_service {
     s32 id;
     void * handle;
+    u32 open_count;
 
     u8 addr;
     u8 reg;
@@ -95,17 +96,29 @@ static bx_err_t iic_svc_write_action( struct bx_iic_service * p_svc, u8 * buff, 
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t iic_svc_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
+static bx_err_t iic_svc_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 {
     struct bx_iic_service * p_svc;
     GET_IIC_SERVICE_BY_ID( p_svc, id );
-    
-    switch( msg ) {
-        case BXM_OPEN:
-            return bx_drv_iic_open( p_svc->handle );
 
-        case BXM_CLOSE:
-            return bx_drv_iic_close( p_svc->handle );
+    switch( msg ) {
+        case BXM_OPEN: {
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                bx_pm_lock( BX_PM_IIC );
+                return bx_drv_iic_open( p_svc->handle );
+            }
+            break;
+        }
+
+        case BXM_CLOSE: {
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                bx_pm_unlock( BX_PM_IIC );
+                return bx_drv_iic_close( p_svc->handle );
+            }
+            break;
+        }
 
         case BXM_READ:
             return iic_svc_read_action( p_svc, ( u8 * )param0, param1 );
@@ -116,7 +129,7 @@ static bx_err_t iic_svc_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
         default:
             return BX_ERR_NOTSUP;
     }
-//    return BX_OK;
+    return BX_OK;
 }
 
 /** ---------------------------------------------------------------------------
@@ -125,11 +138,11 @@ static bx_err_t iic_svc_msg_handle(s32 id, u32 msg, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t iic_svc_property_set(s32 id, u32 property, u32 param0, u32 param1 )
+static bx_err_t iic_svc_property_set( s32 id, u32 property, u32 param0, u32 param1 )
 {
     struct bx_iic_service * p_svc;
     GET_IIC_SERVICE_BY_ID( p_svc, id );
-    
+
     switch( property ) {
         case BXP_HANDLE:
             p_svc->handle = ( reg_iic_t * )param0;
@@ -171,7 +184,7 @@ static bx_err_t iic_svc_property_set(s32 id, u32 property, u32 param0, u32 param
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t iic_svc_property_get(s32 id, u32 property, u32 param0, u32 param1 )
+static bx_err_t iic_svc_property_get( s32 id, u32 property, u32 param0, u32 param1 )
 {
     return BX_ERR_NOTSUP;
 //    switch( property ) {
@@ -216,7 +229,7 @@ bx_err_t bxs_iic_register( void )
         return BX_ERR_NOMEM;
     }
     iic0_svc.handle = BX_IIC0;
-    
+
     svc.name = "iic1 service";
     svc.msg_handle_func = iic_svc_msg_handle;
     svc.prop_get_func = iic_svc_property_get;

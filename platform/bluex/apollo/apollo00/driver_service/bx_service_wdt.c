@@ -19,13 +19,14 @@
 #include "bx_kernel.h"
 #include "bx_service_wdt.h"
 #include "bx_drv_wdt.h"
-
+#include "bx_pm.h"
 /* config --------------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
 struct bx_wdt_service {
     s32 id;
     void * handle;
+    u32 open_count;
 };
 
 /* private variables ---------------------------------------------------------*/
@@ -58,13 +59,23 @@ static bx_err_t wdt_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
     GET_WDT_SERVICE_BY_ID( p_svc, id );
 
     switch( msg ) {
-        case BXM_OPEN :
-            bx_drv_wdt_open( p_svc->handle );
+        case BXM_OPEN : {
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                bx_pm_lock( BX_PM_WDT );
+                return bx_drv_wdt_open( p_svc->handle );
+            }
             break;
+        }
 
-        case BXM_CLOSE :
-            bx_drv_wdt_close( p_svc->handle );
+        case BXM_CLOSE : {
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                bx_pm_unlock( BX_PM_WDT );
+                bx_drv_wdt_close( p_svc->handle );
+            }
             break;
+        }
 
         case BXM_START :
             bx_drv_wdt_start( p_svc->handle, param0 );

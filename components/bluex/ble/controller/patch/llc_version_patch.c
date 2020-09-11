@@ -86,14 +86,14 @@ void llc_llcp_version_ind_pdu_send_patch(uint16_t conhdl)
 
 void llc_llcp_version_ind_pdu_send_patch_creat(void)
 {
-    uint8_t patch_no;
-    if(patch_alloc(&patch_no)==false)
-    {
-        BX_ASSERT(0);
-    }
-    uint32_t code = cal_patch_bl(LLC_VERSION_PATCH_ADDR, (uint32_t)LLC_VERSION_PATCH -1);
-    patch_entrance_exit_addr(patch_no,LLC_VERSION_PATCH_ADDR,code);
-    PATCH_ENABLE(patch_no);
+//    uint8_t patch_no;
+//    if(patch_alloc(&patch_no)==false)
+//    {
+//        BX_ASSERT(0);
+//    }
+//    uint32_t code = cal_patch_bl(LLC_VERSION_PATCH_ADDR, (uint32_t)LLC_VERSION_PATCH -1);
+//    patch_entrance_exit_addr(patch_no,LLC_VERSION_PATCH_ADDR,code);
+//    PATCH_ENABLE(patch_no);
 }
 
 

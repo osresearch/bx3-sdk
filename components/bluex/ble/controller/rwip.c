@@ -52,7 +52,8 @@
 #endif //BLE_HOST_PRESENT
 
 #if (BLE_APP_PRESENT)
-#include "app.h"             // Application definitions
+//#include "app.h"             // Application definitions
+#include "user_ble.h"             // Application definitions
 #endif //BLE_APP_PRESENT
 
 #if (DEEP_SLEEP)
@@ -864,7 +865,7 @@ void rwip_init(uint32_t error)
     #if (!(defined(CFG_FREERTOS_SUPPORT)&&(CFG_FREERTOS_SUPPORT==1)))
     #if (BLE_APP_PRESENT)
     // Initialize APP
-    appm_init();
+    user_ble_init();
     #endif //BLE_APP_PRESENT
     #endif/*(defined(CFG_FREERTOS_SUPPORT)&&(CFG_FREERTOS_SUPPORT==1))*/
     #if LOCAL_NVDS == 0

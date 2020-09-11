@@ -18,13 +18,14 @@
 #include "bx_kernel.h"
 #include "bx_service_gpio.h"
 #include "bx_drv_gpio.h"
-
+#include "bx_pm.h"
 /* config --------------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
 struct bx_gpio_service {
     s32 id;
     void * handle;
+    u32 open_count;
 };
 
 /* private variables ---------------------------------------------------------*/
@@ -56,25 +57,32 @@ static bx_err_t gpio_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
     GET_GPIO_SERVICE_BY_ID( p_svc, id );
 
     switch( msg ) {
-        case BXM_OPEN :
-            bx_drv_gpio_open( p_svc->handle );
+        case BXM_OPEN : {
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                bx_pm_lock( BX_PM_GPIO );
+                return bx_drv_gpio_open( p_svc->handle );
+            }
             break;
+        }
 
-        case BXM_CLOSE :
-            bx_drv_gpio_close( p_svc->handle );
+        case BXM_CLOSE : {
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                bx_pm_unlock( BX_PM_GPIO );
+                return bx_drv_gpio_close( p_svc->handle );
+            }
             break;
+        }
 
         case BXM_READ :
-            bx_drv_gpio_read( p_svc->handle, ( u32 * )param0 );
-            break;
+            return bx_drv_gpio_read( p_svc->handle, ( u32 * )param0 );
 
         case BXM_WRITE :
-            bx_drv_gpio_write( p_svc->handle, param0, param1 );
-            break;
+            return bx_drv_gpio_write( p_svc->handle, param0, param1 );
 
         case BXM_TOGGLE:
-            bx_drv_gpio_toggle( p_svc->handle, param0 );
-            break;
+            return bx_drv_gpio_toggle( p_svc->handle, param0 );
 
         default:
             return BX_ERR_NOTSUP;
@@ -153,9 +161,9 @@ bx_err_t bxs_gpio_register( void )
     if( gpioa_svc.id == -1 ) {
         return BX_ERR_NOMEM;
     }
-    
+
     gpioa_svc.handle = BX_GPIOA;
-    
+
     return BX_OK;
 }
 
@@ -196,33 +204,33 @@ void GPIO_IRQHandler( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-u32 ext_int_stat_2_pin_state(u32 ext_int_stat)
+u32 ext_int_stat_2_pin_state( u32 ext_int_stat )
 {
     u32 ret = 0;
     u32 temp = 0;
-    for(u32 i=0;i<5;i++) {
-        if( ext_int_stat & (0x01<<i) ){
-            switch( i ){
+    for( u32 i = 0; i < 5; i++ ) {
+        if( ext_int_stat & ( 0x01 << i ) ) {
+            switch( i ) {
                 case 0:
-                    temp = 0x01<<15;
+                    temp = 0x01 << 15;
                     break;
-                
+
                 case 1:
-                    temp = 0x01<<16;
+                    temp = 0x01 << 16;
                     break;
-                
+
                 case 2:
-                    temp = 0x01<<17;
+                    temp = 0x01 << 17;
                     break;
-                
+
                 case 3:
-                    temp = 0x01<<22;
+                    temp = 0x01 << 22;
                     break;
-                
+
                 case 4:
-                    temp = 0x01<<23;
+                    temp = 0x01 << 23;
                     break;
-                
+
                 default:
                     break;
             }
@@ -241,8 +249,8 @@ void EXT_INTR_IRQHandler( void )
 {
     uint8_t ext_int_stat = BX_FIELD_RD( BX_AWO->EIVAL, AWO_EIVAL_VAL ) ;
     BX_AWO->EICLR |= ext_int_stat;
-    u32 pin_state = ext_int_stat_2_pin_state(ext_int_stat);
-    
+    u32 pin_state = ext_int_stat_2_pin_state( ext_int_stat );
+
     bx_public( gpioa_svc.id, BXM_GPIO_EXT_INTR, pin_state, 0 );
 }
 /*========================= end of interrupt function ========================*/

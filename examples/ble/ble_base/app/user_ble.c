@@ -15,18 +15,41 @@
   */
 
 /* includes ------------------------------------------------------------------*/
+#include "rwip_config.h"             // SW configuration
 
+#include "user_ble_task.h"
+#include "user_ble.h"
+#include "gap.h"
+#include "gapm_task.h"
+#include "gapc_task.h"
+#include "user_ble_profile.h"
 #include "bx_kernel.h"
-#include "user_app.h"
+#include "ke_timer.h"
 #include "bx_shell.h"
-#include "bx_service_ble.h"
+
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
+typedef void ( *appm_add_svc_func_t )( void );
 
 /* private variables ---------------------------------------------------------*/
+static const struct ke_task_desc TASK_DESC_APP = {
+    NULL,
+    &appm_default_handler,
+    appm_state,
+    APPM_STATE_MAX,
+    1
+};
+struct app_env_tag app_env;
+
+static const appm_add_svc_func_t appm_add_svc_func_list[] = {
+    ( appm_add_svc_func_t )add_dis_profile,
+    ( appm_add_svc_func_t )add_bxota_profile,
+    ( appm_add_svc_func_t )add_user_profile,
+};
 
 /* exported variables --------------------------------------------------------*/
+
 
 /*============================= private function =============================*/
 
@@ -34,16 +57,6 @@
 
 
 /*============================= exported function ============================*/
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void user_init( void )
-{
-    bxs_ble_register();
-}
 
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -51,12 +64,14 @@ void user_init( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void user_app( void )
+void user_ble_init()
 {
-    bx_subscibe( bxs_ble_id(),BXM_BLE_READY,0,0 );
-    bx_subscibe( bxs_ble_id(),BXM_BLE_ADVERTISING,0,0 );
-    bx_subscibe( bxs_ble_id(),BXM_BLE_CONNECTED,0,0 );
-    bx_subscibe( bxs_ble_id(),BXM_BLE_DISCONNECTED,0,0 );
+    memset( &app_env, 0, sizeof( app_env ) );
+    ke_task_create( TASK_APP, &TASK_DESC_APP );
+    ke_state_set( TASK_APP, APPM_INIT );
+    memcpy( app_env.dev_name, BX_DEV_NAME, sizeof( BX_DEV_NAME ) );
+    app_env.dev_name_len = strlen( BX_DEV_NAME );
+    app_dis_init();
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -64,45 +79,15 @@ void user_app( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t user_ble_msg_handle_func(u32 src_id, u32 msg,u32 param0,u32 param1 )
+bool user_ble_add_svc( void )
 {
-    switch(msg){
-        case BXM_BLE_READY:
-            bxsh_logln("BXM_BLE_READY");
-            bx_post(src_id,BXM_BLE_ADV_START,0,0);
-            break;
-        
-        case BXM_BLE_ADVERTISING:
-            bxsh_logln("BXM_BLE_ADVERTISING");
-            break;
-        
-        case BXM_BLE_CONNECTED:
-            bxsh_logln("BXM_BLE_CONNECTED");
-            break;
-        
-        case BXM_BLE_DISCONNECTED:
-            bxsh_logln("BXM_BLE_DISCONNECTED");
-            bx_post(src_id,BXM_BLE_ADV_START,0,0);
-            break;
-        
-        default:
-            break;
+    bool more_svc = false;
+    if ( app_env.next_svc != sizeof( appm_add_svc_func_list ) / sizeof( appm_add_svc_func_t ) ) {
+        appm_add_svc_func_list[app_env.next_svc]();
+        app_env.next_svc++;
+        more_svc = true;
     }
-    return BX_OK;
-}
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-bx_err_t user_msg_handle_func(s32 svc, u32 msg,u32 param0,u32 param1 )
-{
-    s32 msg_src = bx_msg_source();
-    if(  msg_src == bxs_ble_id() ) {
-        user_ble_msg_handle_func(msg_src,msg,param0,param1);
-    }
-    return BX_OK;
+    return more_svc;
 }
 /*========================= end of exported function =========================*/
 
@@ -116,8 +101,5 @@ bx_err_t user_msg_handle_func(s32 svc, u32 msg,u32 param0,u32 param1 )
 
 /*========================= end of interrupt function ========================*/
 
-  
 /******************** (C) COPYRIGHT BLUEX **********************END OF FILE****/
-
-
 
