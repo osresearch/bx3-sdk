@@ -29,8 +29,12 @@ extern "C" {
 #include "periph_error.h"
 
 /* exported define -----------------------------------------------------------*/
-#define FLASH_TYPE_UNKNOWN             0
-#define FLASH_PAGE_SIZE               256
+#define FLASH_TYPE_UNKNOWN                              0
+#define FLASH_PAGE_SIZE                                 256
+
+#define MANUFACTURER_ZBIT                               0x5E
+#define MANUFACTURER_PUYA                               0x85
+#define MANUFACTURER_WINBOND                            0xEF
 
 /* exported types ------------------------------------------------------------*/
 typedef enum{
@@ -81,6 +85,9 @@ periph_err_t flash_deep_power_down(void);
 
 //void flash_test(void);
 //void flash_security_reg_test(void);
+
+periph_err_t flash_read_manufacturer_device_id(uint8_t *manufacturer_id,uint8_t *device_id);
+periph_err_t ZBIT_flash_read_security_reg(uint8_t reg_num,uint16_t offset,uint16_t length,uint8_t *buffer);
 
 #ifdef __cplusplus
 }

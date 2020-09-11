@@ -82,6 +82,7 @@ u32                 bx_get_service_count( void );
 struct bx_service * bx_get_service( s32 id );
 s32                 bx_msg_source( void );
 
+bool                bx_ke_busy(void);
 #ifdef __cplusplus
 }
 #endif

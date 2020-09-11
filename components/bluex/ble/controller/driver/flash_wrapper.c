@@ -385,7 +385,17 @@ periph_err_t flash_write_status_reg( uint8_t cmd, uint8_t * data, uint8_t length
 {
     return flash_write_status_reg_operation( cmd, data, length );
 }
-
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+periph_err_t ZBIT_flash_read_security_reg(uint8_t reg_num,uint16_t offset,uint16_t length,uint8_t *buffer)
+{
+    uint8_t read_cmd[5] = {ZBIT_FLASH_READ_SECURITY_REGISTERS,0,reg_num,offset&0xff,0};
+    return flash_read_operation(read_cmd,sizeof(read_cmd), buffer, length);
+}
 /*========================= end of exported function =========================*/
 
 

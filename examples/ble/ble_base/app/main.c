@@ -46,8 +46,7 @@ int main( void )
 {
     ble_init();
     bx_kernel_init();
-    bxsh_init();
-
+    
     struct bx_service svc;
     svc.prop_set_func = NULL;
     svc.prop_get_func = NULL;

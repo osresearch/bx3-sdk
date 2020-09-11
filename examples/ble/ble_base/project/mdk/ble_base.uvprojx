@@ -981,6 +981,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6\rf_temp_adjust.c</FilePath>
             </File>
+            <File>
+              <FileName>llc_version_patch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.c</FilePath>
+            </File>
+            <File>
+              <FileName>llc_version_patch.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2191,6 +2201,16 @@
               <FileName>rf_temp_adjust.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6\rf_temp_adjust.c</FilePath>
+            </File>
+            <File>
+              <FileName>llc_version_patch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.c</FilePath>
+            </File>
+            <File>
+              <FileName>llc_version_patch.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.s</FilePath>
             </File>
           </Files>
         </Group>

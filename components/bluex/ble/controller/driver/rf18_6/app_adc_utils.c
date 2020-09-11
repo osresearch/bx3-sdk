@@ -14,6 +14,8 @@
 #include "flash_wrapper.h"
 #include "app_adc_utils.h"
 
+#include "bx_shell.h"
+
 #if HW_BX_VERSION == 00
 
 //#if (defined(CFG_FREERTOS_SUPPORT)&&(CFG_FREERTOS_SUPPORT==1))
@@ -353,32 +355,42 @@ static uint8_t app_adc_gpadc_bonding_RO_bit(uint32_t channel)
 
 void app_adc_util_init(void)
 {
-	#ifdef ADC_RO_READ_FORCE_ON
-    if(flash_read_security_reg(1, 0, 1, (uint8_t*)&adc_cp_RO) != PERIPH_NO_ERROR)
-    {
-        BX_ASSERT(0);
+#ifdef ADC_RO_READ_FORCE_ON
+    uint8_t manufacturer_id, device_id;
+    flash_read_manufacturer_device_id( &manufacturer_id, &device_id );
+    bxsh_logln("falsh id:%x",manufacturer_id);
+    if( MANUFACTURER_ZBIT == manufacturer_id ) { /*ZBIT Serial Flash*/
+        periph_err_t err = ZBIT_flash_read_security_reg( 0, 0, sizeof(uint8_t), ( uint8_t * )&adc_cp_RO );
+        if( err!= PERIPH_NO_ERROR ) {
+            BX_ASSERT( 0 );
+        }
+    } else if(    (  MANUFACTURER_WINBOND == manufacturer_id ) /*Winbond Serial Flash*/
+                  || (  MANUFACTURER_PUYA == manufacturer_id )/*PUYA Serial Flash*/
+             ) {
+        if( flash_read_security_reg( 1, 0, 1, ( uint8_t * )&adc_cp_RO ) != PERIPH_NO_ERROR ) {
+            BX_ASSERT( 0 );
+        }
+    } else {
+        LOG( LOG_LVL_INFO, "UNKONWN flash\n" );
+        BX_ASSERT( 0 );
     }
-    if(0xff == (uint8_t)adc_cp_RO)
-    {
+    if( 0xff == ( uint8_t )adc_cp_RO ) {
         uint8_t temp_bonding = 0;
-    
-        for(uint8_t i = 1; i < 6; i++)
-        {
-            temp_bonding |= app_adc_gpadc_bonding_RO_bit(i) << (i-1);
+
+        for( uint8_t i = 1; i < 6; i++ ) {
+            temp_bonding |= app_adc_gpadc_bonding_RO_bit( i ) << ( i - 1 );
         }
         adc_cp_RO = adc_bonding_RO_array[temp_bonding];
     }
-    #else
+#else
     adc_cp_RO = 33;
-    #endif
-	
+#endif
 
-    #if RF_PARAM == 2 || RF_PARAM == 3 
-    extern void refresh_rf_param_with_ro(uint32_t ro);
-    refresh_rf_param_with_ro(adc_cp_RO);
-    #endif
-    LOG(LOG_LVL_INFO,"RO=0x%x\n", adc_cp_RO);
-    LOG(LOG_LVL_INFO,"RO=0x%x\n", adc_cp_RO);
+#if RF_PARAM == 2 || RF_PARAM == 3
+    extern void refresh_rf_param_with_ro( uint32_t ro );
+    refresh_rf_param_with_ro( adc_cp_RO );
+#endif
+    bxsh_logln( "RO=%d", adc_cp_RO );
 }
 
 uint32_t app_adc_battery(void)

@@ -42,6 +42,7 @@
 
 #include "bx_shell.h"
 #include "bx_pm.h"
+#include "bx_kernel.h"
 #include "rf_temp_adjust.h"
 
 
@@ -162,7 +163,7 @@ N_XIP_SECTION uint8_t sleep_prepare_and_check()
 -----------------------------------------------------------------------------*/
 N_XIP_SECTION void sleep_check(void)
 {
-    if( bx_pm_check( BX_PM_ALL ) ) {
+    if( bx_pm_check( BX_PM_ALL ) || bx_ke_busy() ) {
         bxsh_logln("not sleep");
         return ;
     }

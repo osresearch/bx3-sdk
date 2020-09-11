@@ -21,6 +21,8 @@
 #include "bx_service.h"
 #include <string.h>
 
+#include "bx_shell.h"
+
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
@@ -78,10 +80,12 @@ static struct   bx_service_handle       service_hdl;
 static struct   bx_subject_hub          subject_hub;
 
 //当前的服务
-static s32      current_service_id;
-static s32      current_msg_source_id;
-volatile u32    interrupt_disable_count;
+volatile static s32     current_service_id;
+volatile static s32     current_msg_source_id;
+volatile static bool    kernel_is_busy;
+
 /* exported variables --------------------------------------------------------*/
+volatile u32            interrupt_disable_count;
 
 /*============================= private function =============================*/
 
@@ -151,6 +155,7 @@ static __inline bx_err_t post( s32 src, s32 dst, u32 msg, u32 param0, u32 param1
     pmsg->msg = msg;
     pmsg->param0 = param0;
     pmsg->param1 = param1;
+    kernel_is_busy = true;
     GLOBAL_ENABLE_IRQ();
     return BX_OK;
 }
@@ -169,10 +174,9 @@ void bx_kernel_init( void )
 {
     memset( &msg_hdl, 0, sizeof( struct bx_msg_handle ) );
     memset( &dly_msg_hdl, 0, sizeof( struct bx_delay_msg_handle ) );
-
+    kernel_is_busy = false;
     bx_kernel_timer_init();
 }
-#include "bx_pm.h"
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -184,6 +188,7 @@ void bx_kernel_schedule( void )
     while( 1 ) {
         struct bx_msg * pmsg = get_next_msg();
         if( pmsg == NULL ) {
+            kernel_is_busy = false;
             // do something to notify app
             return;
         }
@@ -204,6 +209,7 @@ void bx_kernel_schedule( void )
             post( pmsg->src,pmsg->dst, pmsg->msg, pmsg->param0, pmsg->param1 );
         } else {
             // do something to notify app
+            bxsh_logln("excute err:%u,%u,%u",pmsg->dst, pmsg->msg,err);
         }
     }
 }
@@ -235,7 +241,8 @@ bx_err_t bx_defer( s32 dst, u32 msg, u32 param0, u32 param1, u32 time )
     //重新设置时间
     tm_id = bx_kernel_timer_creat( time, 1 );
     if( tm_id == 0 ) {
-        return BX_ERR_FULL;
+        bxsh_logln("bx_defer BX_ERR_NOMEM");
+        return BX_ERR_NOMEM;
     }
     u16 index = bx_kernel_timer_id_to_array_index( tm_id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
@@ -268,7 +275,8 @@ bx_err_t bx_repeat( s32 dst, u32 msg, u32 param0, u32 param1, u32 period )
     //重新设置时间
     tm_id = bx_kernel_timer_creat( period, BX_FOREVER );
     if( tm_id == 0 ) {
-        return BX_ERR_FULL;
+        bxsh_logln("bx_repeat BX_ERR_NOMEM");
+        return BX_ERR_NOMEM;
     }
     u16 index = bx_kernel_timer_id_to_array_index( tm_id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
@@ -301,7 +309,8 @@ bx_err_t bx_repeatn( s32 dst, u32 msg, u32 param0, u32 param1, u32 period, s32 n
     //重新设置时间
     tm_id = bx_kernel_timer_creat( period, num );
     if( tm_id == 0 ) {
-        return BX_ERR_FULL;
+        bxsh_logln("bx_repeatn BX_ERR_NOMEM");
+        return BX_ERR_NOMEM;
     }
     u16 index = bx_kernel_timer_id_to_array_index( tm_id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
@@ -327,7 +336,7 @@ bx_err_t bx_cancel( s32 dst, u32 msg )
 {
     u16 id = get_kernel_timer_id( dst, msg );
     if( id == 0 ) {
-        return BX_ERR_EMPTY;
+        return BX_OK;
     }
     bx_kernel_timer_stop( id );
     u16 index = bx_kernel_timer_id_to_array_index( id );
@@ -354,6 +363,7 @@ s32 bx_register( struct bx_service * p_svc )
         GLOBAL_ENABLE_IRQ();
         return index;
     } else {
+        bxsh_logln("bx_register BX_ERR_NOMEM");
         return -1;
     }
 }
@@ -546,6 +556,16 @@ s32 bx_msg_source( void )
 {
     return current_msg_source_id;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bool bx_ke_busy(void)
+{
+    return kernel_is_busy;
+}
 /*========================= end of exported function =========================*/
 
 
@@ -558,12 +578,12 @@ s32 bx_msg_source( void )
 -----------------------------------------------------------------------------*/
 void bx_kernel_timer_timeout_callback( u16 id, bool end_of_repeat )
 {
-    //bxs_logln( "id:%X %X", id, BKT_ID_TO_INDEX(id) );
+    //bxsh_logln( "id:%X %X", id, BKT_ID_TO_INDEX(id) );
 
     u16 index = bx_kernel_timer_id_to_array_index( id );
     struct bx_delay_msg * pmsg = &( dly_msg_hdl.hub[index] );
 
-    //bxs_logln("%08X:%08x",pmsg->dst,pmsg->msg);
+    //bxsh_logln("%08X:%08x",pmsg->dst,pmsg->msg);
     if( pmsg->used ) {
         post( pmsg->src,pmsg->dst, pmsg->msg, pmsg->param0, pmsg->param1 );
     }

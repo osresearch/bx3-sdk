@@ -28,6 +28,7 @@
 #include "ll.h"
 #include "app_adc_utils.h"
 #include "rf_temp_adjust.h"
+#include "bx_shell.h"
 
 /* private define ------------------------------------------------------------*/
 
@@ -53,6 +54,8 @@
 N_XIP_SECTION void ble_init()
 {
     soc_init();
+    
+    bxsh_init();
     
     RTC_EN_WITHOUT_INT();
     rwip_init( 0 );

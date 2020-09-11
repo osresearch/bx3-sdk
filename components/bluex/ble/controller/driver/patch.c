@@ -80,7 +80,7 @@ void set_scan_adv_rx_threshold_patch( void );
 void set_lld_scan_stop_patch( void );
 void set_lld_evt_schedule_scan_patch( void );
 void set_slave_latency_patch( void );
-
+void llc_llcp_version_ind_pdu_send_patch_creat( void );
 /*============================= private function =============================*/
 
 /*========================= end of private function ==========================*/
@@ -140,6 +140,7 @@ void patch_init()
 #endif
     set_lld_evt_schedule_scan_patch();
     set_slave_latency_patch();
+    llc_llcp_version_ind_pdu_send_patch_creat();
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

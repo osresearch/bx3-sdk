@@ -28,7 +28,7 @@
 /* private typedef -----------------------------------------------------------*/
 
 /* private variables ---------------------------------------------------------*/
-
+static bool is_init = false;
 
 /* private macros ------------------------------------------------------------*/
 
@@ -188,6 +188,7 @@ void bxsh_init( void )
     bxsh_add_cmd( "mr", prv_memory_read, "memory read" );
     bxsh_add_cmd( "ls", prv_list_cmd, "show all command" );
     bxsh_add_cmd( "reset", prv_reset_cmd, "reset chip" );
+    is_init = true;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -267,7 +268,9 @@ void bxsh_arg_err( char * cmd )
 -----------------------------------------------------------------------------*/
 int fputc( int ch, FILE * f )
 {
-    bxsh_uart_send_byte( ch );
+    if( is_init ) {
+        bxsh_uart_send_byte( ch );
+    }
     return ch;
 }
 
@@ -280,7 +283,9 @@ int fputc( int ch, FILE * f )
 int fgetc( FILE * f )
 {
     int ch;
-    ch = bxsh_uart_read_byte();
+    if( is_init ) {
+        ch = bxsh_uart_read_byte();
+    }
     return ch;
 }
 /*=========================== end of import function =========================*/

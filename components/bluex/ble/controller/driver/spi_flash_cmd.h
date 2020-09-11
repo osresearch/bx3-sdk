@@ -57,6 +57,8 @@ enum flash_commands{
 	FLASH_ERASE_SECURITY_REGISTERS = 0x44,
 	FLASH_READ_SECURITY_REGISTERS = 0x48,
 	FLASH_PAGE_ERASE = 0x81,
+    
+    ZBIT_FLASH_READ_SECURITY_REGISTERS = 0x4B,
 };
 
 /* exported variables --------------------------------------------------------*/
