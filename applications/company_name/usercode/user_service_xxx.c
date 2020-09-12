@@ -16,83 +16,63 @@
 
 /* includes ------------------------------------------------------------------*/
 
-#include "bx_service_ble.h"
 #include "bx_kernel.h"
-#include "bx_drv_ble.h"
-
-#include "app.h"
+#include "user_service_xxx.h"
 
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
-struct bx_ble_service {
+struct us_xxx_service {
     s32 id;
+    u32 open_count;
 };
 /* private variables ---------------------------------------------------------*/
-static struct bx_ble_service ble_svc = { 0 };
-
-
-#define CHECK_POINTER(p)                                    \
-do{                                                         \
-    if( (p) == NULL ) {                                     \
-        return BX_ERR_POINTER_EMPTY;                        \
-    }                                                       \
-}while(0)
-
-#define CHECK_ADV_DATA_LEN(len)                             \
-do{                                                         \
-    if( (len) > GAP_ADV_DATA_LEN-3 ) {                      \
-        return BX_ERR_POINTER_EMPTY;                        \
-    }                                                       \
-}while(0)
-
-#define CHECK_SCAN_RSP_DATA_LEN(len)                        \
-do{                                                         \
-    if( (len) > GAP_SCAN_RSP_DATA_LEN ) {                   \
-        return BX_ERR_POINTER_EMPTY;                        \
-    }                                                       \
-}while(0)
-
+static struct us_xxx_service xxx_svc = {0};
 /* exported variables --------------------------------------------------------*/
 
-
+/* private macros ------------------------------------------------------------*/
+#define GET_XXX_SERVICE_BY_ID( p_svc, svc_id )                  \
+do{                                                             \
+    if( ( svc_id ) == xxx_svc.id ) {                            \
+        p_svc = &xxx_svc;                                       \
+    } else {                                                    \
+        return BX_ERR_NOTSUP;                                   \
+    }                                                           \
+}while(0)
 
 /*============================= private function =============================*/
+
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
+static bx_err_t xxx_msg_handle(s32 svc_id, u32 msg, u32 param0, u32 param1 )
 {
+    struct us_xxx_service * p_svc;
+    GET_XXX_SERVICE_BY_ID( p_svc, svc_id );
+    
     switch( msg ) {
-        case BXM_BLE_ADV_START:
-            return ble_advtising_start( ( struct ble_adv_data * )param0,param1 );
-            
-        case BXM_BLE_ADV_STOP:
-            ble_advtising_stop();
+        case BXM_OPEN:{
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                // for open code
+            }
             break;
-		case BXM_BLE_DIS_LINK:
-			ble_connect_stop();
-			break;
-		case BXM_BLE_SCAN_STOP:
-			ble_scan_stop();
-			break;
+        }
         
-        case BXM_BLE_NOTIFY:
-			ble_notify((struct ble_notify_data *) param0);
-			break;
+        case BXM_CLOSE:{
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                // for close code
+            }
+            break;
+        }
         
-		case BXM_BLE_NOTIFY_ENABLED:
-			ble_notifaction_enabled(param0);
-			break;
-
         default:
             return BX_ERR_NOTSUP;
     }
-	return BX_OK;
-
 }
 
 /** ---------------------------------------------------------------------------
@@ -101,25 +81,15 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t ble_property_set( s32 id, u32 property, u32 param0, u32 param1 )
+static bx_err_t xxx_property_set(s32 svc_id, u32 property, u32 param0, u32 param1 )
 {
+    struct us_xxx_service * p_svc;
+    GET_XXX_SERVICE_BY_ID( p_svc, svc_id );
+    
     switch( property ) {
-        case BXP_BLE_ADV_DATA:
-            break;
-        
-        case BXP_BLE_SCAN_RSP_DATA:
-            break;
-        
-        case BXP_BLE_ADV_INTV:
-            break;
-        
-        case BXP_BLE_CNT_INTV:
-            break;
-
         default:
             return BX_ERR_NOTSUP;
     }
-    return BX_OK;
 }
 
 /** ---------------------------------------------------------------------------
@@ -128,40 +98,22 @@ static bx_err_t ble_property_set( s32 id, u32 property, u32 param0, u32 param1 )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static bx_err_t ble_property_get( s32 id, u32 property, u32 param0, u32 param1 )
+static bx_err_t xxx_property_get(s32 svc_id, u32 property, u32 param0, u32 param1 )
 {
+    struct us_xxx_service * p_svc;
+    GET_XXX_SERVICE_BY_ID( p_svc, svc_id );
+    
     switch( property ) {
-        case BXP_BLE_ADV_DATA:
-            break;
-        
-        case BXP_BLE_SCAN_RSP_DATA:
-            break;
-        
-        case BXP_BLE_ADV_INTV:
-            break;
-        
-        case BXP_BLE_CNT_INTV:
-            break;
-        
         default:
             return BX_ERR_NOTSUP;
-
     }
-    return BX_OK;
 }
+
+
 /*========================= end of private function ==========================*/
 
+
 /*============================= exported function ============================*/
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-s32 bxs_ble_id( void )
-{
-    return ble_svc.id;
-}
 
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -169,22 +121,30 @@ s32 bxs_ble_id( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bxs_ble_register( void )
+bool us_xxx_register( void )
 {
-	memset( &ble_svc, 0, sizeof( struct bx_ble_service ) );
     struct bx_service svc;
-    svc.name = "ble service";
-	svc.msg_handle_func = ble_msg_handle;
-	svc.prop_set_func = ble_property_set;
-    svc.prop_get_func = ble_property_get;
-	
-	ble_svc.id = bx_register( &svc );
-	if( ble_svc.id == -1 ) {
-        return BX_ERR_NOMEM;
+    svc.name = "xxx service";
+    svc.msg_handle_func = xxx_msg_handle;
+    svc.prop_get_func = xxx_property_get;
+    svc.prop_set_func = xxx_property_set;
+    xxx_svc.id = bx_register( &svc );
+    if( xxx_svc.id == -1 ) {
+        return false;
     }
-	
-	return BX_OK;
+    return true;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+s32 us_xxx_id( void )
+{
+    return xxx_svc.id;
+}
+
 /*========================= end of exported function =========================*/
 
 
@@ -199,4 +159,6 @@ bx_err_t bxs_ble_register( void )
 
 
 /******************** (C) COPYRIGHT BLUEX **********************END OF FILE****/
+
+
 

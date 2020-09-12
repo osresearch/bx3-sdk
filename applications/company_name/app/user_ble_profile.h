@@ -44,7 +44,7 @@
 //#define APP_DIS_MANUFACTURER_NAME       ("Homeylab.us")
 //#define APP_DIS_MANUFACTURER_NAME_LEN   (11)
 
-#define APP_DIS_MANUFACTURER_NAME       ("AiHere")
+#define APP_DIS_MANUFACTURER_NAME       ("BLUEX-SDK3")
 #define APP_DIS_MANUFACTURER_NAME_LEN   (sizeof(APP_DIS_MANUFACTURER_NAME) - 1)
     
 /// Model Number String Value
@@ -119,9 +119,9 @@ void app_dis_init(void);
  * @brief Add a Device Information Service instance in the DB
  ****************************************************************************************
  */
-void app_dis_add_dis(void);
-void app_user_add_profile(void);
-void app_user_add_proxr(void);
+void add_dis_profile(void);
+void add_user_profile(void);
+void add_bxota_profile(void);
 void app_bxotas(void);
 void osapp_bxotas_config(void);
 void app_user_add_glps(void);

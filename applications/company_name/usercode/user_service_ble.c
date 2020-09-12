@@ -16,7 +16,7 @@
 
 /* includes ------------------------------------------------------------------*/
 
-#include "bx_service_ble.h"
+#include "user_service_ble.h"
 #include "bx_kernel.h"
 #include "bx_drv_ble.h"
 

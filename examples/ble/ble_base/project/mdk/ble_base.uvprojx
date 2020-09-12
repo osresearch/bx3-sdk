@@ -1197,9 +1197,9 @@
           <GroupName>user/service</GroupName>
           <Files>
             <File>
-              <FileName>bx_service_ble.c</FileName>
+              <FileName>user_service_ble.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\usercode\bx_service_ble.c</FilePath>
+              <FilePath>..\..\usercode\user_service_ble.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2763,9 +2763,9 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>bx_service_ble.c</FileName>
+              <FileName>user_service_ble.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\usercode\bx_service_ble.c</FilePath>
+              <FilePath>..\..\usercode\user_service_ble.c</FilePath>
             </File>
           </Files>
         </Group>

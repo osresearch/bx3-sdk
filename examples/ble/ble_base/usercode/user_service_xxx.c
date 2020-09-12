@@ -24,7 +24,7 @@
 /* private typedef -----------------------------------------------------------*/
 struct us_xxx_service {
     s32 id;
-    
+    u32 open_count;
 };
 /* private variables ---------------------------------------------------------*/
 static struct us_xxx_service xxx_svc = {0};
@@ -54,11 +54,21 @@ static bx_err_t xxx_msg_handle(s32 svc_id, u32 msg, u32 param0, u32 param1 )
     GET_XXX_SERVICE_BY_ID( p_svc, svc_id );
     
     switch( msg ) {
-        case BXM_OPEN:
+        case BXM_OPEN:{
+            p_svc->open_count++;
+            if( p_svc->open_count == 1 ) {
+                // for open code
+            }
             break;
+        }
         
-        case BXM_CLOSE:
+        case BXM_CLOSE:{
+            p_svc->open_count--;
+            if( p_svc->open_count == 0 ) {
+                // for close code
+            }
             break;
+        }
         
         default:
             return BX_ERR_NOTSUP;

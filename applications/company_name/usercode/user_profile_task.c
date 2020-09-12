@@ -37,7 +37,7 @@
 
 #include "bx_shell.h"
 #include "bx_kernel.h"
-#include "bx_service_ble.h"
+#include "user_service_ble.h"
 /*
  *  GLUCOSE PROFILE ATTRIBUTES
  ****************************************************************************************

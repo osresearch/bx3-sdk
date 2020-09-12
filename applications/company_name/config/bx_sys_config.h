@@ -147,7 +147,7 @@ extern "C" {
 
 /*------------- NVDS ---------- */
 #ifndef BX_DEV_NAME
-#define BX_DEV_NAME                                     "SDK3"
+#define BX_DEV_NAME                                     "BLUEX-SDK3"
 #endif
 
 #ifndef BX_MAC_ADDR
