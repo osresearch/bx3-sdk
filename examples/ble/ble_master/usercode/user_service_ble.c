@@ -72,7 +72,7 @@ static uint8_t scanRspData[] = {
 };
 
 // GAP - Advertisement data (max size = (28) bytes, though this is
-static uint8_t advertData[] = {
+static uint8_t advData[] = {
 
     // service UUID, to notify central devices what services are included
     // in this peripheral
@@ -133,7 +133,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 {
     switch( msg ) {
         case BXM_BLE_ADV_START: {
-            bx_err_t err = ble_advtising_start( &ble_adv );
+            bx_err_t err = ble_advertising_start( &ble_adv );
             if( err == BX_OK ) {
                 bx_public( us_ble_id(), BXM_BLE_ADVERTISING, ble_adv.adv_intv_min, ble_adv.adv_intv_max );
             } else {
@@ -143,7 +143,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
         break;
 
         case BXM_BLE_ADV_STOP:
-            ble_advtising_stop();
+            ble_advertising_stop();
             break;
         case BXM_BLE_DIS_LINK:
             ble_connect_stop();
@@ -158,7 +158,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             ble_notifaction_enabled( param0 );
             break;
         case BXM_BLE_ADV_CHANGE_DATA:
-            ble_advtising_stop();
+            ble_advertising_stop();
 
             ble_adv.adv_data_len = param1;
             memcpy( ble_adv.adv_data, ( u8 * )param0, param1 );
@@ -166,7 +166,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
         case BXM_BLE_ADV_CHANGE_SCAN_RSP_DATA:
-            ble_advtising_stop();
+            ble_advertising_stop();
 
             ble_adv.scan_rsp_data_len = param1;
             memcpy( ble_adv.scan_rsp_data, ( u8 * )param0, param1 );
@@ -174,7 +174,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
         case BXM_BLE_ADV_CHANGE_INTV:
-            ble_advtising_stop();
+            ble_advertising_stop();
 
             ble_adv.adv_intv_max = param0;
             ble_adv.adv_intv_min = param1;
@@ -182,14 +182,14 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
         case BXM_BLE_ADV_CHANGE_OP_CODE:
-            ble_advtising_stop();
+            ble_advertising_stop();
 
             ble_adv.op_code = param0;
 
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
         case BXM_BLE_ADV_CHANGE_MODE:
-            ble_advtising_stop();
+            ble_advertising_stop();
 
             ble_adv.adv_mode = param0;
 
@@ -197,7 +197,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             break;
 
         case BXM_BLE_ADV_CHANGE_FILT_POLICY:
-            ble_advtising_stop();
+            ble_advertising_stop();
 
             ble_adv.adv_filt_policy = param0;
 
@@ -211,7 +211,7 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             ble_adv.scan_rsp_data_len = ble_adv_update->scan_rsp_data_len;
             memcpy( ble_adv.adv_data, ble_adv_update->adv_data, ble_adv.adv_data_len );
             memcpy( ble_adv.scan_rsp_data, ble_adv_update->scan_rsp_data, ble_adv.scan_rsp_data_len );
-            ble_advtising_advdata_update( &ble_adv );
+            ble_advertising_advdata_update( &ble_adv );
         }
         break;
 
@@ -396,9 +396,9 @@ bx_err_t us_ble_register( void )
     ble_adv.adv_mode = DEFAULT_ADV_MODE;
     ble_adv.adv_filt_policy = DEFAULT_ADV_FILT_POLICY;
 
-    ble_adv.adv_data_len = sizeof( advertData );
+    ble_adv.adv_data_len = sizeof( advData );
     ble_adv.scan_rsp_data_len = sizeof( scanRspData );
-    memcpy( ble_adv.adv_data, advertData, ble_adv.adv_data_len );
+    memcpy( ble_adv.adv_data, advData, ble_adv.adv_data_len );
     memcpy( ble_adv.scan_rsp_data, scanRspData, ble_adv.scan_rsp_data_len );
     return BX_OK;
 }

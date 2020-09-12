@@ -103,7 +103,7 @@ extern "C" {
 #endif 
 
 #ifndef RC32K_USED
-#define RC32K_USED                                      0
+#define RC32K_USED                                      1
 #endif
 
 #ifndef SYSTICK_USED

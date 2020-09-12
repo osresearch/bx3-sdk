@@ -20,7 +20,7 @@
 #include "patch.h"
 #include "log.h"
 #include "lld_evt.h"
-
+#include "bx_sdk3_config.h"
 /* private define ------------------------------------------------------------*/
 #define LLD_EVT_DRIFT_COMPUTE_ENTRY_PATCH_ADDR          0x16180
 #define LLD_EVT_DRIFT_COMPUTE_ENTRY_PATCH_CODE          0xb510
@@ -74,6 +74,7 @@ uint16_t lld_evt_drift_compute_patch( uint16_t delay, uint8_t master_sca )
 -----------------------------------------------------------------------------*/
 void set_rc32k_patch()
 {
+#if (BX_CHIP_TYPE != 1 )
     uint8_t patch_no[2];
     if( patch_alloc( &patch_no[0] ) == false ) {
         BX_ASSERT( 0 );
@@ -86,6 +87,7 @@ void set_rc32k_patch()
     }
     patch_entrance_exit_addr( patch_no[1], LLD_EVT_DRIFT_COMPUTE_ENTRY_PATCH_ADDR, LLD_EVT_DRIFT_COMPUTE_ENTRY_PATCH_CODE );
     PATCH_ENABLE( patch_no[1] );
+#endif
 }
 
 /*========================= end of exported function =========================*/

@@ -43,13 +43,13 @@ extern "C" {
 
 bx_err_t ble_scan_stop( void );
 bx_err_t ble_bonding_pair(void);
-bx_err_t ble_advtising_stop( void );
+bx_err_t ble_advertising_stop( void );
 bx_err_t ble_connect_stop(void);
 bx_err_t ble_bonding_pair_request( void );
 bx_err_t ble_indication_enabled(u16 handle);
 bx_err_t ble_notifaction_enabled(u16 handle);
-bx_err_t ble_advtising_start( struct ble_adv_data * p_new_advdata_buf );
-bx_err_t ble_advtising_advdata_update( struct ble_adv_data * p_new_advdata_buf );
+bx_err_t ble_advertising_start( struct ble_adv_data * p_new_advdata_buf );
+bx_err_t ble_advertising_advdata_update( struct ble_adv_data * p_new_advdata_buf );
 bx_err_t ble_whitelist_set( struct whitelist_data *white_list, u8 addr_cnt );
 bx_err_t ble_send_data_notify(u8 *data,u8 length,u16 handle);
 

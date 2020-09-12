@@ -22,8 +22,18 @@
 extern "C" {
 #endif
 
+//1 => rf01
+//2 => bx2416
+//3 => rf03
+//4 => rf04
+//8 => rf08
+#ifndef BX_CHIP_TYPE
+#define BX_CHIP_TYPE                                    3
+#endif
+
+
 #ifndef BX_DEEP_SLEEP
-#define BX_DEEP_SLEEP                                  0
+#define BX_DEEP_SLEEP                                   0
 #endif
 
 #if ( BX_DEEP_SLEEP > 0 )

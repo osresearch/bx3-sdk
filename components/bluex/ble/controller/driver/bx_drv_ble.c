@@ -42,7 +42,7 @@
 #define DEFAULT_CNT_INTV_MAX                            400 // (400* 1.25 ms = 1000ms)
 #define DEFAULT_CON_LATENCY                             0
 #define DEFAULT_TIME_OUT                                300
-#define DEFAUT_CE_LEN_MIN                               0
+#define DEFAULT_CE_LEN_MIN                              0
 #define DEFAULT_CE_LEN_MAX                              0
 #define DEFAULT_NB_PEERS                                1
 #define DEFAULT_ADDR_TYPE                               0
@@ -83,7 +83,7 @@ do{                                                         \
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_advtising_start( struct ble_adv_data * p_new_advdata_buf )
+bx_err_t ble_advertising_start( struct ble_adv_data * p_new_advdata_buf )
 {
 
     ke_state_set( TASK_APP, APPM_ADVERTISING );
@@ -120,7 +120,7 @@ bx_err_t ble_advtising_start( struct ble_adv_data * p_new_advdata_buf )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_advtising_advdata_update( struct ble_adv_data * p_new_advdata_buf )
+bx_err_t ble_advertising_advdata_update( struct ble_adv_data * p_new_advdata_buf )
 {
     struct gapm_update_advertise_data_cmd * update_cmd = KE_MSG_ALLOC( GAPM_UPDATE_ADVERTISE_DATA_CMD,
             TASK_GAPM, TASK_APP,
@@ -191,7 +191,7 @@ bx_err_t ble_bonding_pair_request( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t ble_advtising_stop( void )
+bx_err_t ble_advertising_stop( void )
 {
     if ( ke_state_get( TASK_APP ) == APPM_ADVERTISING ) {
         ke_state_set( TASK_APP, APPM_READY );
@@ -317,7 +317,7 @@ bx_err_t ble_connect_start( u8 * addr )
     connect_cmd->con_intv_max = DEFAULT_CNT_INTV_MAX;
     connect_cmd->con_latency = DEFAULT_CON_LATENCY;
     connect_cmd->superv_to = DEFAULT_TIME_OUT;
-    connect_cmd->ce_len_min = DEFAUT_CE_LEN_MIN;
+    connect_cmd->ce_len_min = DEFAULT_CE_LEN_MIN;
     connect_cmd->ce_len_max = DEFAULT_CE_LEN_MAX;
 	connect_cmd->nb_peers=1;
 	
