@@ -49,18 +49,20 @@ struct bx_ble_adv {
 enum bx_property_ble {
     BXP_BLE_FIRST = BXP_FIRST_USER_PROP,
     
-    BXP_BLE_ADV_DATA,
-    BXP_BLE_SCAN_RSP_DATA,
+    BXP_BLE_ADV_DATA,       //广播数据
+    BXP_BLE_SCAN_RSP_DATA,  //扫描回复数据
     
-    BXP_BLE_ADV_INTV,
+    BXP_BLE_ADV_INTV,       //广播间隔
+    BXP_BLE_CNT_INTV,       //连接间隔
 	BXP_BLE_ADV_FILT_POLICY,
 	BXP_BLE_OP_CODE,
 	BXP_BLE_ADV_MODE,
 	BXP_BLE_NOTIFY_HANDLE,
 
-	BXP_BLE_SCAN_MODE,
-	BXP_BLE_SCAN_POLICY,
-	BXP_BLE_SCAN_DUPLIC,
+		
+	BXP_BLE_SCAN_MODE,      //扫描模式
+	BXP_BLE_SCAN_policy,	//
+	BXP_BLE_SCAN_duplic,
 	BXP_BLE_WRITE_TYPE,
 	BXP_BLE_WRITE_HANDLE,
 	BXP_BLE_READ_TYPE,
@@ -69,6 +71,7 @@ enum bx_property_ble {
 	BXP_BLE_CON_PARAM_MAXINTV,
 	BXP_BLE_CON_PARAM_LATENCY,
 	BXP_BLE_CON_PARAM_TIMEOUT,
+	
 	
 };
 
@@ -79,12 +82,14 @@ enum bx_msg_ble{
 	BXM_BLE_ADV_UPDATE,
 	BXM_BLE_ADV_STOP,
 	
+	
 	BXM_BLE_ADV_CHANGE_DATA,
     BXM_BLE_ADV_CHANGE_SCAN_RSP_DATA,
     BXM_BLE_ADV_CHANGE_INTV,
     BXM_BLE_ADV_CHANGE_OP_CODE,
     BXM_BLE_ADV_CHANGE_MODE,
     BXM_BLE_ADV_CHANGE_FILT_POLICY,
+	
 	
     BXM_BLE_SCAN_START,
 	BXM_BLE_SCAN_STOP,
@@ -102,19 +107,18 @@ enum bx_msg_ble{
 	BXM_BLE_SET_PHY,
 	BXM_BLE_UPDATE_PARAM,
 	
-    
-	BXM_BLE_READY,
+	
 	BXM_BLE_ADVERTISING,
     BXM_BLE_CONNECTED,
     BXM_BLE_DISCONNECTED,
-    
+
    
 };
 /* exported macros -----------------------------------------------------------*/
 
 /* exported functions --------------------------------------------------------*/
 
-bx_err_t us_ble_register( void );
+bx_err_t bxs_ble_register( void );
 s32      us_ble_id( void );
 
 #ifdef __cplusplus

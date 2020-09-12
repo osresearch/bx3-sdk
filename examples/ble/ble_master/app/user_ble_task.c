@@ -37,6 +37,7 @@
 #include "bx_kernel.h"
 #include "bx_shell.h"
 #include "user_service_ble.h"
+#include "bx_drv_ble.h"
 
 /* private define ------------------------------------------------------------*/
 
@@ -415,16 +416,16 @@ static int gapm_gen_rand_nb_ind_handler( ke_msg_id_t const msgid, struct gapm_ge
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static void osapp_gapc_param_update_cfm( ke_msg_id_t const msgid, void const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id )
-{
-    struct gapc_param_update_cfm * cfm = KE_MSG_ALLOC( GAPC_PARAM_UPDATE_CFM,
-                                         src_id, dest_id,
-                                         gapc_param_update_cfm );
-    cfm->accept = 0x01;
-    cfm->ce_len_max = 0xffff;
-    cfm->ce_len_min = 0xffff;
-    ke_msg_send( cfm );
-}
+//static void osapp_gapc_param_update_cfm( ke_msg_id_t const msgid, void const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id )
+//{
+//    struct gapc_param_update_cfm * cfm = KE_MSG_ALLOC( GAPC_PARAM_UPDATE_CFM,
+//                                         src_id, dest_id,
+//                                         gapc_param_update_cfm );
+//    cfm->accept = 0x01;
+//    cfm->ce_len_max = 0xffff;
+//    cfm->ce_len_min = 0xffff;
+//    ke_msg_send( cfm );
+//}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -467,6 +468,137 @@ static int gattc_cmp_evt_handler( ke_msg_id_t const msgid, struct gattc_cmp_evt 
     return ( KE_MSG_CONSUMED );
 }
 
+
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int osapp_gapm_scan_adv_report_ind_handler(ke_msg_id_t const msgid, adv_report_t const *param,ke_task_id_t const dest_id,ke_task_id_t const src_id)
+{
+
+	printf("MAC ADDR:%02x:%02x:%02x:%02x:%02x:%02x\r\n", param->adv_addr.addr[0],param->adv_addr.addr[1],param->adv_addr.addr[2],param->adv_addr.addr[3],param->adv_addr.addr[4],param->adv_addr.addr[5]);
+	if(param->adv_addr.addr[0]==0x11&&param->adv_addr.addr[1]==0x22&&param->adv_addr.addr[2]==0x33)
+	{
+		if(param->adv_addr.addr[3]==0x44&&param->adv_addr.addr[4]==0x55&&param->adv_addr.addr[5]==0x77)
+		{
+			static uint8_t mac_buf[6];
+			mac_buf[0]=param->adv_addr.addr[0];
+			mac_buf[1]=param->adv_addr.addr[1];
+			mac_buf[2]=param->adv_addr.addr[2];
+			mac_buf[3]=param->adv_addr.addr[3];
+			mac_buf[4]=param->adv_addr.addr[4];
+			mac_buf[5]=param->adv_addr.addr[5];
+
+			ble_scan_stop();
+			bx_defer( us_ble_id(), BXM_BLE_CONNECT, (u32)mac_buf, 0,500);
+			bxsh_logln("start connect\r\n");
+		}
+	
+	}
+	
+	
+	return (KE_MSG_CONSUMED);		
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int app_event_ind_handler(ke_msg_id_t const msgid, struct gattc_event_ind const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id)
+{
+	printf("central recvice:");
+    for(uint8_t i = 0; i < param->length; i++)
+    {
+        printf("%02x", param->value[i]);
+    }
+    printf("\r\n");
+	return (KE_MSG_CONSUMED);	
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int central_app_read_ind_handler(ke_msg_id_t const msgid, struct gattc_read_ind const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id)
+{
+	printf("read data:\r\n");
+	for(uint8_t i = 0; i < param->length; i++)
+    {
+        printf("%02x", param->value[i]);
+    }
+    printf("\r\n");
+
+	return (KE_MSG_CONSUMED);
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int central_app_mtu_ind_handler(ke_msg_id_t const msgid, struct gattc_mtu_changed_ind const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id)
+{
+	printf("mtu vaule=%d\r\n", param->mtu);
+	printf("mtu seq_num=%d\r\n", param->seq_num);
+
+	return (KE_MSG_CONSUMED);
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int central_app_setphy_ind_handler(ke_msg_id_t const msgid, struct gapc_le_phy_ind const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id)
+{
+	printf("tx rate=%d\r\n", param->tx_rate);
+	printf("rx rate=%d\r\n", param->rx_rate);
+	
+	return (KE_MSG_CONSUMED);
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int gapc_conparam_req_ind_handler(ke_msg_id_t const msgid, struct gapc_param_update_req_ind const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id)
+{
+	struct gapc_param_update_cfm *update_cfm = KE_MSG_ALLOC(GAPC_PARAM_UPDATE_CFM,
+												TASK_GAPC,TASK_APP,
+												gapc_param_update_cfm);
+	
+	update_cfm->accept=true;
+	update_cfm->ce_len_max=0xffff;
+	update_cfm->ce_len_min=0xffff;
+	
+	printf("request ok\r\n");
+
+	 ke_msg_send( update_cfm );
+	return (KE_MSG_CONSUMED);
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int gapc_conparam_ind_handler(ke_msg_id_t const msgid, struct gapc_param_update_req_ind const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id)
+{
+	printf("max_intv=%d\r\n",param->intv_max);
+	printf("min_intv=%d\r\n",param->intv_min);
+	printf("latency=%d\r\n",param->latency);
+	printf("time_out=%d\r\n",param->time_out);
+	
+	return (KE_MSG_CONSUMED);
+}
+
 const struct ke_msg_handler appm_default_state[] = {
     {KE_MSG_DEFAULT_HANDLER,    ( ke_msg_func_t )msg_default_handler},
     {GAPM_DEVICE_READY_IND,     ( ke_msg_func_t )gapm_device_ready_ind_handler},
@@ -478,10 +610,17 @@ const struct ke_msg_handler appm_default_state[] = {
     {GAPC_DISCONNECT_IND,       ( ke_msg_func_t )gapc_disconnect_ind_handler},
     {GAPM_PROFILE_ADDED_IND,    ( ke_msg_func_t )gapm_profile_added_ind_handler},
     {GAPM_GEN_RAND_NB_IND,      ( ke_msg_func_t )gapm_gen_rand_nb_ind_handler},
-    {GAPC_PARAM_UPDATE_REQ_IND, ( ke_msg_func_t )osapp_gapc_param_update_cfm},
+//    {GAPC_PARAM_UPDATE_REQ_IND, ( ke_msg_func_t )osapp_gapc_param_update_cfm},
     {BXOTAS_START_REQ_IND,      ( ke_msg_func_t )osapp_bxotas_start_req_ind_handler},
     {BXOTAS_FINISH_IND,         ( ke_msg_func_t )osapp_bxotas_finish_ind_handler},
     {GATTC_CMP_EVT,             ( ke_msg_func_t )gattc_cmp_evt_handler},
+	{GAPM_ADV_REPORT_IND, 		(ke_msg_func_t)osapp_gapm_scan_adv_report_ind_handler},
+	{GATTC_EVENT_IND, 			(ke_msg_func_t)app_event_ind_handler},  //主机接收notify数据
+	{GATTC_READ_IND,			(ke_msg_func_t)central_app_read_ind_handler},   //主机读数据响应
+	{GATTC_MTU_CHANGED_IND,		(ke_msg_func_t)central_app_mtu_ind_handler},
+	{GAPC_LE_PHY_IND,			(ke_msg_func_t)central_app_setphy_ind_handler},
+	{GAPC_PARAM_UPDATED_IND,	(ke_msg_func_t)gapc_conparam_ind_handler},
+	{GAPC_PARAM_UPDATE_REQ_IND,	(ke_msg_func_t)gapc_conparam_req_ind_handler},
 };
 
 const struct ke_state_handler appm_default_handler = KE_STATE_HANDLER( appm_default_state );

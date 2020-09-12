@@ -338,7 +338,7 @@
               <MiscControls>--bss_threshold=0</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\app;..\..\config;..\..\usercode;..\..\..\..\..\include;..\..\..\..\..\platform\cmsis;..\..\..\..\..\platform\bluex\apollo\common;..\..\..\..\..\platform\bluex\apollo\typedef;..\..\..\..\..\platform\bluex\apollo\apollo00;..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service;..\..\..\..\..\components\bluex\ble\common;..\..\..\..\..\components\bluex\ble\dbg;..\..\..\..\..\components\bluex\bxfs;..\..\..\..\..\components\bluex\ble\profiles;..\..\..\..\..\components\bluex\ble\controller;..\..\..\..\..\components\bluex\ble\controller\patch;..\..\..\..\..\components\bluex\ble\controller\driver;..\..\..\..\..\components\bluex\ble\controller\driver\reg;..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6;..\..\..\..\..\components\bluex\fifo;..\..\..\..\..\components\bluex\shell;..\..\..\..\..\components\3rdparty\cm_backtrace</IncludePath>
+              <IncludePath>..\..\app;..\..\config;..\..\usercode;..\..\..\..\..\include;..\..\..\..\..\platform\cmsis;..\..\..\..\..\platform\bluex\apollo\common;..\..\..\..\..\platform\bluex\apollo\typedef;..\..\..\..\..\platform\bluex\apollo\apollo00;..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service;..\..\..\..\..\components\bluex\ble\common;..\..\..\..\..\components\bluex\ble\dbg;..\..\..\..\..\components\bluex\bxfs;..\..\..\..\..\components\bluex\ble\profiles;..\..\..\..\..\components\bluex\ble\controller;..\..\..\..\..\components\bluex\ble\controller\patch;..\..\..\..\..\components\bluex\ble\controller\driver;..\..\..\..\..\components\bluex\ble\controller\driver\reg;..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6;..\..\..\..\..\components\bluex\fifo;..\..\..\..\..\components\bluex\shell;..\..\..\..\..\components\3rdparty\cm_backtrace;..\..\..\..\..\components\3rdparty\button</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -958,6 +958,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\fifo\bx_fifo.c</FilePath>
             </File>
+            <File>
+              <FileName>flexible_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\3rdparty\button\flexible_button.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -999,6 +1004,11 @@
           <GroupName>user/service</GroupName>
           <Files>
             <File>
+              <FileName>user_service_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\usercode\user_service_button.c</FilePath>
+            </File>
+            <File>
               <FileName>user_service_ble.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\usercode\user_service_ble.c</FilePath>
@@ -1019,14 +1029,14 @@
               <FilePath>..\..\app\user_ble.c</FilePath>
             </File>
             <File>
-              <FileName>user_ble_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\app\user_ble_task.c</FilePath>
-            </File>
-            <File>
               <FileName>user_ble_profile.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\app\user_ble_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_ble_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\user_ble_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2366,6 +2376,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\fifo\bx_fifo.c</FilePath>
             </File>
+            <File>
+              <FileName>flexible_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\components\3rdparty\button\flexible_button.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2545,6 +2560,11 @@
           </GroupOption>
           <Files>
             <File>
+              <FileName>user_service_button.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\usercode\user_service_button.c</FilePath>
+            </File>
+            <File>
               <FileName>user_service_ble.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\usercode\user_service_ble.c</FilePath>
@@ -2634,14 +2654,14 @@
               <FilePath>..\..\app\user_ble.c</FilePath>
             </File>
             <File>
-              <FileName>user_ble_task.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\app\user_ble_task.c</FilePath>
-            </File>
-            <File>
               <FileName>user_ble_profile.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\app\user_ble_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_ble_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app\user_ble_task.c</FilePath>
             </File>
           </Files>
         </Group>
