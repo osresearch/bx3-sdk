@@ -53,6 +53,7 @@ enum bx_message {
     BXM_WRITE_START,
     
     BXM_DATA_RECEIVED,
+	BXM_DATA_TRANSMIT,
     
     BXM_READ_DONE,
     BXM_WRITE_DONE,

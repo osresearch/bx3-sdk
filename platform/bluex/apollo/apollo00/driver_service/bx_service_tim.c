@@ -215,7 +215,7 @@ void TIMER_IRQHandler( void )
     }
 
     if( timer_isr_status1 ) {
-        BX_READ_REG( BX_TIM0->EOI);
+        BX_READ_REG( BX_TIM1->EOI);
         bx_public( tim1_svc.id, BXM_TIM1_INTR, 0, 0 );
     }
 }

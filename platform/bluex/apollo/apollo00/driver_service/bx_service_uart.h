@@ -49,6 +49,8 @@ enum bx_property_uart {
 
     BXP_UART_RXBUFF,
     BXP_UART_TXBUFF,
+	
+	BXP_DATA_TXRX_TIMEOUT,
 
 };
 
@@ -58,7 +60,18 @@ enum bx_msg_uart {
 
     BXM_UART_RECEIVED_DATA,
     BXM_DATA_RECEIVED_TIMEOUT,
+	
+	BXM_DATA_TRANSMIT_TIMEOUT,
+
+	BXM_DATA_TRANSMIT_FROM_APP,
+
+	BXM_DATA_TX_END,
+	
 };
+
+
+extern uint32_t uart_rx_time_1ms;
+extern uint32_t uart_tx_time_1ms;
 /* exported macros -----------------------------------------------------------*/
 
 /* exported functions --------------------------------------------------------*/

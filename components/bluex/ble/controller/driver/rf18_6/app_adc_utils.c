@@ -358,7 +358,7 @@ void app_adc_util_init(void)
 #ifdef ADC_RO_READ_FORCE_ON
     uint8_t manufacturer_id, device_id;
     flash_read_manufacturer_device_id( &manufacturer_id, &device_id );
-    bxsh_logln("falsh id:%x",manufacturer_id);
+    bxsh_logln("flash id:%x",manufacturer_id);
     if( MANUFACTURER_ZBIT == manufacturer_id ) { /*ZBIT Serial Flash*/
         periph_err_t err = ZBIT_flash_read_security_reg( 0, 0, sizeof(uint8_t), ( uint8_t * )&adc_cp_RO );
         if( err!= PERIPH_NO_ERROR ) {

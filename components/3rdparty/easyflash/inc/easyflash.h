@@ -53,14 +53,10 @@ EfErrCode ef_set_env_blob(const char *key, const void *value_buf, size_t buf_len
 /* ef_env.c, ef_env_legacy_wl.c and ef_env_legacy.c */
 EfErrCode ef_load_env(void);
 void ef_print_env(void);
-char *ef_get_env(const char *key);
+
 EfErrCode ef_set_env(const char *key, const char *value);
 EfErrCode ef_del_env(const char *key);
-EfErrCode ef_save_env(void);
 EfErrCode ef_env_set_default(void);
-size_t ef_get_env_write_bytes(void);
-EfErrCode ef_set_and_save_env(const char *key, const char *value);
-EfErrCode ef_del_and_save_env(const char *key);
 #endif
 
 #ifdef EF_USING_IAP

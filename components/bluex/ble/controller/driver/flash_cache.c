@@ -120,6 +120,8 @@ N_XIP_SECTION periph_err_t flash_cache_enable()
         ble_clk_gate_cpu_g1( BLE_CPU_CLKG_SET_CACHE );
         REG_FIELD_WR( CACHE_REG->REG_FLASH_CMD, CACHE_FLASH_RD_CMD, app_qspi_multi_read_cmd_get_wrapper() );
         CACHE_REG->REG_CACHE_EN = 1;
+        uint32_t time=0xFF;
+        while(time-->0);
     }
     return error;
 }

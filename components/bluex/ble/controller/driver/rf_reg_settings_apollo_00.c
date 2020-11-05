@@ -1618,7 +1618,7 @@ void rf_setPA_negative2dbm_dcdc_on_3V3(void)
 -----------------------------------------------------------------------------*/
 void rf_reg_settings_init_mp( void )
 {
-    hwp_rf_reg->rf_reg_0.freq_pulling = 1;
+    hwp_rf_reg->rf_reg_0.freq_pulling = 0;
     reg_set_xtal_current_normal();
     reg_pad_voltage_init();
     

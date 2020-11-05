@@ -117,13 +117,14 @@ static int gapm_cmp_evt_handler( ke_msg_id_t const msgid,
 
                 cmd->operation = GAPM_SET_DEV_CONFIG;
 
-                cmd->role      = GAP_ROLE_PERIPHERAL;
+                cmd->role      = GAP_ROLE_CENTRAL;
 
                 cmd->pairing_mode = GAPM_PAIRING_LEGACY;
                 cmd->sugg_max_tx_octets = BLE_MAX_OCTETS;
                 cmd->sugg_max_tx_time   = BLE_MAX_TIME;
                 memcpy( cmd->irk.key, app_env.loc_irk, KEY_LEN );
                 ke_msg_send( cmd );
+				ke_msg_send_basic( BKT_MSG_CREAT_TIMER, TASK_BX_KERNEL_TIMER, TASK_BX_KERNEL_TIMER );
             } else {
                 ASSERT_ERR( 0 );
             }
@@ -157,6 +158,7 @@ static int gapm_cmp_evt_handler( ke_msg_id_t const msgid,
                 memcpy( &cmd->irk.key[0], &app_env.loc_irk[0], KEY_LEN );
 
                 ke_msg_send( cmd );
+				
             }
         }
         break;
@@ -167,6 +169,7 @@ static int gapm_cmp_evt_handler( ke_msg_id_t const msgid,
             if ( !user_ble_add_svc() ) {
                 ke_state_set( TASK_APP, APPM_READY );
                 bx_public( us_ble_id(), BXM_BLE_READY, 0, 0 );
+				
             }
         }
         break;
@@ -479,7 +482,7 @@ static int gattc_cmp_evt_handler( ke_msg_id_t const msgid, struct gattc_cmp_evt 
 static int osapp_gapm_scan_adv_report_ind_handler(ke_msg_id_t const msgid, adv_report_t const *param,ke_task_id_t const dest_id,ke_task_id_t const src_id)
 {
 
-	printf("MAC ADDR:%02x:%02x:%02x:%02x:%02x:%02x\r\n", param->adv_addr.addr[0],param->adv_addr.addr[1],param->adv_addr.addr[2],param->adv_addr.addr[3],param->adv_addr.addr[4],param->adv_addr.addr[5]);
+    printf("MAC ADDR:%02x:%02x:%02x:%02x:%02x:%02x\r\n", param->adv_addr.addr[0],param->adv_addr.addr[1],param->adv_addr.addr[2],param->adv_addr.addr[3],param->adv_addr.addr[4],param->adv_addr.addr[5]);
 	if(param->adv_addr.addr[0]==0x11&&param->adv_addr.addr[1]==0x22&&param->adv_addr.addr[2]==0x33)
 	{
 		if(param->adv_addr.addr[3]==0x44&&param->adv_addr.addr[4]==0x55&&param->adv_addr.addr[5]==0x77)

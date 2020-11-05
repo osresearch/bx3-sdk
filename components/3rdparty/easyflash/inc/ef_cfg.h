@@ -34,7 +34,7 @@
 
 #ifdef EF_USING_ENV
 /* Auto update ENV to latest default when current ENV version number is changed. */
-/* #define EF_ENV_AUTO_UPDATE */
+//#define EF_ENV_AUTO_UPDATE 
 /**
  * ENV version number defined by user.
  * Please change it when your firmware add a new ENV to default_env_set.
@@ -51,6 +51,8 @@
 
 /* using save log function */
 //#define EF_USING_LOG 
+
+#define EF_ENV_NAME_MAX                          32
 
 /* The minimum size of flash erasure. May be a flash sector size. */
 #define EF_ERASE_MIN_SIZE         4096/* @note you must define it for a value */
@@ -87,7 +89,7 @@
 #define ENV_AREA_SIZE            EF_ERASE_MIN_SIZE*6 /* @note you must define it for a value if you used ENV */
 
 /* saved log area size */
-#define LOG_AREA_SIZE             EF_ERASE_MIN_SIZE*2/* @note you must define it for a value if you used log */
+//#define LOG_AREA_SIZE             EF_ERASE_MIN_SIZE*2/* @note you must define it for a value if you used log */
 
 /* print debug information of flash */
 #define PRINT_DEBUG

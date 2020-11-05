@@ -20,6 +20,9 @@
 
 #include "bx_shell.h"
 #include "plf.h"
+
+#include "bx_kernel.h"
+#include "bx_service_uart.h"
 /* includes ------------------------------------------------------------------*/
 
 /* private define ------------------------------------------------------------*/
@@ -195,6 +198,7 @@ bx_err_t bx_drv_uart_write( void * hdl, u8 * buff, u32 len )
         buff++;
         len--;
     }
+	bx_public(bxs_uart1_id(),BXM_DATA_TX_END,0,0);
     return BX_OK;
 }
 

@@ -311,8 +311,8 @@ N_XIP_SECTION void BLE_LP_IRQHandler( void )
     modem_init();
     ble_lp_irq_disable();
     mac_status = wakeup_requested;
+    NVIC_ClearPendingIRQ( BLE_MAC_IRQn );
     NVIC_EnableIRQ( BLE_MAC_IRQn );
-    BX_ASSERT( NVIC_GetPendingIRQ( BLE_MAC_IRQn ) == 0 );
 }
 /*========================= end of interrupt function ========================*/
 

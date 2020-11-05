@@ -75,6 +75,7 @@ static const uint32_t crc32_table[] =
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d
 };
 
+
 /**
  * Calculate the CRC32 value of a memory buffer.
  *

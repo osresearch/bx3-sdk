@@ -33,6 +33,9 @@
 extern "C" {
 #endif
 
+#include "stdint.h"
+#include "ef_cfg.h"
+#include "stdbool.h"
 
 
 /* EasyFlash software version number */
@@ -48,9 +51,9 @@ extern "C" {
 #endif
 
 /* the ENV max name length must less then it */
-#ifndef EF_ENV_NAME_MAX
-#define EF_ENV_NAME_MAX                          32
-#endif
+//#ifndef EF_ENV_NAME_MAX
+//#define EF_ENV_NAME_MAX                          32
+//#endif
 
 /* EasyFlash debug print function. Must be implement by user. */
 #ifdef PRINT_DEBUG
@@ -59,7 +62,8 @@ extern "C" {
 #define EF_DEBUG(...)
 #endif
 /* EasyFlash routine print function. Must be implement by user. */
-#define EF_INFO(...)  ef_log_info(__VA_ARGS__)
+//#define EF_INFO(...)  ef_log_info(__VA_ARGS__)
+#define EF_INFO(...)  bxsh_log(__VA_ARGS__)
 /* EasyFlash assert for developer. */
 #define EF_ASSERT(EXPR)                                                       \
 if (!(EXPR))                                                                  \

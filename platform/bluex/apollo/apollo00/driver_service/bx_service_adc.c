@@ -77,28 +77,34 @@ static bx_err_t adc_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
         }
 
 
-        case BXM_ADC_VOLT:
-            bx_err = bx_drv_adc_get_volt( p_svc->handle, param0, ( u32 * )param1 );
-            bx_public( id, BXM_ADV_VOLT_DATA_UPDATE, param0, *( u32 * )param1 );
+        case BXM_ADC_VOLT:{
+            u32 value;
+            bx_err = bx_drv_adc_get_volt( p_svc->handle, param0, &value );
+            bx_public( id, BXM_ADV_VOLT_DATA_UPDATE, param0, value );
             break;
+        }
 
 
-        case BXM_ADC_BATTERY:
-            bx_err = bx_drv_adc_get_battery( p_svc->handle, ( u32 * )param0 );
-            bx_public( id, BXM_ADV_BAT_DATA_UPDATE, *( u32 * )param0, param1 );
+        case BXM_ADC_BATTERY:{
+            u32 value;
+            bx_err = bx_drv_adc_get_battery( p_svc->handle, &value );
+            bx_public( id, BXM_ADV_BAT_DATA_UPDATE, value, param1 );
             break;
-
-        case BXM_ADC_TEMPERATURE:
-            bx_err = bx_drv_adc_get_chip_temperature( p_svc->handle, ( u32 * )param0 );
-            bx_public( id, BXM_ADV_TEMP_DATA_UPDATE, *( u32 * )param0, param1 );
-
+        }
+        
+        case BXM_ADC_TEMPERATURE:{
+            u32 value;
+            bx_err = bx_drv_adc_get_chip_temperature( p_svc->handle, &value );
+            bx_public( id, BXM_ADV_TEMP_DATA_UPDATE, value, param1 );
             break;
+        }
 
         default:
             return BX_ERR_NOTSUP;
     }
     return bx_err;
 }
+
 
 /** ---------------------------------------------------------------------------
  * @brief   :

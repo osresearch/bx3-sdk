@@ -36,13 +36,14 @@
 
 /* default environment variables set for user */
 static const ef_env default_env_set[] = {
-		{"reboot_time","0"},
-		{"device_name","0"},
-		{"logmsg_save","0"},
-		
+    {"reboot_time", "0"},
+    {"device_name", "0"},
+    {"logmsg_save", "0"},
+
 
 };
 
+static char log_buf[128];
 /**
  * Flash port for hardware initialize.
  *
@@ -51,13 +52,14 @@ static const ef_env default_env_set[] = {
  *
  * @return result
  */
-EfErrCode ef_port_init(ef_env const **default_env, size_t *default_env_size) {
+EfErrCode ef_port_init( ef_env const ** default_env, size_t * default_env_size )
+{
 
     EfErrCode result = EF_NO_ERR;
 
     *default_env = default_env_set;
-    *default_env_size = sizeof(default_env_set) / sizeof(default_env_set[0]);
-	
+    *default_env_size = sizeof( default_env_set ) / sizeof( default_env_set[0] );
+
     return result;
 }
 
@@ -71,18 +73,20 @@ EfErrCode ef_port_init(ef_env const **default_env, size_t *default_env_size) {
  *
  * @return result
  */
-EfErrCode ef_port_read(uint32_t addr, uint32_t *buf, size_t size) {
+EfErrCode ef_port_read( uint32_t addr, uint32_t * buf, size_t size )
+{
     EfErrCode result = EF_NO_ERR;
-
     uint8_t err_code;
+
     /* You can add your code under here. */
-	flash_multi_read( addr, size, (uint8_t *)buf );
+       
+    err_code = flash_multi_read( addr, size, ( uint8_t * )buf );
     if( err_code == 0 ) {
         result = EF_NO_ERR;
     } else {
         result = EF_READ_ERR;
     }
-	
+
     return result;
 }
 
@@ -97,19 +101,33 @@ EfErrCode ef_port_read(uint32_t addr, uint32_t *buf, size_t size) {
  *
  * @return result
  */
-EfErrCode ef_port_erase(uint32_t addr, size_t size) {
+EfErrCode ef_port_erase( uint32_t addr, size_t size )
+{
     EfErrCode result = EF_NO_ERR;
 
     uint8_t err_code;
+    size_t erase_Sector, i;
+
 
     /* make sure the start address is a multiple of EF_ERASE_MIN_SIZE */
     EF_ASSERT( addr % EF_ERASE_MIN_SIZE == 0 );
 
     /* You can add your code under here. */
-    err_code = flash_erase( addr, size );
-    if( err_code != 0 ) {
-        result = EF_ERASE_ERR;
+    erase_Sector = size / EF_ERASE_MIN_SIZE;
+    if ( size % EF_ERASE_MIN_SIZE != 0 ) {
+        erase_Sector++;
     }
+
+    for ( i = 0; i < erase_Sector; i++ ) {
+
+        err_code = flash_erase( ( addr + ( erase_Sector * i ) ), Sector_Erase );
+        if( err_code != 0 ) {
+            result = EF_ERASE_ERR;
+            break;
+        }
+    }
+
+
 
     return result;
 }
@@ -124,38 +142,41 @@ EfErrCode ef_port_erase(uint32_t addr, size_t size) {
  *
  * @return result
  */
-EfErrCode ef_port_write(uint32_t addr, const uint32_t *buf, size_t size) {
+EfErrCode ef_port_write( uint32_t addr, const uint32_t * buf, size_t size )
+{
     EfErrCode result = EF_NO_ERR;
-    
+
     uint8_t err_code;
-    /* You can add your code under here. */
-	err_code = flash_program( addr, size, (uint8_t *)buf );
+    uint8_t *buf_8 = (uint8_t *)buf;
+    
+    err_code = flash_program( addr, size, ( uint8_t * )buf_8 );
     if( err_code != 0 ) {
         result = EF_WRITE_ERR;
     }
-	 
+
+
     return result;
 }
 
 /**
  * lock the ENV ram cache
  */
-void ef_port_env_lock(void) {
-    
-	
-//	GLOBAL_DISABLE_IRQ();
+void ef_port_env_lock( void )
+{
+
+    GLOBAL_DISABLE_IRQ();
     /* You can add your code under here. */
-    
 }
 
 /**
  * unlock the ENV ram cache
  */
-void ef_port_env_unlock(void) {
-    
-//	GLOBAL_ENABLE_IRQ();
+void ef_port_env_unlock( void )
+{
+
+    GLOBAL_ENABLE_IRQ();
     /* You can add your code under here. */
-    
+
 }
 
 
@@ -168,20 +189,24 @@ void ef_port_env_unlock(void) {
  * @param ... args
  *
  */
-void ef_log_debug(const char *file, const long line, const char *format, ...) {
+void ef_log_debug( const char * file, const long line, const char * format, ... )
+{
 
 #ifdef PRINT_DEBUG
 
     va_list args;
 
     /* args point to the first variable parameter */
-    va_start(args, format);
+    va_start( args, format );
 
     /* You can add your code under here. */
-    
-	bxsh_log(format,args);
-	
-    va_end(args);
+    ef_print("[Flash](%s:%ld) ", file, line);
+    /* must use vprintf to print */
+    vsprintf(log_buf, format, args);
+    ef_print("%s", log_buf);
+    printf("\r");
+   
+    va_end( args );
 
 #endif
 
@@ -193,16 +218,19 @@ void ef_log_debug(const char *file, const long line, const char *format, ...) {
  * @param format output format
  * @param ... args
  */
-void ef_log_info(const char *format, ...) {
+void ef_log_info( const char * format, ... )
+{
     va_list args;
 
     /* args point to the first variable parameter */
-    va_start(args, format);
+    va_start( args, format );
 
-    /* You can add your code under here. */
-    bxsh_log(format,args);
-	
-    va_end(args);
+    ef_print("[Flash]");
+    /* must use vprintf to print */
+    vsprintf(log_buf, format, args);
+    ef_print("%s", log_buf);
+    
+    va_end( args );
 }
 /**
  * This function is print flash non-package info.
@@ -210,13 +238,14 @@ void ef_log_info(const char *format, ...) {
  * @param format output format
  * @param ... args
  */
-void ef_print(const char *format, ...) {
+void ef_print( const char * format, ... )
+{
     va_list args;
 
     /* args point to the first variable parameter */
-    va_start(args, format);
+    va_start( args, format );
     /* You can add your code under here. */
-	bxsh_log(format,args);
-    
-    va_end(args);
+    vsprintf(log_buf, format, args);
+    bxsh_log("%s", log_buf);
+    va_end( args );
 }

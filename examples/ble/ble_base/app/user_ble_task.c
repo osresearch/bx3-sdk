@@ -123,6 +123,7 @@ static int gapm_cmp_evt_handler( ke_msg_id_t const msgid,
                 cmd->sugg_max_tx_time   = BLE_MAX_TIME;
                 memcpy( cmd->irk.key, app_env.loc_irk, KEY_LEN );
                 ke_msg_send( cmd );
+                ke_msg_send_basic( BKT_MSG_CREAT_TIMER, TASK_BX_KERNEL_TIMER, TASK_BX_KERNEL_TIMER );
             } else {
                 ASSERT_ERR( 0 );
             }

@@ -470,7 +470,7 @@ bx_err_t bx_set( s32 dst, u32 prop, u32 param0, u32 param1 )
 //    if( __get_IPSR() != 0 ) {
 //        return BX_ERR_PERM;
 //    }
-    if( dst > service_hdl.count || service_hdl.hub[dst].prop_set_func == NULL ) {
+    if( (u32)dst > service_hdl.count || service_hdl.hub[dst].prop_set_func == NULL ) {
         return BX_ERR_NOTSUP;
     }
 
@@ -488,7 +488,7 @@ bx_err_t bx_get( s32 dst, u32 prop, u8 * buff, u32 len )
 //    if( __get_IPSR() != 0 ) {
 //        return BX_ERR_PERM;
 //    }
-    if( dst > service_hdl.count || service_hdl.hub[dst].prop_get_func == NULL ) {
+    if( (u32)dst > service_hdl.count || service_hdl.hub[dst].prop_get_func == NULL ) {
         return false;
     }
 
@@ -506,7 +506,7 @@ bx_err_t bx_call( s32 dst,u32 msg,u32 param0,u32 param1)
 //    if( __get_IPSR() != 0 ) {
 //        return BX_ERR_PERM;
 //    }
-    if( dst > service_hdl.count || service_hdl.hub[dst].prop_get_func == NULL ) {
+    if( (u32)dst > service_hdl.count || service_hdl.hub[dst].msg_handle_func == NULL ) {
         return BX_ERR_EMPTY;
     }
     return service_hdl.hub[dst].msg_handle_func(dst, msg, param0, param1 );

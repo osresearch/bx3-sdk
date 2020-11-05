@@ -51,6 +51,7 @@ enum bx_property {
     BXP_VALUE,
     
     BXP_RECEIVED_DATA,
+	BXP_TRANSMIT_DATA,
     
     BXP_VERSION,
     BXP_FIRST_USER_PROP,

@@ -23,11 +23,11 @@
 #include "user_ble.h"
 #include "bx_shell.h"
 /* private define ------------------------------------------------------------*/
-#define APP_ADV_INT_MIN                                 64 //40ms (64*0.625ms)  unit:0.625ms
-#define APP_ADV_INT_MAX                                 64 //40ms (64*0.625ms)  unit:0.625ms
+#define APP_ADV_INT_MIN                                 160 //40ms (64*0.625ms)  unit:0.625ms
+#define APP_ADV_INT_MAX                                 160 //40ms (64*0.625ms)  unit:0.625ms
 
 #define DEFAULT_OP_CODE                                 GAPM_ADV_UNDIRECT
-#define DEFAULT_ADV_MODE                                GAP_GEN_DISCOVERY
+#define DEFAULT_ADV_MODE                                GAP_GEN_DISCOVERABLE
 
 #define DEFAULT_SCAN_OPERATION                          GAPM_SCAN_ACTIVE
 #define DEFAULT_ADV_FILT_POLICY                         ADV_ALLOW_SCAN_ANY_CON_ANY
@@ -76,15 +76,11 @@ static uint8_t advData[] = {
 
     // service UUID, to notify central devices what services are included
     // in this peripheral
-    0x03,   // length of this data
-    GAP_AD_TYPE_COMPLETE_LIST_16_BIT_UUID,// some of the UUID's, but not all
-    0x12,
-    0x18,
-
+ 
     //shortened name
     0x0B,// length of this data
     GAP_AD_TYPE_SHORTENED_NAME,//type of this data
-    0x42, //'B'
+    0x43, //'B'
     0x4C, //'L'
     0x55, //'U'
     0x45, //'E'
@@ -213,6 +209,9 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             memcpy( ble_adv.scan_rsp_data, ble_adv_update->scan_rsp_data, ble_adv.scan_rsp_data_len );
             ble_advertising_advdata_update( &ble_adv );
         }
+        break;
+        case BXM_BLE_GET_RSSI: 
+            ble_get_dev_rssi(); 
         break;
 
 

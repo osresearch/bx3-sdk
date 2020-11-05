@@ -52,6 +52,8 @@ bx_err_t ble_advertising_start( struct ble_adv_data * p_new_advdata_buf );
 bx_err_t ble_advertising_advdata_update( struct ble_adv_data * p_new_advdata_buf );
 bx_err_t ble_whitelist_set( struct whitelist_data *white_list, u8 addr_cnt );
 bx_err_t ble_send_data_notify(u8 *data,u8 length,u16 handle);
+bx_err_t ble_send_data_indicate(u8 *data,u8 length,u16 handle);
+
 
 bx_err_t ble_scan_start( u8 filter_duplic, u8 filt_policy, u8 scan_mode );
 bx_err_t update_conn_params( struct ble_gapc_conn_param * conn_param );

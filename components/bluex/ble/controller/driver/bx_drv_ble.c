@@ -426,6 +426,31 @@ bx_err_t ble_send_data_notify(u8 *data,u8 length,u16 handle)
     return BX_OK;
 }
 
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t ble_send_data_indicate(u8 *data,u8 length,u16 handle)
+{
+    struct gattc_send_evt_cmd * indicate_cmd = KE_MSG_ALLOC_DYN( GATTC_SEND_EVT_CMD,
+											TASK_GATTC, TASK_APP,
+											gattc_send_evt_cmd,length);
+	CHECK_POINTER(indicate_cmd);
+    static u16 notify_seq_num = 0;
+    indicate_cmd->operation = GATTC_INDICATE;
+    indicate_cmd->seq_num = notify_seq_num++;
+    indicate_cmd->length = length;
+    indicate_cmd->handle = handle;
+
+    memcpy( indicate_cmd->value,data, length );
+		
+    ke_msg_send( indicate_cmd );
+    return BX_OK;
+}
+
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -446,7 +471,7 @@ bx_err_t ble_get_dev_rssi(void)
 }
 
 /** ---------------------------------------------------------------------------
- * @brief   :
+ * @brief   :Used for wtite data from the master to the slave
  * @note    :
  * @param   :
  * @retval  :
@@ -470,7 +495,7 @@ bx_err_t ble_gatt_write(u8 operation,u8 length,u8 handle,u8 *pdata)
 }
 
 /** ---------------------------------------------------------------------------
- * @brief   :
+ * @brief   :Used to read data from the master to the slave
  * @note    :
  * @param   :
  * @retval  :

@@ -18,6 +18,7 @@
 
 #include "bx_kernel.h"
 #include "bx_service_uart.h"
+#include "bx_service_tim.h"
 #include "bx_drv_uart.h"
 #include "bx_pm.h"
 
@@ -36,8 +37,11 @@ struct bx_uart_service {
 /* private variables ---------------------------------------------------------*/
 static struct bx_uart_service uart0_svc = { 0 };
 static struct bx_uart_service uart1_svc = { 0 };
+static uint32_t uart_svc_time_out = 1000;
 
 /* exported variables --------------------------------------------------------*/
+uint32_t uart_rx_time_1ms = 0;
+uint32_t uart_tx_time_1ms = 0;
 
 /* private define ------------------------------------------------------------*/
 #define GET_UART_SERVICE_BY_ID( p_svc, svc_id )                 \
@@ -108,8 +112,24 @@ static bx_err_t uart_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 
         case BXM_DATA_RECEIVED:
             if(  p_svc->rx_fifo.data_len > 0 ) {
-                bx_public( id, BXM_DATA_RECEIVED, p_svc->rx_fifo.data_len, 0 );
+
+                bx_public( id, BXM_DATA_RECEIVED_TIMEOUT, p_svc->rx_fifo.data_len, 0 );
+                uart_rx_time_1ms = 0;
             }
+            break;
+
+        case BXM_DATA_TRANSMIT:
+            if( p_svc->tx_fifo.data_len ) {
+                bx_public( id, BXM_DATA_TRANSMIT_TIMEOUT, p_svc->tx_fifo.data_len, 0 );
+            }
+            break;
+
+        case BXM_DATA_TRANSMIT_FROM_APP:
+            bx_fifo_push( &( p_svc->tx_fifo ), ( uint8_t * )param0, param1 );
+            if( uart_tx_time_1ms == 0 ) {
+                bx_set( bxs_uart1_id(), BXP_DATA_TXRX_TIMEOUT, uart_svc_time_out, 0 );
+            }
+            uart_tx_time_1ms = 1;
             break;
 
         default:
@@ -168,6 +188,13 @@ static bx_err_t uart_property_set( s32 id, u32 property, u32 param0, u32 param1 
             bx_fifo_init( &( p_svc->tx_fifo ), ( u8 * )param0, param1 );
             break;
 
+        case BXP_DATA_TXRX_TIMEOUT:
+            uart_svc_time_out = param0;
+            bx_post( bxs_tim0_id(), BXM_OPEN, 0, 0 );
+            bx_post( bxs_tim0_id(), BXM_START, uart_svc_time_out, 0 );
+            break;
+
+
         default:
             return BX_ERR_NOTSUP;
     }
@@ -188,6 +215,13 @@ static bx_err_t uart_property_get( s32 id, u32 property, u32 param0, u32 param1 
     switch( property ) {
         case BXP_RECEIVED_DATA:
             if( !bx_fifo_pop( &( p_svc->rx_fifo ), ( u8 * )param0, param1 ) ) {
+                return BX_ERR_NOMEM;
+            }
+            bx_public( id, property, ( u32 )&param0, param1 );
+            break;
+
+        case BXP_TRANSMIT_DATA:
+            if( !bx_fifo_pop( &( p_svc->tx_fifo ), ( u8 * )param0, param1 ) ) {
                 return BX_ERR_NOMEM;
             }
             bx_public( id, property, ( u32 )&param0, param1 );
@@ -274,6 +308,12 @@ s32 bxs_uart1_id( void )
 void UART1_IRQHandler( void )
 {
     u8 irq_status = BX_READ_REG( BX_UART1->IF ) & 0x0F;
+    if( uart_rx_time_1ms == 0 ) {
+        bx_set( bxs_uart1_id(), BXP_DATA_TXRX_TIMEOUT, uart_svc_time_out, 0 );
+
+    }
+    uart_rx_time_1ms = 1;
+
 
     switch( irq_status ) {
         case BX_UART_IRQ_RLS:

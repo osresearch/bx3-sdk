@@ -161,10 +161,10 @@ bx_err_t bx_drv_spim_close( void * hdl )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bx_drv_spim_read( void * hdl, u8 * buff, u32 len )
+bx_err_t bx_drv_spim_read( void * hdl, u8 * rx_data, u32 rx_len )
 {
     CHECK_HANDLE( hdl );
-    CHECK_POINTER( buff );
+    CHECK_POINTER( rx_data );
     reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
 
     //清空当前存在的数据
@@ -173,18 +173,18 @@ bx_err_t bx_drv_spim_read( void * hdl, u8 * buff, u32 len )
     }
 
     while( 1 ) {
-        uint32_t rx_len = len > SPIM_RX_FIFO_MAX_LEN ? SPIM_RX_FIFO_MAX_LEN : len;
-        for( uint32_t i = 0; i < rx_len; i++ ) {
+        uint32_t rd_len = rx_len > SPIM_RX_FIFO_MAX_LEN ? SPIM_RX_FIFO_MAX_LEN : rx_len;
+        for( uint32_t i = 0; i < rd_len; i++ ) {
             BX_SPIMx->DATA = 0xAA;
         }
-        while( rx_len > 0 && BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
-        while( rx_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) == 0 );
-        while( rx_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
-            *buff = BX_READ_REG( BX_SPIMx->DATA );
-            buff++;
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) == 0 );
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
+            *rx_data = BX_READ_REG( BX_SPIMx->DATA );
+            rx_data++;
         }
-        len -= rx_len;
-        if( len == 0 ) {
+        rx_len -= rd_len;
+        if( rx_len == 0 ) {
             break;
         }
     }
@@ -197,25 +197,25 @@ bx_err_t bx_drv_spim_read( void * hdl, u8 * buff, u32 len )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bx_drv_spim_write( void * hdl, u8 * buff, u32 len )
+bx_err_t bx_drv_spim_write( void * hdl, u8 * tx_data, u32 tx_len )
 {
     CHECK_HANDLE( hdl );
-    CHECK_POINTER( buff );
+    CHECK_POINTER( tx_data );
     reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
 
     BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_TXRX );
 
-    uint32_t tx_len;
+    uint32_t wr_len;
     while( 1 ) {
-        tx_len = len > SPIM_TX_FIFO_MAX_LEN ? SPIM_TX_FIFO_MAX_LEN : len;
-        for( uint32_t i = 0; i < tx_len; i++ ) {
-            BX_SPIMx->DATA = *buff;
-            buff++;
+        wr_len = tx_len > SPIM_TX_FIFO_MAX_LEN ? SPIM_TX_FIFO_MAX_LEN : tx_len;
+        for( uint32_t i = 0; i < wr_len; i++ ) {
+            BX_SPIMx->DATA = *tx_data;
+            tx_data++;
         }
-        while( tx_len > 0 &&  BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+        while( wr_len > 0 &&  BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
 
-        len -= tx_len;
-        if( len == 0 ) {
+        tx_len -= wr_len;
+        if( tx_len == 0 ) {
             break;
         }
     }
@@ -234,7 +234,7 @@ bx_err_t bx_drv_spim_set_cs1_pin( void * hdl, u8 pin_num )
     reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
 
     if( BX_SPIMx == BX_SPIM0 ) {
-        if( pin_num == 3 ) {
+        if( pin_num == 2 ) {
             bx_drv_iomux_af_enable( SPIM0_CS1_EN );
         } else {
             return BX_ERR_INVAL;
@@ -319,52 +319,64 @@ bx_err_t bx_drv_spim_transmit_recieve( void * hdl, u8 * tx_data, u32 tx_len, u8 
     CHECK_POINTER( tx_data );
     CHECK_POINTER( rx_data );
     reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
-
-    uint32_t rx_data_len_in_tx = tx_len;
-    uint32_t rx_data_len_in_rx = 0;
-
-    uint32_t remain = BX_READ_REG( BX_SPIMx->RXFL );
-    while( remain > 0 ) {
-        remain--;
-        BX_READ_REG( BX_SPIMx->DATA );
-    }
-    remain = BX_READ_REG( BX_SPIMx->RXFL );
-
-    BX_MODIFY_REG( BX_SPIS->CTRL, SPIS_CTRL_TM, ( uint32_t ) SPIS_CTRL_TM_T_TXRX );
-
-    uint32_t len = 0;
+    
+    BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_TXRX );
+    
+    uint32_t tx_len_bk = tx_len;
+    
+    uint32_t wr_len = 0;
     while( 1 ) {
-        len = tx_len > SPIM_TX_FIFO_MAX_LEN ? SPIM_TX_FIFO_MAX_LEN : tx_len;
-        for( uint32_t i = 0; i < len; i++ ) {
+        wr_len = tx_len > SPIM_TX_FIFO_MAX_LEN ? SPIM_TX_FIFO_MAX_LEN : tx_len;
+        for( uint32_t i = 0; i < wr_len; i++ ) {
             BX_SPIMx->DATA = *tx_data;
             tx_data++;
         }
-        while( len > 0 && BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
-        tx_len -= len;
+        while( wr_len > 0 &&  BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+
+        tx_len -= wr_len;
         if( tx_len == 0 ) {
             break;
         }
     }
 
+    //清空由于TX而产生的数据
+    tx_len = tx_len_bk;
+    while( BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
+        BX_READ_REG( BX_SPIMx->DATA );
+    }
     while( 1 ) {
-        len = rx_len > SPIM_RX_FIFO_MAX_LEN ? SPIM_RX_FIFO_MAX_LEN : rx_len;
-        for( uint32_t i = 0; i < len; i++ ) {
+        uint32_t rd_len = tx_len > SPIM_RX_FIFO_MAX_LEN ? SPIM_RX_FIFO_MAX_LEN : tx_len;
+        for( uint32_t i = 0; i < rd_len; i++ ) {
             BX_SPIMx->DATA = 0xAA;
         }
-        while( len > 0 && BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
-        //while( BX_READ_REG( BX_SPIM->RXFL ) <= len + rx_data_len_in_tx );
-        while( len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) == 0 );
-        while( len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
-            rx_data_len_in_rx++;
-            if( rx_data_len_in_tx > 0 ) {
-                BX_READ_REG( BX_SPIMx->DATA );
-                rx_data_len_in_tx--;
-            } else {
-                *rx_data = BX_READ_REG( BX_SPIMx->DATA );
-                rx_data++;
-            }
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) == 0 );
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
+            u8 a = BX_READ_REG( BX_SPIMx->DATA );
         }
-        rx_len -= len;
+        tx_len -= rd_len;
+        if( tx_len == 0 ) {
+            break;
+        }
+    }
+    
+    //清空当前存在的数据
+    while( BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
+        BX_READ_REG( BX_SPIMx->DATA );
+    }
+    //接收数据
+    while( 1 ) {
+        uint32_t rd_len = rx_len > SPIM_RX_FIFO_MAX_LEN ? SPIM_RX_FIFO_MAX_LEN : rx_len;
+        for( uint32_t i = 0; i < rd_len; i++ ) {
+            BX_SPIMx->DATA = 0xAA;
+        }
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) == 0 );
+        while( rd_len > 0 && BX_READ_REG( BX_SPIMx->RXFL ) > 0 ) {
+            *rx_data = BX_READ_REG( BX_SPIMx->DATA );
+            rx_data++;
+        }
+        rx_len -= rd_len;
         if( rx_len == 0 ) {
             break;
         }

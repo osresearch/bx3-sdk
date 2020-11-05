@@ -212,6 +212,8 @@ enum {
     ATT_SVC_MESH_PROXY                               = ATT_UUID_16(0x1828),
     /// Apollo BLE OTA Service
     ATT_SVC_BXOTA = ATT_UUID_16(0x2600),
+    
+     
 
     /*------------------- UNITS ---------------------*/
     /// No defined unit

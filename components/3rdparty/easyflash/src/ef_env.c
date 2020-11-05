@@ -177,6 +177,7 @@ struct sector_meta_data {
 typedef struct sector_meta_data *sector_meta_data_t;
 
 struct env_hdr_data {
+
     uint8_t status_table[ENV_STATUS_TABLE_SIZE]; /**< ENV node status, @see node_status_t */
     uint32_t magic;                              /**< magic word(`K`, `V`, `4`, `0`) */
     uint32_t len;                                /**< ENV node total length (header + name + value), must align by EF_WRITE_GRAN */
@@ -751,7 +752,6 @@ static bool find_env(const char *key, env_node_obj_t env)
 	
 #ifdef EF_ENV_USING_CACHE
     if (find_ok) {
-//		EF_INFO("7\r\n");
         update_env_cache(key, key_len, env->addr.start);
     }
 #endif /* EF_ENV_USING_CACHE */
@@ -842,7 +842,13 @@ bool ef_get_env_obj(const char *key, env_node_obj_t env)
 size_t ef_get_env_blob(const char *key, void *value_buf, size_t buf_len, size_t *saved_value_len)
 {
     size_t read_len = 0;
-
+    if( strlen(key) > EF_ENV_NAME_MAX )
+        return EF_ENV_NAME_ERR;
+    
+    char key_buf[EF_ENV_NAME_MAX+1]={0};
+    
+    memcpy(key_buf,key,strlen(key));
+    
     if (!init_ok) {
         EF_INFO("ENV isn't initialize OK.\n");
         return 0;
@@ -851,7 +857,7 @@ size_t ef_get_env_blob(const char *key, void *value_buf, size_t buf_len, size_t 
     /* lock the ENV cache */
     ef_port_env_lock();
 
-    read_len = get_env(key, value_buf, buf_len, saved_value_len);
+    read_len = get_env(key_buf, value_buf, buf_len, saved_value_len);
 	
     /* unlock the ENV cache */
     ef_port_env_unlock();
@@ -859,34 +865,6 @@ size_t ef_get_env_blob(const char *key, void *value_buf, size_t buf_len, size_t 
     return read_len;
 }
 
-/**
- * Get an ENV value by key name.
- *
- * @note this function is NOT supported reentrant
- * @note this function is DEPRECATED
- *
- * @param key ENV name
- *
- * @return value
- */
-char *ef_get_env(const char *key)
-{
-    static char value[EF_STR_ENV_VALUE_MAX_SIZE + 1];
-    size_t get_size;
-
-    if ((get_size = ef_get_env_blob(key, value, EF_STR_ENV_VALUE_MAX_SIZE, NULL)) > 0) {
-        /* the return value must be string */
-        if (ef_is_str((uint8_t *)value, get_size)) {
-            value[get_size] = '\0';
-            return value;
-        } else {
-            EF_INFO("Warning: The ENV value isn't string. Could not be returned\n");
-            return NULL;
-        }
-    }
-
-    return NULL;
-}
 
 /**
  * read the ENV value by ENV object
@@ -1091,7 +1069,6 @@ static EfErrCode del_env(const char *key, env_node_obj_t old_env, bool complete_
             old_env = &env;
         } else {
             EF_DEBUG("Not found '%s' in ENV.\n", key);
-			printf("Not found '%s' in ENV.\n", key);
             return EF_ENV_NAME_ERR;
         }
     }
@@ -1187,7 +1164,6 @@ static EfErrCode move_env(env_node_obj_t env)
     }
 
     EF_DEBUG("Moved the ENV (%.*s) from 0x%08X to 0x%08X.\n", env->name_len, env->name, env->addr.start, env_addr);
-	printf("Moved the ENV (%.*s) from 0x%08X to 0x%08X.\n", env->name_len, env->name, env->addr.start, env_addr);
 __exit:
     del_env(NULL, env, true);
 
@@ -1203,7 +1179,6 @@ __retry:
 
     if ((empty_env = alloc_env(sector, env_size)) == FAILED_ADDR && gc_request && !already_gc) {
         EF_DEBUG("Warning: Alloc an ENV (size %d) failed when new ENV. Now will GC then retry.\n", env_size);
-		printf("Warning: Alloc an ENV (size %d) failed when new ENV. Now will GC then retry.\n", env_size);
         gc_collect();
         already_gc = true;
         goto __retry;
@@ -1247,13 +1222,11 @@ static bool do_gc(sector_meta_data_t sector, void *arg1, void *arg2)
                 /* move the ENV to new space */
                 if (move_env(&env) != EF_NO_ERR) {
                     EF_DEBUG("Error: Moved the ENV (%.*s) for GC failed.\n", env.name_len, env.name);
-					printf("Error: Moved the ENV (%.*s) for GC failed.\n", env.name_len, env.name);
                 }
             }
         }
         format_sector(sector->addr, SECTOR_NOT_COMBINED);
         EF_DEBUG("Collect a sector @0x%08X\n", sector->addr);
-		printf("Collect a sector @0x%08X\n", sector->addr);
     }
 
     return false;
@@ -1274,7 +1247,6 @@ static void gc_collect(void)
 
     /* do GC collect */
     EF_DEBUG("The remain empty sector is %d, GC threshold is %d.\n", empty_sec, EF_GC_EMPTY_SEC_THRESHOLD);
-	printf("The remain empty sector is %d, GC threshold is %d.\n", empty_sec, EF_GC_EMPTY_SEC_THRESHOLD);
     if (empty_sec <= EF_GC_EMPTY_SEC_THRESHOLD) {
         sector_iterator(&sector, SECTOR_STORE_UNUSED, NULL, NULL, do_gc, false);
     }
@@ -1419,20 +1391,6 @@ EfErrCode ef_del_env(const char *key)
     return result;
 }
 
-/**
- * The same to ef_del_env on this mode
- * It's compatibility with older versions (less then V4.0).
- *
- * @note this function is DEPRECATED
- *
- * @param key ENV name
- *
- * @return result
- */
-EfErrCode ef_del_and_save_env(const char *key)
-{
-    return ef_del_env(key);
-}
 
 static EfErrCode set_env(const char *key, const void *value_buf, size_t buf_len)
 {
@@ -1451,12 +1409,10 @@ static EfErrCode set_env(const char *key, const void *value_buf, size_t buf_len)
         env_is_found = find_env(key, &env);
         /* prepare to delete the old ENV */
         if (env_is_found) {
-			 EF_INFO("del_env\r\n");
             result = del_env(key, &env, false);
         }
         /* create the new ENV */
         if (result == EF_NO_ERR) {
-			EF_INFO("create_env\r\n");
             result = create_env_blob(&sector, key, value_buf, buf_len);
         }
         /* delete the old ENV */
@@ -1486,6 +1442,14 @@ EfErrCode ef_set_env_blob(const char *key, const void *value_buf, size_t buf_len
 {
     EfErrCode result = EF_NO_ERR;
 	
+    if( strlen(key) > EF_ENV_NAME_MAX )
+        return EF_ENV_NAME_ERR;
+    
+    char key_buf[EF_ENV_NAME_MAX+1]={0};
+    
+    memcpy(key_buf,key,strlen(key));
+    
+    
     if (!init_ok) {
         EF_INFO("ENV isn't initialize OK.\n");
         return EF_ENV_INIT_FAILED;
@@ -1494,7 +1458,7 @@ EfErrCode ef_set_env_blob(const char *key, const void *value_buf, size_t buf_len
     /* lock the ENV cache */
     ef_port_env_lock();
 	
-    result = set_env(key, value_buf, buf_len);
+    result = set_env(key_buf, value_buf, buf_len);
 
     /* unlock the ENV cache */
     ef_port_env_unlock();
@@ -1515,32 +1479,8 @@ EfErrCode ef_set_env(const char *key, const char *value)
     return ef_set_env_blob(key, value, strlen(value));
 }
 
-/**
- * The same to ef_set_env on this mode.
- * It's compatibility with older versions (less then V4.0).
- *
- * @note this function is DEPRECATED
- *
- * @param key ENV name
- * @param value ENV value
- *
- * @return result
- */
-EfErrCode ef_set_and_save_env(const char *key, const char *value)
-{
-    return ef_set_env_blob(key, value, strlen(value));
-}
 
-/**
- * Save ENV to flash.
- *
- * @note this function is DEPRECATED
- */
-EfErrCode ef_save_env(void)
-{
-    /* do nothing not cur mode */
-    return EF_NO_ERR;
-}
+
 
 /**
  * ENV set default.
@@ -1627,7 +1567,7 @@ __reload:
                 goto __reload;
             } else if (!value_is_str) {
                 ef_print("blob @0x%08X %dbytes", env->addr.value, env->value_len);
-				printf("blob @0x%08X %dbytes", env->addr.value, env->value_len);
+				
             }
             ef_print("\n");
         }
