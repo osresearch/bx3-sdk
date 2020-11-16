@@ -115,8 +115,8 @@ extern "C" {
 #endif
 
 #ifndef MAIN_CLOCK
-#define MAIN_CLOCK                                      96000000
-//#define MAIN_CLOCK                                      32000000
+//#define MAIN_CLOCK                                      96000000
+#define MAIN_CLOCK                                      32000000
 //#define MAIN_CLOCK                                      16000000
 #endif
 
