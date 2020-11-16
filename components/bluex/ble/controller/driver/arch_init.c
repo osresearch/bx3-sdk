@@ -148,7 +148,19 @@ NOINLINE N_XIP_SECTION static void cache_restart()
     cache_config();
     cache_enable();
 }
-
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void app_rtc_init_wrapper()
+{
+    srst_awo( RTC_SRST_AWO );
+    ble_clk_gate_awo( BLE_AWO_CLKG_SET_RTC );
+    NVIC_ClearPendingIRQ( RTC_IRQn );
+    NVIC_EnableIRQ( RTC_IRQn );
+}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -359,7 +371,7 @@ void enable_disable_3v2(void)
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-N_XIP_SECTION void soc_init()
+void soc_init()
 {
     srst_cpu( WDT_SRST_CPU );
 

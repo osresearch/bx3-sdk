@@ -479,9 +479,9 @@ N_XIP_SECTION uint8_t app_qspi_multi_read_cmd_get( periph_inst_handle_t hdl )
 N_XIP_SECTION periph_err_t app_qspi_disable_for_cache( periph_inst_handle_t hdl )
 {
     app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
-    if( periph_lock_state_get( &inst->qspi_lock ) == false ) {
-        return PERIPH_STATE_ERROR;
-    }
+//    if( periph_lock_state_get( &inst->qspi_lock ) == false ) {
+//        return PERIPH_STATE_ERROR;
+//    }
     ble_reg_ssi_t * reg = inst->reg;
     while( FIELD_RD( reg, SR, SSI_BUSY ) );
     reg->SSIENR = SSI_Disabled;

@@ -19,7 +19,6 @@
 #include <string.h>
 #include "app_hwecc.h"
 #include "hwecc_typedef.h"
-#include "bx_ring_queue.h"
 #include "ll.h"
 #include "co_utils.h"
 #include "field_manipulate.h"

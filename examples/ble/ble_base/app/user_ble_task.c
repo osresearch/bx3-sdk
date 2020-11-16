@@ -439,7 +439,8 @@ static void osapp_bxotas_start_req_ind_handler( ke_msg_id_t const msgid, struct 
                                     bxotas_start_cfm );
     cfm->status = OTA_REQ_ACCEPTED;
     ke_msg_send( cfm );
-
+    
+    bx_post( us_ble_id(),BXM_BLE_ADV_STOP,0,0);
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

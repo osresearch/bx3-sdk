@@ -95,8 +95,10 @@ bx_err_t bx_drv_timer_close( void * hdl )
     reg_timer_t * BX_TIMx = ( reg_timer_t * )hdl;
 
     if( BX_TIMx == BX_TIM0 ) {
+        BX_CPU->CLKG1 &= ~CPU_CLKG1_SET_TIM0;
         BX_CPU->CLKG1 |= CPU_CLKG1_CLR_TIM0;
     } else if ( BX_TIMx == BX_TIM1 ) {
+        BX_CPU->CLKG1 &= ~CPU_CLKG1_SET_TIM1;
         BX_CPU->CLKG1 |= CPU_CLKG1_CLR_TIM1;
     } else {
         return BX_ERR_INVAL;

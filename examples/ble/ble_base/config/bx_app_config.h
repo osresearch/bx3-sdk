@@ -25,7 +25,7 @@ extern "C" {
 /* includes ------------------------------------------------------------------*/
 
 /* exported define -----------------------------------------------------------*/
-#define HOST_TEST
+
 #define CFG_APP
 
 #define CFG_PRF_DISS

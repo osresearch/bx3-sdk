@@ -379,8 +379,8 @@ static uint32_t adc_val_to_volt( int32_t adc_val )
     uint32_t temp, quotient, reminder;
     uint32_t adc_value_volt = 0;
 
-	adc_val = ( adc_val  > 0 ? (uint32_t)adc_val : 0);
-		
+    adc_val = ( adc_val  > 0 ? ( uint32_t )adc_val : 0 );
+
     if( adc_val <= 0 ) {
         adc_val = 0;
     }
@@ -521,7 +521,7 @@ bx_err_t bx_drv_adc_get_value( void * hdl, u8 channel, int32_t * value )
     BX_MODIFY_REG( BX_ADC->DLY, ADC_DLY_CHANNEL, ( uint32_t ) ( 8 << ADC_DLY_CHANNEL_POS ) ); //LDO on/off delay of ADC
     BX_CLR_BIT( BX_ADC->CTRL, ADC_CTRL_DMA_EN ); //dma disable. High means the hardware handshake signals between the DAMC and ADC will be active. Then system can move the ADC data from the ADC FIFO to the system SRAM through DMAC.
     config_init();
-    
+
     for( uint8_t i = 0; i < 4; i++ ) {
         BX_MODIFY_REG( BX_ADC->SSM, ADC_SSM_CH_NUM, ( uint32_t ) ( channel << ADC_SSM_CH_NUM_POS ) );
         BX_SET_BIT( BX_ADC->SSM, ADC_SSM_START );
@@ -554,7 +554,7 @@ bx_err_t bx_drv_adc_get_volt( void * hdl, u8 channel, u32 * value_mv )
     if( err != BX_OK ) {
         return err;
     }
-    * value_mv = adc_val_to_volt(adc_value);
+    * value_mv = adc_val_to_volt( adc_value );
 
     return BX_OK;
 }

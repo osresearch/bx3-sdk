@@ -26,7 +26,6 @@
 struct bx_wdt_service {
     s32 id;
     void * handle;
-    u32 open_count;
 };
 
 /* private variables ---------------------------------------------------------*/
@@ -60,21 +59,13 @@ static bx_err_t wdt_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 
     switch( msg ) {
         case BXM_OPEN : {
-            p_svc->open_count++;
-            if( p_svc->open_count == 1 ) {
-                bx_pm_lock( BX_PM_WDT );
-                return bx_drv_wdt_open( p_svc->handle );
-            }
-            break;
+            bx_pm_lock( BX_PM_WDT );
+            return bx_drv_wdt_open( p_svc->handle );
         }
 
         case BXM_CLOSE : {
-            p_svc->open_count--;
-            if( p_svc->open_count == 0 ) {
-                bx_pm_unlock( BX_PM_WDT );
-                bx_drv_wdt_close( p_svc->handle );
-            }
-            break;
+            bx_pm_unlock( BX_PM_WDT );
+            return bx_drv_wdt_close( p_svc->handle );
         }
 
         case BXM_START :

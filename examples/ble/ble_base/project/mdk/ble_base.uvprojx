@@ -444,16 +444,6 @@
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\nvds_in_ram.c</FilePath>
             </File>
             <File>
-              <FileName>queued_async_framework.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\common\queued_async_framework.c</FilePath>
-            </File>
-            <File>
-              <FileName>bx_ring_queue.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\common\bx_ring_queue.c</FilePath>
-            </File>
-            <File>
               <FileName>prf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\prf.c</FilePath>
@@ -502,11 +492,6 @@
               <FileName>app_qspi_wrapper.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\app_qspi_wrapper.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_rtc_wrapper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\app_rtc_wrapper.c</FilePath>
             </File>
             <File>
               <FileName>arch_init.c</FileName>
@@ -772,11 +757,6 @@
               <FileName>app_adc_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6\app_adc_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>refresh_rf_param_with_ro.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6\refresh_rf_param_with_ro.c</FilePath>
             </File>
             <File>
               <FileName>rf_temp_adjust.c</FileName>
@@ -1645,16 +1625,6 @@
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\nvds_in_ram.c</FilePath>
             </File>
             <File>
-              <FileName>queued_async_framework.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\common\queued_async_framework.c</FilePath>
-            </File>
-            <File>
-              <FileName>bx_ring_queue.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\common\bx_ring_queue.c</FilePath>
-            </File>
-            <File>
               <FileName>prf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\prf.c</FilePath>
@@ -1703,11 +1673,6 @@
               <FileName>app_qspi_wrapper.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\app_qspi_wrapper.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_rtc_wrapper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\app_rtc_wrapper.c</FilePath>
             </File>
             <File>
               <FileName>arch_init.c</FileName>
@@ -1973,11 +1938,6 @@
               <FileName>app_adc_utils.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6\app_adc_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>refresh_rf_param_with_ro.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\components\bluex\ble\controller\driver\rf18_6\refresh_rf_param_with_ro.c</FilePath>
             </File>
             <File>
               <FileName>rf_temp_adjust.c</FileName>

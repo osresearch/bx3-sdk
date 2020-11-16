@@ -26,7 +26,6 @@
 struct bx_pwm_service {
     s32 id;
     void * handle;
-    u32 open_count;
 
     u8 pin_num;
 };
@@ -74,21 +73,13 @@ static bx_err_t pwm_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 
     switch( msg ) {
         case BXM_OPEN : {
-            p_svc->open_count++;
-            if( p_svc->open_count == 1 ) {
-                bx_pm_lock( BX_PM_PWM );
-                return bx_drv_pwm_open( p_svc->handle );
-            }
-            break;
+            bx_pm_lock( BX_PM_PWM );
+            return bx_drv_pwm_open( p_svc->handle );
         }
 
         case BXM_CLOSE : {
-            p_svc->open_count++;
-            if( p_svc->open_count == 0 ) {
-                bx_pm_unlock( BX_PM_PWM );
-                return bx_drv_pwm_close( p_svc->handle );
-            }
-            break;
+            bx_pm_unlock( BX_PM_PWM );
+            return bx_drv_pwm_close( p_svc->handle );
         }
 
         case BXM_START :

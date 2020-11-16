@@ -23,8 +23,8 @@
 #include "user_ble.h"
 #include "bx_shell.h"
 /* private define ------------------------------------------------------------*/
-#define APP_ADV_INT_MIN                                 160 //40ms (64*0.625ms)  unit:0.625ms
-#define APP_ADV_INT_MAX                                 160 //40ms (64*0.625ms)  unit:0.625ms
+#define APP_ADV_INT_MIN                                 64 //40ms (64*0.625ms)  unit:0.625ms
+#define APP_ADV_INT_MAX                                 64 //40ms (64*0.625ms)  unit:0.625ms
 
 #define DEFAULT_OP_CODE                                 GAPM_ADV_UNDIRECT
 #define DEFAULT_ADV_MODE                                GAP_GEN_DISCOVERABLE
@@ -127,82 +127,77 @@ do{                                                         \
 -----------------------------------------------------------------------------*/
 static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
 {
+    bx_err_t err = BX_OK;
     switch( msg ) {
         case BXM_BLE_ADV_START: {
-            bx_err_t err = ble_advertising_start( &ble_adv );
+            err = ble_advertising_start( &ble_adv );
             if( err == BX_OK ) {
                 bx_public( us_ble_id(), BXM_BLE_ADVERTISING, ble_adv.adv_intv_min, ble_adv.adv_intv_max );
-            } else {
-                return err;
             }
         }
         break;
 
         case BXM_BLE_ADV_STOP:
-            ble_advertising_stop();
+            err = ble_advertising_stop();
             break;
-        case BXM_BLE_DIS_LINK:
-            ble_connect_stop();
-            break;
-        case BXM_BLE_SCAN_STOP:
-            ble_scan_stop();
-            break;
-        case BXM_BLE_NOTIFY:
-            ble_send_data_notify( ( u8 * )param0, param1, ble_svc.notify_handle );
-            break;
-        case BXM_BLE_NOTIFY_ENABLED:
-            ble_notifaction_enabled( param0 );
-            break;
-        case BXM_BLE_ADV_CHANGE_DATA:
-            ble_advertising_stop();
 
+        case BXM_BLE_DIS_LINK:
+            err = ble_connect_stop();
+            break;
+
+        case BXM_BLE_SCAN_STOP:
+            err = ble_scan_stop();
+            break;
+
+        case BXM_BLE_NOTIFY:
+            err = ble_send_data_notify( ( u8 * )param0, param1, ble_svc.notify_handle );
+            break;
+
+        case BXM_BLE_NOTIFY_ENABLED:
+            err = ble_notifaction_enabled( param0 );
+            break;
+
+        case BXM_BLE_ADV_CHANGE_DATA:
+            err = ble_advertising_stop();
             ble_adv.adv_data_len = param1;
             memcpy( ble_adv.adv_data, ( u8 * )param0, param1 );
-
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
-        case BXM_BLE_ADV_CHANGE_SCAN_RSP_DATA:
-            ble_advertising_stop();
 
+        case BXM_BLE_ADV_CHANGE_SCAN_RSP_DATA:
+            err = ble_advertising_stop();
             ble_adv.scan_rsp_data_len = param1;
             memcpy( ble_adv.scan_rsp_data, ( u8 * )param0, param1 );
-
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
-        case BXM_BLE_ADV_CHANGE_INTV:
-            ble_advertising_stop();
 
+        case BXM_BLE_ADV_CHANGE_INTV:
+            err = ble_advertising_stop();
             ble_adv.adv_intv_max = param0;
             ble_adv.adv_intv_min = param1;
-
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
+
         case BXM_BLE_ADV_CHANGE_OP_CODE:
-            ble_advertising_stop();
-
+            err = ble_advertising_stop();
             ble_adv.op_code = param0;
-
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
+
         case BXM_BLE_ADV_CHANGE_MODE:
-            ble_advertising_stop();
-
+            err = ble_advertising_stop();
             ble_adv.adv_mode = param0;
-
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
 
         case BXM_BLE_ADV_CHANGE_FILT_POLICY:
-            ble_advertising_stop();
-
+            err = ble_advertising_stop();
             ble_adv.adv_filt_policy = param0;
-
             bx_defer( id, BXM_BLE_ADV_START, 0, 0, 100 );
             break;
 
         case BXM_BLE_ADV_UPDATE: {
             struct ble_adv_data * ble_adv_update = ( struct ble_adv_data * )param0;
-
             ble_adv.adv_data_len = ble_adv_update->adv_data_len;
             ble_adv.scan_rsp_data_len = ble_adv_update->scan_rsp_data_len;
             memcpy( ble_adv.adv_data, ble_adv_update->adv_data, ble_adv.adv_data_len );
@@ -210,45 +205,50 @@ static bx_err_t ble_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             ble_advertising_advdata_update( &ble_adv );
         }
         break;
-        case BXM_BLE_GET_RSSI:
-            ble_get_dev_rssi();
-            break;
 
+        case BXM_BLE_GET_RSSI:
+            err = ble_get_dev_rssi();
+            break;
 
         case BXM_BLE_SCAN_START:
-            ble_scan_start( ble_svc.scan_filter_duplic, ble_svc.scan_filt_policy, ble_svc.scan_mode );
+            err = ble_scan_start( ble_svc.scan_filter_duplic, ble_svc.scan_filt_policy, ble_svc.scan_mode );
             break;
+
         case BXM_BLE_CONNECT:
             memcpy( ble_svc.connect_addr, ( u8 * )param0, 6 );
-            ble_connect_start( ble_svc.connect_addr );
+            err = ble_connect_start( ble_svc.connect_addr );
             break;
+
         case BXM_BLE_GATTC_WRITE:
-            ble_gatt_write( ble_svc.write_type, param0, ble_svc.write_handle, ( u8 * )param1 );
+            err = ble_gatt_write( ble_svc.write_type, param0, ble_svc.write_handle, ( u8 * )param1 );
             break;
+
         case BXM_BLE_GATTC_READ:
-            ble_gatt_read( ble_svc.read_trpe, param0, ble_svc.read_handle );
+            err = ble_gatt_read( ble_svc.read_trpe, param0, ble_svc.read_handle );
             break;
+
         case BXM_BLE_EXCHANGE_MTU:
-            ble_exchange_mtu();
+            err = ble_exchange_mtu();
             break;
+
         case BXM_BLE_SET_PHY:
-            ble_set_phy( param0, param1 );
+            err = ble_set_phy( param0, param1 );
             break;
+
         case BXM_BLE_UPDATE_PARAM: {
-            struct ble_gapc_conn_param * conn_param;
-            conn_param->intv_min = ble_svc.con_min_intv;
-            conn_param->intv_max = ble_svc.con_max_intv;
-            conn_param->latency = ble_svc.latency;
-            conn_param->time_out = ble_svc.con_param_timeout;
-            update_conn_params( conn_param );
+            struct ble_gapc_conn_param conn_param;
+            conn_param.intv_min = ble_svc.con_min_intv;
+            conn_param.intv_max = ble_svc.con_max_intv;
+            conn_param.latency = ble_svc.latency;
+            conn_param.time_out = ble_svc.con_param_timeout;
+            update_conn_params( &conn_param );
         }
         break;
 
         default:
             return BX_ERR_NOTSUP;
     }
-    return BX_OK;
-
+    return err;
 }
 
 /** ---------------------------------------------------------------------------
@@ -274,7 +274,6 @@ static bx_err_t ble_property_set( s32 id, u32 property, u32 param0, u32 param1 )
             ble_adv.adv_intv_max = param0;
             ble_adv.adv_intv_min = param1;
             break;
-
 
         case BXP_BLE_OP_CODE:
             ble_adv.op_code = param0;

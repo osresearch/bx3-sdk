@@ -26,7 +26,6 @@
 struct bx_adc_service {
     s32 id;
     void * handle;
-    u32 open_count;
 };
 /* private variables ---------------------------------------------------------*/
 struct bx_adc_service adc_svc = {0};
@@ -58,26 +57,17 @@ static bx_err_t adc_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
     bx_err_t bx_err = BX_OK;
     switch( msg ) {
         case BXM_OPEN: {
-            p_svc->open_count++;
-            if( p_svc->open_count == 1 ) {
-                bx_pm_lock( BX_PM_ADC );
-                return bx_drv_adc_open( p_svc->handle );
-            }
-            break;
+            bx_pm_lock( BX_PM_ADC );
+            return bx_drv_adc_open( p_svc->handle );
         }
 
 
         case BXM_CLOSE: {
-            p_svc->open_count--;
-            if( p_svc->open_count == 0 ) {
-                bx_pm_unlock( BX_PM_ADC );
-                return bx_drv_adc_close( p_svc->handle );
-            }
-            break;
+            bx_pm_unlock( BX_PM_ADC );
+            return bx_drv_adc_close( p_svc->handle );
         }
 
-
-        case BXM_ADC_VOLT:{
+        case BXM_ADC_VOLT: {
             u32 value;
             bx_err = bx_drv_adc_get_volt( p_svc->handle, param0, &value );
             bx_public( id, BXM_ADV_VOLT_DATA_UPDATE, param0, value );
@@ -85,14 +75,14 @@ static bx_err_t adc_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
         }
 
 
-        case BXM_ADC_BATTERY:{
+        case BXM_ADC_BATTERY: {
             u32 value;
             bx_err = bx_drv_adc_get_battery( p_svc->handle, &value );
             bx_public( id, BXM_ADV_BAT_DATA_UPDATE, value, param1 );
             break;
         }
-        
-        case BXM_ADC_TEMPERATURE:{
+
+        case BXM_ADC_TEMPERATURE: {
             u32 value;
             bx_err = bx_drv_adc_get_chip_temperature( p_svc->handle, &value );
             bx_public( id, BXM_ADV_TEMP_DATA_UPDATE, value, param1 );

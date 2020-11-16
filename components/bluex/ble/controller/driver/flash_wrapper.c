@@ -396,6 +396,36 @@ periph_err_t ZBIT_flash_read_security_reg(uint8_t reg_num,uint16_t offset,uint16
     uint8_t read_cmd[5] = {ZBIT_FLASH_READ_SECURITY_REGISTERS,0,reg_num,offset&0xff,0};
     return flash_read_operation(read_cmd,sizeof(read_cmd), buffer, length);
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t XMC_flash_enter_OTP_mode(void)
+{
+    uint8_t flash_dp_cmd = XMC_FLASH_ENTER_OTP_MODE;
+    periph_err_t error;
+    cache_disable();
+    error = flash_write_no_dma_operation_start(&flash_dp_cmd, sizeof(flash_dp_cmd));
+    cache_enable();
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t XMC_flash_exit_OTP_mode(void)
+{
+    uint8_t flash_dp_cmd = FLASH_WRITE_DISABLE;
+    periph_err_t error;
+    cache_disable();
+    error = flash_write_no_dma_operation_start(&flash_dp_cmd, sizeof(flash_dp_cmd));
+    cache_enable();
+    return error;
+}
 /*========================= end of exported function =========================*/
 
 

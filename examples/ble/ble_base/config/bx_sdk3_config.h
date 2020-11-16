@@ -28,7 +28,7 @@ extern "C" {
 //4 => rf04
 //8 => rf08
 #ifndef BX_CHIP_TYPE
-#define BX_CHIP_TYPE                                    3
+#define BX_CHIP_TYPE                                    1
 #endif
 
 

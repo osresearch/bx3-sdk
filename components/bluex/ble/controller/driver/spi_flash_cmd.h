@@ -59,6 +59,7 @@ enum flash_commands{
 	FLASH_PAGE_ERASE = 0x81,
     
     ZBIT_FLASH_READ_SECURITY_REGISTERS = 0x4B,
+    XMC_FLASH_ENTER_OTP_MODE = 0x3A,
 };
 
 /* exported variables --------------------------------------------------------*/

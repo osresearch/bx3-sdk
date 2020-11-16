@@ -185,9 +185,6 @@ static int gattc_read_req_ind_handler(ke_msg_id_t const msgid,
                         prf_dst_task_get(&(diss_env->prf_env), KE_IDX_GET(src_id)),
                         dest_id, diss_value_req_ind);
                 
-                bxsh_log("dst_id:%u\r\n",prf_dst_task_get(&(diss_env->prf_env), KE_IDX_GET(src_id)));
-                bxsh_log("src_id:%u\r\n",dest_id);
-                
                 req_ind->value = value;
                 ke_msg_send(req_ind);
 

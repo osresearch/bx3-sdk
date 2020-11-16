@@ -23,7 +23,6 @@ extern "C" {
 #endif
 
 /* includes ------------------------------------------------------------------*/
-#include "app_rtc_wrapper.h"
 #include "reg_rtc.h"
 #include "apollo_00_ble_reg.h"
 #include "field_manipulate.h"

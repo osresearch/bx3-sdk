@@ -70,8 +70,11 @@ void rc_calib_end( bool wait )
     if( wait ) {
         //LOG( LOG_LVL_INFO, "rc_calib loop count i=%d\n", i );
     }
-    calib32k = sysc_cpu_calb32k_rslt_getf();
-    BX_ASSERT( calib32k );
+    uint32_t value = sysc_cpu_calb32k_rslt_getf();
+    if( value != 0 ) {
+        calib32k = value;
+    }
+    //BX_ASSERT( calib32k );
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

@@ -51,7 +51,7 @@
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-N_XIP_SECTION void ble_init()
+void ble_init()
 {
     soc_init();
     

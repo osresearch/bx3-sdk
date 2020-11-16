@@ -13,7 +13,9 @@
 #include "io_ctrl.h"
 #include "flash_wrapper.h"
 #include "app_adc_utils.h"
-
+#include "bx_config.h"
+#include "modem.h"
+#include "rf_reg_typedef.h"
 #include "bx_shell.h"
 
 #if HW_BX_VERSION == 00
@@ -353,15 +355,116 @@ static uint8_t app_adc_gpadc_bonding_RO_bit(uint32_t channel)
     return app_adc_gpadc_single_end_raw(channel) < 675? 1: 0;
 }
 
-void app_adc_util_init(void)
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void refresh_rf_param_with_ro( uint32_t ro )
+{
+#if ( RF_PARAM == 2 )
+    if( ( ro >= 0 ) && ( ro <= 28 ) ) {
+
+        set_vco_buff_others( 0x78f, 0x78e, 0x78e );
+        set_vco_buff_aa55( 0x811, 0x810, 0x810 );
+
+        hwp_rf_reg->rf_reg_b.VDD_VCO_Regulator_Voltage  = 0;
+        hwp_rf_reg->rf_reg_b.VDD_PLL_Regulator_Voltage  = 1;
+        hwp_rf_reg->rf_reg_b.VDD_Div2_Regulator_Voltage = 1;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 2;
+        hwp_rf_reg->rf_reg_e.VCO_Buffer_Current_for_TX  = 2;
+        hwp_rf_reg->rf_reg_e.Divide_by_2_current_for_TX = 6;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 2;
+        hwp_rf_reg->rf_reg_e.VCO_Buffer_Current_for_RX  = 2;
+    }
+    if( ( ro >= 29 ) && ( ro <= 40 ) ) { 
+
+        set_vco_buff_others( 0x78f, 0x78e, 0x78e );
+        set_vco_buff_aa55( 0x811, 0x810, 0x810 );
+
+        hwp_rf_reg->rf_reg_b.VDD_VCO_Regulator_Voltage  = 0;
+        hwp_rf_reg->rf_reg_b.VDD_PLL_Regulator_Voltage  = 1;
+        hwp_rf_reg->rf_reg_b.VDD_Div2_Regulator_Voltage = 1;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 3;
+        hwp_rf_reg->rf_reg_e.VCO_Buffer_Current_for_TX  = 1;
+        hwp_rf_reg->rf_reg_e.Divide_by_2_current_for_TX = 6;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 2;
+        hwp_rf_reg->rf_reg_e.VCO_Buffer_Current_for_RX  = 2;
+    }
+    if( ( ro >= 41 ) && ( ro <= 52 ) ) { 
+
+        set_vco_buff_others( 0x78f, 0x78e, 0x78e );
+        set_vco_buff_aa55( 0x811, 0x810, 0x810 );
+
+        hwp_rf_reg->rf_reg_b.VDD_VCO_Regulator_Voltage  = 0;
+        hwp_rf_reg->rf_reg_b.VDD_PLL_Regulator_Voltage  = 1;
+        hwp_rf_reg->rf_reg_b.VDD_Div2_Regulator_Voltage = 2;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 3;
+        hwp_rf_reg->rf_reg_e.VCO_Buffer_Current_for_TX  = 5;
+        hwp_rf_reg->rf_reg_e.Divide_by_2_current_for_TX = 7;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 3;
+        hwp_rf_reg->rf_reg_e.VCO_Buffer_Current_for_RX  = 2;
+    }
+    enable_vco_value( false );
+    
+#elif ( RF_PARAM == 3 )
+    if( ro <= 28 ) { 
+        set_vco_buff_others( 0x78f, 0x78e, 0x78e );
+        set_vco_buff_aa55( 0x811, 0x810, 0x810 );
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 3;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 2;
+
+        if( MAIN_CLOCK > 32000000 ) {
+            hwp_rf_reg->rf_reg_b.VDD_PLL_Regulator_Voltage = 0;
+        }
+
+    }
+    if( ( ro >= 29 ) && ( ro <= 40 ) ) { 
+        set_vco_buff_others( 0x78f, 0x78e, 0x78e );
+        set_vco_buff_aa55( 0x811, 0x810, 0x810 );
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 4;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 2;
+
+        if( MAIN_CLOCK > 32000000 ) {
+            hwp_rf_reg->rf_reg_b.VDD_PLL_Regulator_Voltage = 0;
+        }
+    }
+    if( ( ro >= 41 ) && ( ro <= 46 ) ) {
+        set_vco_buff_others( 0x810, 0x78f, 0x78f );
+        set_vco_buff_aa55( 0x812, 0x811, 0x811 );
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 4;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 3;
+    }
+    if( ( ro >= 47 ) && ( ro <= 52 ) ) {
+        set_vco_buff_others( 0x810, 0x78f, 0x78f );
+        set_vco_buff_aa55( 0x812, 0x811, 0x811 );
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 5;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 4;
+    }
+    if( ro >= 53 ) {
+        set_vco_buff_others( 0x810, 0x78f, 0x78f );
+        set_vco_buff_aa55( 0x812, 0x811, 0x811 );
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_TX         = 5;
+        hwp_rf_reg->rf_reg_e.VCO_Current_for_RX         = 4;
+    }
+    enable_vco_value( false );
+	
+#elif (RF_PARAM == 1)
+
+#endif /* ( RF_PARAM == 2 ) */
+}
+
+void app_adc_util_init( void )
 {
 #ifdef ADC_RO_READ_FORCE_ON
+    periph_err_t err;
     uint8_t manufacturer_id, device_id;
     flash_read_manufacturer_device_id( &manufacturer_id, &device_id );
-    bxsh_logln("flash id:%x",manufacturer_id);
+    bxsh_logln( "falsh id:%x", manufacturer_id );
     if( MANUFACTURER_ZBIT == manufacturer_id ) { /*ZBIT Serial Flash*/
-        periph_err_t err = ZBIT_flash_read_security_reg( 0, 0, sizeof(uint8_t), ( uint8_t * )&adc_cp_RO );
-        if( err!= PERIPH_NO_ERROR ) {
+        err = ZBIT_flash_read_security_reg( 0, 0, sizeof( uint8_t ), ( uint8_t * )&adc_cp_RO );
+        if( err != PERIPH_NO_ERROR ) {
             BX_ASSERT( 0 );
         }
     } else if(    (  MANUFACTURER_WINBOND == manufacturer_id ) /*Winbond Serial Flash*/
@@ -369,6 +472,20 @@ void app_adc_util_init(void)
              ) {
         if( flash_read_security_reg( 1, 0, 1, ( uint8_t * )&adc_cp_RO ) != PERIPH_NO_ERROR ) {
             BX_ASSERT( 0 );
+        }
+    } else if( MANUFACTURER_XMC == manufacturer_id ) {
+        bxsh_logln( "MANUFACTURER_XMC" );
+        err = XMC_flash_enter_OTP_mode();
+        if( err != PERIPH_NO_ERROR ) {
+            bxsh_logln( "XMC_flash_enter_OTP_mode fail£º%u",err );
+        }
+        err = flash_multi_read( 0xFFF000, sizeof( uint8_t ), ( uint8_t * )&adc_cp_RO );
+        if( err != PERIPH_NO_ERROR ) {
+            bxsh_logln( "flash_multi_read fail£º%u",err );
+        }
+        err = XMC_flash_exit_OTP_mode();
+        if( err != PERIPH_NO_ERROR ) {
+            bxsh_logln( "XMC_flash_exit_OTP_mode fail£º%u",err );
         }
     } else {
         LOG( LOG_LVL_INFO, "UNKONWN flash\n" );
@@ -387,7 +504,6 @@ void app_adc_util_init(void)
 #endif
 
 #if RF_PARAM == 2 || RF_PARAM == 3
-    extern void refresh_rf_param_with_ro( uint32_t ro );
     refresh_rf_param_with_ro( adc_cp_RO );
 #endif
     bxsh_logln( "RO=%d", adc_cp_RO );
