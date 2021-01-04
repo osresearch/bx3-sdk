@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "bx_shell.h"
+#include "apollo_00_reg.h"
 
 /* private define ------------------------------------------------------------*/
 
@@ -192,7 +193,11 @@ void bx_kernel_schedule( void )
             // do something to notify app
             return;
         }
-
+        
+        #if ( BX_USE_WDT > 0 )
+        BX_MODIFY_REG( BX_WDT->CR, WDT_CR_VAL, 0X76 );
+        #endif
+        
         msg_handle_f func = service_hdl.hub[pmsg->dst].msg_handle_func ;
         current_service_id = pmsg->dst;
         current_msg_source_id = pmsg->src;
@@ -446,15 +451,19 @@ bx_err_t bx_subscibeex( s32 src, s32 dst, u32 msg )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-bx_err_t bx_public(s32 src, u32 msg, u32 param0, u32 param1 )
+bx_err_t bx_public( s32 src, u32 msg, u32 param0, u32 param1 )
 {
+    bx_err_t err;
     u32 count = subject_hub.count;
     for( u32 i = 0; i < count; i++ ) {
         if( subject_hub.hub[i].dst != src ) {
             continue;
         }
         if( subject_hub.hub[i].msg == msg ) {
-            return post( src, subject_hub.hub[i].src, msg, param0, param1 );
+             err = post( src, subject_hub.hub[i].src, msg, param0, param1 );
+            if( err != BX_OK ) {
+                return err;
+            }
         }
     }
     return BX_ERR_EMPTY;

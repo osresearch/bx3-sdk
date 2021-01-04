@@ -10,13 +10,12 @@
       <TargetName>template</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
-      <uAC6>0</uAC6>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>ARMCM0P</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.CMSIS.5.6.0</PackID>
+          <PackID>ARM.CMSIS.5.0.1</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IROM(0x00000000,0x00040000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -184,7 +183,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>0</RvdsVP>
-            <RvdsMve>0</RvdsMve>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -325,7 +323,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -874,11 +871,6 @@
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_uart.c</FilePath>
             </File>
             <File>
-              <FileName>bx_drv_wdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_wdt.c</FilePath>
-            </File>
-            <File>
               <FileName>bx_pm.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_pm.c</FilePath>
@@ -922,11 +914,6 @@
               <FileName>bx_service_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>bx_service_wdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_wdt.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1055,12 +1042,11 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
-      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>ARMCM0P</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.CMSIS.5.6.0</PackID>
+          <PackID>ARM.CMSIS.5.0.1</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IROM(0x00000000,0x00040000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1228,7 +1214,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>0</RvdsVP>
-            <RvdsMve>0</RvdsMve>
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -1369,7 +1354,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -1458,7 +1442,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -1552,7 +1535,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -1991,7 +1973,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2110,7 +2091,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2193,11 +2173,6 @@
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_uart.c</FilePath>
             </File>
             <File>
-              <FileName>bx_drv_wdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_drv_wdt.c</FilePath>
-            </File>
-            <File>
               <FileName>bx_pm.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_pm.c</FilePath>
@@ -2242,11 +2217,6 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_uart.c</FilePath>
             </File>
-            <File>
-              <FileName>bx_service_wdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\bluex\apollo\apollo00\driver_service\bx_service_wdt.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -2284,7 +2254,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2363,7 +2332,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2467,7 +2435,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2546,7 +2513,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2640,7 +2606,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>
@@ -2712,7 +2677,6 @@
                 <uThumb>2</uThumb>
                 <uSurpInc>2</uSurpInc>
                 <uC99>2</uC99>
-                <uGnu>2</uGnu>
                 <useXO>2</useXO>
                 <v6Lang>0</v6Lang>
                 <v6LangP>0</v6LangP>

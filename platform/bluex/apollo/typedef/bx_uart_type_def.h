@@ -26,8 +26,23 @@ extern "C" {
 
 /* exported types ------------------------------------------------------------*/
 enum bx_uart_baudrate{
+    BX_UART_BD_1200,
+    BX_UART_BD_2400,
+    BX_UART_BD_4800,
+    BX_UART_BD_9600,
+    BX_UART_BD_14400,
+    BX_UART_BD_19200,
+    BX_UART_BD_38400,
+    BX_UART_BD_57600,
+    BX_UART_BD_76800,
     BX_UART_BD_115200,
+    BX_UART_BD_230400,
+    BX_UART_BD_250000,
+    BX_UART_BD_256000,
+    BX_UART_BD_460800,
+    BX_UART_BD_500000,
     BX_UART_BD_921600,
+    BX_UART_BD_1000000,
     BX_UART_BD_2000000,
     
     BX_UART_BD_MAX,

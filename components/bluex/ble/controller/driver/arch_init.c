@@ -61,6 +61,7 @@
 #include "log.h"
 #include "reg_sysc_awo_apollo_00.h"
 #include "flash_wrapper.h"
+#include "bx_sdk3_config.h"
 /* private define ------------------------------------------------------------*/
 #define XIP_REGION_MPU_NUM          7
 #define XIP_REGION_BASE             0x800000
@@ -186,6 +187,14 @@ static void sys_setup()
     NVIC_EnableIRQ( BLE_MAC_IRQn );
     SWINT_SYS_INT_CLR();
     SWINT_SYS_INT_EN();
+
+#if ( BX_USE_WDT > 0 )
+    BX_CPU->CLKG1 |= CPU_CLKG1_SET_WDT;
+    BX_MODIFY_REG( BX_WDT->CTRL, WDT_CTRL_RST_PULSE_LEN, WDT_CTRL_RST_PULSE_LEN_T_4_PCLK_CYCLES );
+    BX_MODIFY_REG( BX_WDT->TR, WDT_TR_PERIOD, 1600 );
+    BX_SET_BIT( BX_WDT->CTRL, WDT_CTRL_EN );
+#endif
+
 #if (SYSTICK_USED == 0)
     app_rtc_init_wrapper();
 #else

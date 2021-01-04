@@ -29,7 +29,6 @@ extern "C" {
 #include "bx_service_gpio.h"
 #include "bx_service_tim.h"
 #include "bx_service_pwm.h"
-#include "bx_service_wdt.h"
 #include "bx_service_iic.h"
 
 //#include "bx_service_rtc.h"

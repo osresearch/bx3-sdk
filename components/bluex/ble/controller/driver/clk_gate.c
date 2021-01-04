@@ -16,6 +16,7 @@
 /* config --------------------------------------------------------------------*/
 
 /* includes ------------------------------------------------------------------*/
+#include "apollo_00_reg.h"
 #include "clk_gate.h"
 #include "reg_sysc_cpu.h"
 #include "reg_sysc_cpu_apollo_00.h"
@@ -24,7 +25,7 @@
 #include "bx_dbg.h"
 #include "compiler_flag.h"
 #include "ll.h"
-
+#include "bx_sdk3_config.h"
 /* private define ------------------------------------------------------------*/
 #define CLK_MASK_CLR    0xaaaaaaaa
 #define CLK_MASK_SET    (~CLK_MASK_CLR)
@@ -55,6 +56,14 @@ N_XIP_SECTION void ble_clk_gate_clr_all_clk()
     GLOBAL_INT_DISABLE();
     sysc_cpu_clkg0_set( CLK_MASK_CLR );
     sysc_cpu_clkg1_set( CLK_MASK_CLR );
+
+#if ( BX_USE_WDT > 0 )
+    BX_CPU->CLKG1 |= CPU_CLKG1_SET_WDT;
+    BX_MODIFY_REG( BX_WDT->CTRL, WDT_CTRL_RST_PULSE_LEN, WDT_CTRL_RST_PULSE_LEN_T_4_PCLK_CYCLES );
+    BX_MODIFY_REG( BX_WDT->TR, WDT_TR_PERIOD, 1600 );
+    BX_SET_BIT( BX_WDT->CTRL, WDT_CTRL_EN );
+#endif
+
     sysc_per_clkg0_set( CLK_MASK_CLR );
     sysc_per_clkg1_set( CLK_MASK_CLR );
     GLOBAL_INT_RESTORE();

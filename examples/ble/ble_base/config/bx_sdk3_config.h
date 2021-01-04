@@ -28,7 +28,7 @@ extern "C" {
 //4 => rf04
 //8 => rf08
 #ifndef BX_CHIP_TYPE
-#define BX_CHIP_TYPE                                    1
+#define BX_CHIP_TYPE                                    3
 #endif
 
 
@@ -44,6 +44,9 @@ extern "C" {
 #define BX_UART_SHELL_ENABLE                            1
 #endif
 
+#ifndef BX_USE_WDT
+#define BX_USE_WDT                                      1
+#endif
 
 #ifdef __cplusplus
 }

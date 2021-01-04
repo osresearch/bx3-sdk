@@ -54,10 +54,6 @@ bx_err_t bxs_register( void )
         return BX_ERROR;
     }
 
-    if( bxs_wdt_register() != BX_OK ) {
-        return BX_ERROR;
-    }
-
     if( bxs_iic_register() != BX_OK ) {
         return BX_ERROR;
     }

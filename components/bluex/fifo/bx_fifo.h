@@ -31,11 +31,10 @@ extern "C" {
 
 /* exported types ------------------------------------------------------------*/
 struct bx_fifo{
-    uint32_t            max_len;    /* fifo的最大长度 */
-    uint32_t            data_len;   /* 当前fifo的长度 */
+    uint32_t            max_len;    /* buffer max len */
     uint32_t            head;
     uint32_t            tail;
-    uint8_t *           data;       /* 指向fifo的缓存区 */
+    uint8_t *           data;       /* buffer */
 };
 /* exported variables --------------------------------------------------------*/
 
@@ -49,6 +48,8 @@ void        bx_fifo_init( struct bx_fifo * pfifo,uint8_t * data, uint32_t data_s
 void        bx_fifo_clear( struct bx_fifo * pfifo );
 
 uint32_t    bx_fifo_get_free_len( struct bx_fifo * pfifo );
+
+uint32_t    bx_fifo_get_len( struct bx_fifo * pfifo );
 
 void        bx_fifo_throw( struct bx_fifo * pfifo , uint32_t throwlen);
 

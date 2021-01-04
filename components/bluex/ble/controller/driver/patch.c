@@ -140,7 +140,7 @@ void patch_init()
 #endif
     set_lld_evt_schedule_scan_patch();
     set_slave_latency_patch();
-    llc_llcp_version_ind_pdu_send_patch_creat();
+//    llc_llcp_version_ind_pdu_send_patch_creat();
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

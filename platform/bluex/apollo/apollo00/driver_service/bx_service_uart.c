@@ -90,18 +90,19 @@ static bx_err_t uart_msg_handle( s32 id, u32 msg, u32 param0, u32 param1 )
             break;
 
         case BXM_WRITE_START:
-            while( p_svc->tx_fifo.data_len > 0 ) {
+            while( bx_fifo_get_len(&p_svc->tx_fifo) > 0 ) {
                 u8 data;
                 bx_fifo_pop( &( p_svc->tx_fifo ), &data, 1 );
                 bx_drv_uart_write( p_svc->handle, &data, 1 );
             }
             break;
 
-        case BXM_DATA_RECEIVED:
-            if(  p_svc->rx_fifo.data_len > 0 ) {
-                bx_public( id, BXM_DATA_RECEIVED, p_svc->rx_fifo.data_len, 0 );
+        case BXM_DATA_RECEIVED:{
+            uint32_t len = bx_fifo_get_len(&p_svc->rx_fifo);
+            if(  bx_fifo_get_len(&p_svc->rx_fifo) > 0 ) {
+                bx_public( id, BXM_DATA_RECEIVED, len, 0 );
             }
-            break;
+        }break;
 
         default:
             return BX_ERR_NOTSUP;
