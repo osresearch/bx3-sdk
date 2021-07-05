@@ -90,7 +90,7 @@
 
 # How to
 
-[如何将SDK3.3中修复的bug合并到SDK3.2?]()
+[如何将SDK3.3中修复的bug合并到SDK3.2?](https://gitee.com/BXMicro/SDK3_DOC/blob/master/%E5%A6%82%E4%BD%95%E5%B0%86SDK3.3%E4%B8%AD%E4%BF%AE%E5%A4%8D%E7%9A%84bug%E5%90%88%E5%B9%B6%E5%88%B0SDK3.2.md)
 
-[如何将SDK3.2的项目移植到SDK3.3?]()
+[如何将SDK3.2的项目移植到SDK3.3?](https://gitee.com/BXMicro/SDK3_DOC/blob/master/%E5%A6%82%E4%BD%95%E5%B0%86SDK3.2%E7%9A%84%E9%A1%B9%E7%9B%AE%E7%A7%BB%E6%A4%8D%E5%88%B0SDK3.3.md)
 
