@@ -30,7 +30,7 @@
 
 /* private define ------------------------------------------------------------*/
 #define JUMP_TABLE_SECTION __attribute__((section("jump_table_area")))
-
+void rwip_assert_asm(uint32_t,uint32_t,uint32_t);
 /* private typedef -----------------------------------------------------------*/
 
 /* private variables ---------------------------------------------------------*/

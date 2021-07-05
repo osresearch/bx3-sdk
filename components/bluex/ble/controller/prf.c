@@ -27,9 +27,6 @@
 #define __RAM_CODE__
 #include "rwip_config.h"
 
-#include "user_profile.h"
-#include "bx_shell.h"
-
 #if (BLE_PROFILES)
 #include "prf.h"
 #include "att.h"
@@ -296,9 +293,6 @@ static const struct prf_task_cbs * prf_itf_get(uint16_t task_id)
 //    bxs_log("prf_itf_get:%u\r\n",KE_TYPE_GET(task_id));
     switch(KE_TYPE_GET(task_id))
     {
-        case TASK_ID_USER:
-            prf_cbs = user_profile_prf_itf_get();
-            break;
         
         #if (BLE_HT_THERMOM)
         case TASK_ID_HTPT:

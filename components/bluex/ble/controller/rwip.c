@@ -52,8 +52,7 @@
 #endif //BLE_HOST_PRESENT
 
 #if (BLE_APP_PRESENT)
-//#include "app.h"             // Application definitions
-#include "user_ble.h"             // Application definitions
+#include "app.h"             // Application definitions
 #endif //BLE_APP_PRESENT
 
 #if (DEEP_SLEEP)
@@ -311,7 +310,10 @@ bool rwip_check_wakeup_boundary(void)
 }
 #endif //DEEP_SLEEP && BLE_EMB_PRESENT
 
-
+__weak void app_ble_init( void )
+{
+    
+}
 #if (DEEP_SLEEP)
 /**
  ****************************************************************************************
@@ -698,6 +700,13 @@ static void display_add_config(void)
  *
  * @return current time info sampled in active baseband core
  */
+uint32_t system_time( void )
+{
+    ble_samp_setf(1);
+    while (ble_samp_getf());
+    return ble_basetimecnt_get() & MAX_SLOT_CLOCK;//unit : 625us
+}
+
 static rwip_time_t rwip_time_get(void)
 {
     rwip_time_t res;
@@ -865,7 +874,7 @@ void rwip_init(uint32_t error)
     #if (!(defined(CFG_FREERTOS_SUPPORT)&&(CFG_FREERTOS_SUPPORT==1)))
     #if (BLE_APP_PRESENT)
     // Initialize APP
-    user_ble_init();
+    app_ble_init();
     #endif //BLE_APP_PRESENT
     #endif/*(defined(CFG_FREERTOS_SUPPORT)&&(CFG_FREERTOS_SUPPORT==1))*/
     #if LOCAL_NVDS == 0
@@ -1369,7 +1378,6 @@ uint32_t rwip_us_2_lpcycles(uint32_t us)
 
     return(lpcycles);
 }
-
 #endif// DEEP_SLEEP
 
 #if (BT_EMB_PRESENT)

@@ -58,6 +58,8 @@ do{                                                         \
         __enable_irq();                                     \
     }                                                       \
 }while(0)
+
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0])) 
 /* exported functions --------------------------------------------------------*/
 
 #ifdef __cplusplus

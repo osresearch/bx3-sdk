@@ -17,7 +17,6 @@
 #include "bx_sdk3_config.h"
 
 /* includes ------------------------------------------------------------------*/
-#include <stdio.h>
 
 #include "apollo_00_ble_reg.h"
 #include "arch_init.h"
@@ -28,8 +27,7 @@
 #include "ll.h"
 #include "app_adc_utils.h"
 #include "rf_temp_adjust.h"
-#include "bx_shell.h"
-
+#include "bx_dbg.h"
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
@@ -55,7 +53,7 @@ void ble_init()
 {
     soc_init();
     
-    bxsh_init();
+    log_init();
     
     RTC_EN_WITHOUT_INT();
     rwip_init( 0 );
@@ -77,6 +75,9 @@ void ble_init()
 -----------------------------------------------------------------------------*/
 N_XIP_SECTION void ble_schedule()
 {
+#if ( BX_USE_WDT > 0 )
+    BX_MODIFY_REG( BX_WDT->CR, WDT_CR_VAL, 0X76 );
+#endif
     if( mac_status == sleep_low_power_clk && ke_event_get_all() ) {
         ble_soft_wakeup();
     }

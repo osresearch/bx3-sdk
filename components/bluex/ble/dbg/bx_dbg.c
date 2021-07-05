@@ -18,16 +18,18 @@
 #define __RAM_CODE__
 
 /* includes ------------------------------------------------------------------*/
-#include "log.h"
-#include "arch.h"
-#include "apollo_00_ble_reg.h"
 #include "bx_dbg.h"
+
+#if ( BX_ENABLE_LOG > 0 )
+
+#include "SEGGER_RTT.h"
 #include <stdarg.h>
-#include "compiler_flag.h"
-#include "bx_log.h"
-
+#include "apollo_00_ble_reg.h"
+#include "apollo_00_reg.h"
+#include "bx_sys_config.h"
+#include "arch_init.h"
 /* private define ------------------------------------------------------------*/
-
+#define MAX_TAG_LENGTH  30
 /* private typedef -----------------------------------------------------------*/
 struct {
     uint32_t msp;
@@ -49,36 +51,237 @@ enum {
     PC_INSTACK,
     xPSR_INSTACK,
 };
+struct uart_baudrate_cfg {
+    u8  num1;
+    u8  num0;
+    u8  len1;
+    u8  len0;
+    u32 div;
+};
+static struct uart_baudrate_cfg bd_cfg_hub[] = {
+    {2, 12, 2, 1, 768},/*1200*/
+    {2, 12, 2, 1, 384},/*2400*/
+    {2, 12, 2, 1, 192},/*4800*/
+    {2, 12, 2, 1, 96}, /*9600*/
+    {2, 12, 2, 1, 64}, /*14400*/
+    {2, 12, 2, 1, 48}, /*19200*/
+    {2, 12, 2, 1, 24}, /*38400*/
+    {2, 12, 2, 1, 16}, /*57600*/
+    {2, 12, 2, 1, 12}, /*76800*/
+    {2, 12, 2, 1, 8},  /*115200*/
+    {2, 12, 2, 1, 4},  /*230400*/
+
+    {0, 0, 0, 0, 8},   /*250000*/
+    {1, 29, 4, 7, 1},  /*256000*/
+    {2, 12, 2, 1, 2},  /*460800*/
+    {0, 0, 0, 0, 4},   /*500000*/
+    {12, 2, 1, 2, 1},  /*921600*/
+    {0,  0, 0, 0, 2},  /*1000000*/
+    {0,  0, 0, 0, 1},  /*2000000*/
+};
+
+static bool uart_init_flag = false;
+
+static const char * level_output_info[] = {
+    [LOG_LVL_ASSERT]  = "A/",
+    [LOG_LVL_ERROR]   = "E/",
+    [LOG_LVL_WARN]    = "W/",
+    [LOG_LVL_INFO]    = "I/",
+    [LOG_LVL_DEBUG]   = "D/",
+    [LOG_LVL_VERBOSE] = "V/",
+};
+
+static volatile u32 log_sys_tick = 0;
+
 /* private variables ---------------------------------------------------------*/
 
 /* exported variables --------------------------------------------------------*/
 
 /* private macros ------------------------------------------------------------*/
 
+/*============================= private function =============================*/
 /** ---------------------------------------------------------------------------
  * @brief   :
- * @note    :   in SEGGER_RRT_printf.c
+ * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-int SEGGER_RTT_vprintf( unsigned BufferIndex, const char * sFormat, va_list * pParamList );
+void uart_log_init( void )
+{
+    NVIC_ClearPendingIRQ( UART0_IRQn );
 
-/*============================= private function =============================*/
+    /* close clock */
+    BX_PER->CLKG0 |= PER_CLKG0_32M_CLR_UART0;
+    BX_PER->CLKG0 |= PER_CLKG0_PLL_CLR_UART0;
 
+    struct uart_baudrate_cfg * p_cfg = &bd_cfg_hub[9];
+
+    BX_PER->CDP1  = ( ( ( uint32_t )p_cfg->num1 << 24 )     \
+                      | ( ( uint32_t )p_cfg->num0 << 16 )  \
+                      | ( ( uint32_t )p_cfg->len1 << 8 )   \
+                      | ( ( uint32_t )p_cfg->len0 << 0 ) );
+    BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_DIV_UART0 );
+
+    /* open clock */
+    BX_PER->CLKG0 |= PER_CLKG0_32M_SET_UART0;
+    BX_PER->CLKG0 |= PER_CLKG0_PLL_SET_UART0;
+
+    BX_SET_BIT( BX_CPU->FIOEN, GPIO_PIN_13 >> 2 );
+    BX_SET_BIT( BX_CPU->FIOEN, GPIO_PIN_12 >> 2 );
+
+    /* rx pin n  input config */
+    BX_GPIOA->DIR &= ~( GPIO_PIN_13 );
+    BX_AWO->GPIOIS |= ( GPIO_PIN_13 );
+    BX_AWO->GPIOIE |= ( GPIO_PIN_13 );
+
+
+    //gpio_mux[12] = funcio 10 , gpio_mux[13]=funcio 11
+    BX_MODIFY_REG( BX_CPU->FIOS1, CPU_FIOS1_IO10, CPU_FIO_TYPE_UART0_TX << ( ( 10 - 8 ) * 4 ) );
+    BX_MODIFY_REG( BX_CPU->FIOS1, CPU_FIOS1_IO11, CPU_FIO_TYPE_UART0_RX << ( ( 11 - 8 ) * 4 ) );
+
+    BX_MODIFY_REG( BX_UART0->LC, UART_LC_DATA_WIDTH, UART_LC_DATA_WIDTH_T_8B );
+
+
+    BX_SET_BIT( BX_UART0->LC, UART_LC_STOP_BIT );
+    BX_CLR_BIT( BX_UART0->LC, UART_LC_PARITY_EN );
+
+    //UART0->LCR |= UART_PARITY_EVEN;//even
+    //UART0->LCR &= ~UART_PARITY_EVEN;//odd
+
+    /* before set divisor must open clk */
+    BX_UART0->LC |= 0x80;
+    BX_UART0->RTD = ( uint8_t )p_cfg->div;
+    BX_UART0->DI = ( uint8_t )( p_cfg->div >> 8 );
+    BX_UART0->LC &= ~( ( uint32_t )0x80 );
+
+    BX_UART0->IF |= UART_IF_FIFO_EN;
+
+    uart_init_flag = true;
+
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void uart_log_write( u8 * buff, u32 len )
+{
+    if( !uart_init_flag ) {
+        return;
+    }
+
+    while( len ) {
+        BX_UART0->RTD = *buff;
+        while( BX_READ_BIT( BX_UART0->LS, UART_LS_TX_EMPTY ) == 0 );
+        buff++;
+        len--;
+    }
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :cur_len current copied log length, max size is LOG_PRINTF_BUFFER_SIZE
+ * @param   :dst destination
+ * @param   :src source
+ * @retval  :copied length
+-----------------------------------------------------------------------------*/
+u32 bx_log_strcpy( size_t cur_len, char * dst, const char * src )
+{
+    const char * src_old = src;
+
+    while ( src != 0 && *src != 0 ) {
+        /* make sure destination has enough space */
+        if ( cur_len++ < LOG_PRINTF_BUFFER_SIZE ) {
+            *dst++ = *src++;
+        } else {
+            break;
+        }
+    }
+    return src - src_old;
+}
+
+#if ( BX_USE_SYS_TICK_FOR_LOG > 0 )
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void SysTick_init( void )
+{
+    SysTick->LOAD  = ( u32 )( MAIN_CLOCK / 1000  - 1UL );                   /* set reload register */
+    NVIC_SetPriority ( SysTick_IRQn, ( 1UL << __NVIC_PRIO_BITS ) - 1UL ); /* set Priority for Systick Interrupt */
+    SysTick->VAL   = 0UL;                                             /* Load the SysTick Counter Value */
+    SysTick->CTRL  = SysTick_CTRL_CLKSOURCE_Msk |
+                     SysTick_CTRL_TICKINT_Msk   |
+                     SysTick_CTRL_ENABLE_Msk;                         /* Enable SysTick IRQ and SysTick Timer */
+
+    NVIC_ClearPendingIRQ( SysTick_IRQn );
+    NVIC_EnableIRQ( SysTick_IRQn );
+    __enable_irq();
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void SysTick_Handler( void )
+{
+    log_sys_tick++;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+char * log_get_time( void )
+{
+    static char time[16] = { 0 };
+    sprintf( time, "%10d ", log_sys_tick );
+    return time;
+}
+#else
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+char * log_get_time( void )
+{
+    return NULL;
+}
+#endif
 /*========================= end of private function ==========================*/
 
 
 /*============================= exported function ============================*/
-
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void bx_simu_finish()
+void log_init( void )
 {
-    *( uint32_t * )SIM_REPORT_BASE = 0x30;
+#if ( BX_USE_UART_LOG > 0 )
+    uart_log_init();
+#endif
+#if ( BX_USE_SYS_TICK_FOR_LOG > 0 )
+    SysTick_init();
+#endif
+    
+    // u32 unloaded_area_data = unloaded_area->data;
+    // SHOW_VAR(unloaded_area_data);
+    // for( u32 i = 0; i < 32; i++ ) {
+    //     unloaded_area->mark_count--;
+    //     u32 index = unloaded_area->mark_count & 0x1F;
+    //     LOG_RAW( "mark[%02u]:%10u\r\n", index, unloaded_area->mark[index] );
+    // }
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -86,77 +289,95 @@ void bx_simu_finish()
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void bx_simu_fail()
+void log_output( int8_t level, const char * tag, bool linefeed, const char * format, ... )
 {
-    *( uint32_t * )SIM_REPORT_BASE = 0x20;
-}
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void bx_simu_pass()
-{
-    *( uint32_t * )SIM_REPORT_BASE = 0x10;
-}
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :   in SEGGER_RRT_printf.c
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-N_XIP_SECTION void rtt_output( int8_t level, bool linefeed, const char * format, ... )
-{
-    va_list args;
-    va_start( args, format );
-    SEGGER_RTT_vprintf( 0, format, &args );
+    u32 log_len = 0;
+    u32 tag_len = strlen( tag );
+    u32 newline_len = strlen( BX_DATA_NEWLINE_SIGN );
+    char tag_sapce[MAX_TAG_LENGTH / 2 + 1] = { 0 };
+    char log_buf[LOG_PRINTF_BUFFER_SIZE] = {0};
+    va_list ap;
+    va_start( ap, format );
+    __disable_irq();
     if( linefeed ) {
-        SEGGER_RTT_vprintf( 0, "\n", NULL );
+        log_len += bx_log_strcpy( log_len, log_buf + log_len, log_get_time() );
     }
-    va_end( args );
+    if( level <= LOG_LVL_VERBOSE ) {
+        log_len += bx_log_strcpy( log_len, log_buf + log_len, level_output_info[level] );
+    }
+    if ( tag_len > 0 ) {
+        log_len += bx_log_strcpy( log_len, log_buf + log_len, tag );
+        if ( tag_len <= MAX_TAG_LENGTH / 2 ) {
+            memset( tag_sapce, ' ', MAX_TAG_LENGTH / 2 - tag_len );
+            log_len += bx_log_strcpy( log_len, log_buf + log_len, tag_sapce );
+        }
+        log_len += bx_log_strcpy( log_len, log_buf + log_len, " " );
+    }
+
+    s32 fmt_result = vsnprintf( log_buf + log_len, LOG_PRINTF_BUFFER_SIZE - log_len, format, ap );
+    va_end( ap );
+
+    if ( ( log_len + fmt_result <= LOG_PRINTF_BUFFER_SIZE ) && ( fmt_result > -1 ) ) {
+        log_len += fmt_result;
+    } else {
+        /* using max length */
+        log_len = LOG_PRINTF_BUFFER_SIZE;
+    }
+    if( linefeed ) {
+        if ( log_len + newline_len > LOG_PRINTF_BUFFER_SIZE ) {
+            /* using max length */
+            log_len = LOG_PRINTF_BUFFER_SIZE;
+            log_len -= newline_len;
+        }
+        log_len += bx_log_strcpy( log_len, log_buf + log_len, BX_DATA_NEWLINE_SIGN );
+    }
+    __enable_irq();
+
+#if ( BX_USE_RTT_LOG > 0 )
+    SEGGER_RTT_Write( 0, log_buf, log_len );
+#endif
+
+#if ( BX_USE_UART_LOG > 0 )
+    uart_log_write( ( u8 * )log_buf, log_len );
+#endif
 }
-/*========================= end of exported function =========================*/
 
-
-/*============================= import function ==============================*/
 /** ---------------------------------------------------------------------------
  * @brief   :
- * @note    :   
+ * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-N_XIP_SECTION void __aeabi_assert(const char *expr,const char *file,int line)
+void bx_assert_failed( char * expr, char * file, int line )
 {
-    GLOBAL_INT_STOP();
-    LOG(LOG_LVL_ERROR,"Assertion Failed: file %s, line %d, %s\n",file,line,expr);
-    //while(*(__IO uint32_t *)0 != 0);
-    while(1);
-    //__BKPT(0);
+    __disable_irq();
+    LOG( LOG_LVL_ERROR, "Assertion Failed: file %s, line %d, %s\n", file, line, expr );
+    while( 1 );
 }
-
+#endif
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :   in bx_dbg_asm.s
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-N_XIP_SECTION void rwip_assert_c( uint32_t lvl, uint32_t param0, uint32_t param1, uint32_t lr )
+void rwip_assert_c( uint32_t lvl, uint32_t param0, uint32_t param1, uint32_t lr )
 {
     LOG( lvl, "lvl:%x,lr=0x%08x,param0=0x%x,param1=0x%x\n", lvl, lr, param0, param1 );
-    //printf("lvl:%x,lr=0x%08x,param0=0x%x,param1=0x%x\n", lvl, lr, param0, param1 );
     if( lvl == LVL_ERROR ) {
-        GLOBAL_INT_STOP();
+        __disable_irq();
         while( 1 );
     }
 }
+
+#if ( BX_ENABLE_LOG > 0 )
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-N_XIP_SECTION void hardfault_print( void )
+void hardfault_print( void )
 {
     uint32_t msp = hardfault_env.msp;
     uint32_t psp = hardfault_env.psp;
@@ -193,32 +414,26 @@ N_XIP_SECTION void hardfault_print( void )
     LOG( LOG_LVL_ERROR, "PC   = 0x%08x\r\n", sp[PC_INSTACK] );
     LOG( LOG_LVL_ERROR, "xPSR = 0x%08x\r\n", sp[xPSR_INSTACK] );
 }
-/*=========================== end of import function =========================*/
-
-
-/*============================ interrupt function ============================*/
+#endif /* ( BX_ENABLE_LOG > 0 ) */
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void hardfault_env_save( void *, uint32_t, uint32_t );
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-N_XIP_SECTION void HardFault_Handler( void )
+void HardFault_Handler( void )
 {
+#if ( BX_ENABLE_LOG > 0 )
     uint32_t canonical_frame_addr = __get_MSP() + 8;
     uint32_t * lr_addr = ( uint32_t * )( canonical_frame_addr - 4 );
     hardfault_env_save( &hardfault_env, canonical_frame_addr, *lr_addr );
     hardfault_print();
-    while( *( volatile uint8_t * )1 );
+#endif
+    while( 1 );
 }
-/*========================= end of interrupt function ========================*/
+
+
+/*=========================== end of import function =========================*/
 
 
 /******************** (C) COPYRIGHT BLUEX **********************END OF FILE****/

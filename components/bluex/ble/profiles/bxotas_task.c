@@ -34,7 +34,7 @@
 #include "log.h"
 #include "ota_image.h"
 
-#include "bx_shell.h"
+#include "bx_dbg.h"
 
 /*
  * FUNCTION DEFINITIONS
@@ -54,7 +54,7 @@ static int gattc_read_req_ind_handler(ke_msg_id_t const msgid,
     struct bxotas_env_tag *bxotas_env = PRF_ENV_GET(BXOTAS,bxotas);
     uint8_t att_db_idx = bxotas_get_att_db_idx_from_handle(bxotas_env,param->handle);
     //LOG(LOG_LVL_INFO,"read ota hdl:%d\n",att_db_idx);
-//    bxsh_logln("read ota hdl:%d",att_db_idx);
+//    bx_logln("read ota hdl:%d",att_db_idx);
     switch(att_db_idx)
     {
     case BXOTAS_IDX_DATA_VAL:
@@ -160,7 +160,7 @@ static uint8_t ctrl_pkt_dispatch(bxota_ctrl_t *ctrl,ke_task_id_t task_id,uint8_t
     break;
     default:
         //LOG(LOG_LVL_WARN,"unknown ctrl pkt type\n");
-//        bxsh_logln("unknown ctrl pkt type");
+//        bx_logln("unknown ctrl pkt type");
         status = ATT_ERR_INVALID_HANDLE;
     break;
     }
@@ -213,7 +213,7 @@ static int gattc_write_req_ind_handler(ke_msg_id_t const msgid,
                                        ke_task_id_t const dest_id,
                                        ke_task_id_t const src_id)
 {
-    //bxsh_logln("gattc_write_req_ind_handler:%d %d %d",dest_id,src_id,TASK_ID_BXOTAS);
+    //bx_logln("gattc_write_req_ind_handler:%d %d %d",dest_id,src_id,TASK_ID_BXOTAS);
     struct bxotas_env_tag *bxotas_env = PRF_ENV_GET(BXOTAS,bxotas);
     uint8_t att_db_idx = bxotas_get_att_db_idx_from_handle(bxotas_env,param->handle);
     uint8_t prf_state = ke_state_get(dest_id);
@@ -235,7 +235,7 @@ static int gattc_write_req_ind_handler(ke_msg_id_t const msgid,
             if(request_validity_check(prf_state,bxotas_env,conidx))
             {
                 uint8_t segment_id = param->value[0];
-                //bxsh_logln("segment_id:%d",segment_id);
+                //bx_logln("segment_id:%d",segment_id);
                 //LOG(LOG_LVL_INFO,"%d\n",segment_id);
                 uint8_t const *data = &param->value[offsetof(bxota_data_att_rx_t,data)];
                 uint8_t length = param->length - sizeof(segment_id);
@@ -255,13 +255,13 @@ static int gattc_write_req_ind_handler(ke_msg_id_t const msgid,
         }
         break;
        case BXOTAS_IDX_CTRL_IND_CFG:
-//        bxsh_logln("desc_cfg:%d,%d,%d",att_db_idx,param->length,*param->value);
+//        bx_logln("desc_cfg:%d,%d,%d",att_db_idx,param->length,*param->value);
         //LOG(LOG_LVL_INFO,"desc_cfg:%d,%d,%d\n",att_db_idx,param->length,*param->value);
         cfm->status = ATT_ERR_NO_ERROR;
         break;
     default:
         //LOG(LOG_LVL_WARN,"invalid,%d\n",att_db_idx);
-//        bxsh_logln("invalid,%d",att_db_idx);
+//        bx_logln("invalid,%d",att_db_idx);
         cfm->status = ATT_ERR_INVALID_HANDLE;
         break;
     }
@@ -274,7 +274,7 @@ static int bxotas_firmware_dest_cmd_handler(ke_msg_id_t const msgid,
                                        ke_task_id_t const dest_id,
                                        ke_task_id_t const src_id)
 {
-//    bxsh_logln("bxotas_firmware_dest_cmd_handler");
+//    bx_logln("bxotas_firmware_dest_cmd_handler");
     struct bxotas_env_tag *bxotas_env = PRF_ENV_GET(BXOTAS,bxotas);
     uint8_t state = ke_state_get(dest_id);
     if(state == BXOTAS_IDLE)
@@ -289,7 +289,7 @@ static int bxotas_start_cfm_handler(ke_msg_id_t const msgid,
                                        ke_task_id_t const dest_id,
                                        ke_task_id_t const src_id)
 {
-    bxsh_logln("bxotas_start_cfm_handler");
+    bx_logln("bxotas_start_cfm_handler");
     struct bxotas_env_tag *bxotas_env = PRF_ENV_GET(BXOTAS,bxotas);
     uint8_t state = ke_state_get(dest_id);
     if(state == BXOTAS_REQ)
@@ -318,11 +318,10 @@ static int bxotas_start_cfm_handler(ke_msg_id_t const msgid,
 /// Default State handlers definition
 const struct ke_msg_handler bxotas_default_state[] =
 {
-    {GATTC_WRITE_REQ_IND,      (ke_msg_func_t)gattc_write_req_ind_handler},
-    {GATTC_READ_REQ_IND,      (ke_msg_func_t)gattc_read_req_ind_handler},
-    {BXOTAS_FIRMWARE_DEST_CMD, (ke_msg_func_t)bxotas_firmware_dest_cmd_handler},
-    {BXOTAS_START_CFM,    (ke_msg_func_t)bxotas_start_cfm_handler},
-
+    {GATTC_WRITE_REQ_IND,       (ke_msg_func_t)gattc_write_req_ind_handler},
+    {GATTC_READ_REQ_IND,        (ke_msg_func_t)gattc_read_req_ind_handler},
+    {BXOTAS_FIRMWARE_DEST_CMD,  (ke_msg_func_t)bxotas_firmware_dest_cmd_handler},
+    {BXOTAS_START_CFM,          (ke_msg_func_t)bxotas_start_cfm_handler},
 };
 
 ///Specifies the message handlers that are common to all states.

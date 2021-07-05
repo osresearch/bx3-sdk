@@ -60,7 +60,7 @@ enum bx_property {
 
 
 /* exported macros -----------------------------------------------------------*/
-#define BX_FIRST_USER_PROPERTY(x)               ( BXP_FIRST_USER_PROP + (x) )
+
 
 /* exported functions --------------------------------------------------------*/
 

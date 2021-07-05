@@ -403,6 +403,12 @@
 #define BLE_GATTS_CLIENT  0
 #endif // defined(CFG_PRF_GATTSC)
 
+#if defined(CFG_PRF_USER)
+#define BLE_USER_PROFILE  1
+#else
+#define BLE_USER_PROFILE  0
+#endif // defined(CFG_PRF_USER)
+
 /// BLE_CLIENT_PRF indicates if at least one client profile is present
 #if (BLE_PROX_MONITOR || BLE_FINDME_LOCATOR || BLE_HT_COLLECTOR || BLE_BP_COLLECTOR \
         || BLE_HR_COLLECTOR || BLE_DIS_CLIENT || BLE_TIP_CLIENT || BLE_SP_CLIENT \

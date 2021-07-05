@@ -103,6 +103,9 @@ void flash_recovery(void);
 
 void switch_to_32m_xtal(uint32_t current_time);
 
+void sys_before_enter_sleep(void);
+void sys_after_wakeup(void);
+
 void sleep_check(void);
 
 #ifdef __cplusplus

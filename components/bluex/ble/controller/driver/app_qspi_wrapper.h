@@ -46,6 +46,8 @@ void         app_qspi_param_init_wrapper(multi_read_param_t *multi_read);
 
 periph_err_t app_qspi_std_write_wrapper(uint8_t *data,uint32_t length);
 periph_err_t app_qspi_std_write_no_dma_wrapper(uint8_t *data,uint16_t length);
+periph_err_t app_qspi_4wire_write_wrapper( uint8_t * data, uint32_t length );
+periph_err_t app_qspi_4wire_write_ex_wrapper(uint8_t cmd,uint32_t addr,uint8_t *data,uint32_t length);
 periph_err_t app_qspi_flash_program_wrapper(uint8_t cmd,uint32_t addr,uint8_t *data,uint32_t length);
 
 periph_err_t app_qspi_std_read_wrapper(uint8_t *cmd_buf,uint8_t cmd_len,uint8_t *data_buf,uint16_t data_len);

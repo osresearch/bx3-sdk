@@ -82,7 +82,28 @@ N_XIP_SECTION periph_err_t app_qspi_std_write_wrapper( uint8_t * data, uint32_t 
     periph_err_t error = app_qspi_std_write( &qspi_inst.inst, QSPI_CS_SEL_MASK, data, length );
     return error;
 }
-
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t app_qspi_4wire_write_wrapper( uint8_t * data, uint32_t length )
+{
+    periph_err_t error = app_qspi_4wire_write( &qspi_inst.inst, QSPI_CS_SEL_MASK, data, length );
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t app_qspi_4wire_write_ex_wrapper(uint8_t cmd,uint32_t addr,uint8_t *data,uint32_t length)
+{
+    periph_err_t error = app_qspi_4wire_write_ex( &qspi_inst.inst, QSPI_CS_SEL_MASK, cmd,addr,data, length );
+    return error;
+}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :

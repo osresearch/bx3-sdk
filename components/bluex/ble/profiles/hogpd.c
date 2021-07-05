@@ -819,7 +819,7 @@ uint8_t hogpd_ntf_send(uint8_t conidx, const struct hogpd_report_info* report)
         status = PRF_ERR_REQ_DISALLOWED;
     }
 
-    if(status == GAP_ERR_NO_ERROR)
+//    if(status == GAP_ERR_NO_ERROR)
     {
         // Allocate the GATT notification message
         struct gattc_send_evt_cmd *report_ntf = KE_MSG_ALLOC_DYN(GATTC_SEND_EVT_CMD,

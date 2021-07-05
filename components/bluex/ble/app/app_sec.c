@@ -26,7 +26,6 @@
 #include "rwip_config.h"
 #include <stdbool.h>
 
-#if (BLE_APP_SEC)
 
 #include <string.h>
 #include "co_math.h"
@@ -37,22 +36,33 @@
 #include "gapm.h"
 #include "prf_types.h"
 
-#include "app.h"            // Application API Definition
+//#include "user_ble.h"            // Application API Definition
 #include "app_sec.h"        // Application Security API Definition
-#include "app_task.h"       // Application Manager API Definition
+//#include "user_ble_task.h"       // Application Manager API Definition
 
-#if (DISPLAY_SUPPORT)
-#include "app_display.h"    // Display Application Definitions
-#endif //(DISPLAY_SUPPORT)
+#include "bx_kernel.h"
+//#include "user_service_ble.h"
+
+//#if (DISPLAY_SUPPORT)
+//#include "app_display.h"    // Display Application Definitions
+//#endif //(DISPLAY_SUPPORT)
 
 #if (NVDS_SUPPORT)
 #include "nvds.h"           // NVDS API Definitions
 #endif //(NVDS_SUPPORT)
 
-#ifdef BLE_APP_AM0
-#include "am0_app.h"
-#endif // BLE_APP_AM0
+//#ifdef BLE_APP_AM0
+//#include "am0_app.h"
+//#endif // BLE_APP_AM0
 
+#include "bx_pm.h"
+//#include "bx_shell.h"
+#include "flash_wrapper.h"
+//#include "user_app.h"
+#include "app.h"
+//bool app_sec_get_bond_status( void );
+
+#include "ble.h"
 /*
  * GLOBAL VARIABLE DEFINITIONS
  ****************************************************************************************
@@ -61,175 +71,179 @@
 /// Application Security Environment Structure
 struct app_sec_env_tag app_sec_env;
 
+
+
+
+//#include "log.h"
+//extern u32 sys_tick;
+//#define bx_rtt_log(fmt,args...)                             \
+//do                                                          \
+//{                                                           \
+//    LOG_RAW("%10u SEC-> ",sys_tick);                        \
+//    LOG_RAW( fmt,##args);                                   \
+//    LOG_RAW( "\n");                                         \
+//}while(0)
+
+#define bx_rtt_log(fmt,args...) ( ( void ) 0U )
+
 /*
  * GLOBAL FUNCTION DEFINITIONS
  ****************************************************************************************
  */
 
-void app_sec_init()
+void app_sec_init(void)
 {
     /*------------------------------------------------------
      * RETRIEVE BOND STATUS
      *------------------------------------------------------*/
-    #if (NVDS_SUPPORT)
+
     uint8_t length = NVDS_LEN_PERIPH_BONDED;
 
-    // Get bond status from NVDS
-    if (nvds_get(NVDS_TAG_PERIPH_BONDED, &length, (uint8_t *)&app_sec_env.bonded) != NVDS_OK)
-    {
-        // If read value is invalid, set status to not bonded
+
+    uint8_t sec_buf[256] = {0};
+    flash_std_read(  APP_SEC_OFFSET, FLASH_SIZE, sec_buf );
+
+
+    if( sec_buf[APP_SEC_BOND_STATE_OFFSET] == 0xFF ) {
+        app_sec_env.bonded = false;
+    } else {
+        app_sec_env.bonded = sec_buf[APP_SEC_BOND_STATE_OFFSET];
+    }
+
+    if ( ( app_sec_env.bonded != true ) && ( app_sec_env.bonded != false ) ) {
         app_sec_env.bonded = false;
     }
 
-    if ((app_sec_env.bonded != true) && (app_sec_env.bonded != false))
-    {
-        app_sec_env.bonded = false;
-    }
+    bx_rtt_log( "app_sec_init\t\tapp_sec_env.bonded = %x", app_sec_env.bonded );
 
-    #if (DISPLAY_SUPPORT)
-    // Update the bond status screen value
-    app_display_set_bond(app_sec_env.bonded);
-    #endif //(DISPLAY_SUPPORT)
-    #endif //(NVDS_SUPPORT)
+
+
 }
 
-#if (NVDS_SUPPORT)
-void app_sec_remove_bond(void)
+
+void app_sec_remove_bond( void )
 {
-    #if (BLE_APP_HID)
+
+
     uint16_t ntf_cfg = PRF_CLI_STOP_NTFIND;
-    #endif //(BLE_APP_HID)
 
     // Check if we are well bonded
-    if (app_sec_env.bonded == true)
-    {
+    if ( app_sec_env.bonded == true ) {
+
+        bx_rtt_log( "!#########################app_sec_remove_bond" );
+
         // Update the environment variable
         app_sec_env.bonded = false;
+        uint8_t sec_buf[256] = {0};
 
-        if (nvds_put(NVDS_TAG_PERIPH_BONDED, NVDS_LEN_PERIPH_BONDED,
-                     (uint8_t *)&app_sec_env.bonded) != NVDS_OK)
-        {
-            ASSERT_ERR(0);
-        }
+        flash_std_read(   APP_SEC_OFFSET, FLASH_SIZE, sec_buf );
 
-        #if (BLE_APP_HT)
-        if (nvds_del(NVDS_TAG_LTK) != NVDS_OK)
-        {
-            ASSERT_ERR(0);
-        }
+        flash_erase( APP_SEC_OFFSET, Sector_Erase );
 
-        if (nvds_del(NVDS_TAG_PEER_BD_ADDRESS) != NVDS_OK)
-        {
-            ASSERT_ERR(0);
-        }
-        #endif //(BLE_APP_HT)
+        sec_buf[APP_SEC_BOND_STATE_OFFSET] = app_sec_env.bonded;
+        flash_program( APP_SEC_OFFSET, FLASH_SIZE,  sec_buf );
 
-        #if (BLE_APP_HID)
-        if (nvds_put(NVDS_TAG_MOUSE_NTF_CFG, NVDS_LEN_MOUSE_NTF_CFG,
-                     (uint8_t *)&ntf_cfg) != NVDS_OK)
-        {
-            ASSERT_ERR(0);
-        }
-        #endif //(BLE_APP_HID)
     }
 }
-#endif //(NVDS_SUPPORT)
 
-void app_sec_send_security_req(uint8_t conidx)
+void app_sec_bond_data_save( void * data )
 {
+    bx_rtt_log( "!#########################app_sec_bond_data_save" );
+    uint8_t sec_buf[256] = {0};
+//            bx_pm_lock( BX_PM_FLASH );
+    flash_std_read(  APP_SEC_OFFSET, FLASH_SIZE, sec_buf );
+    flash_erase( APP_SEC_OFFSET, Sector_Erase );
+
+    sec_buf[APP_SEC_BOND_STATE_OFFSET] = app_sec_env.bonded;
+    memcpy( &sec_buf[APP_SEC_LTK_OFFSET], app_sec_env.sec_ltk, NVDS_LEN_LTK );
+
+    memcpy( &sec_buf[APP_SEC_PEER_IRK_OFFSET], app_sec_env.peer_irk, NVDS_LEN_PEER_IRK );
+    memcpy( &sec_buf[APP_SEC_BD_ADDR_OFFSET], app_sec_env.bdaddr, NVDS_LEN_PEER_BD_ADDRESS );
+    flash_program(  APP_SEC_OFFSET, FLASH_SIZE,  sec_buf );
+//            bx_pm_unlock( BX_PM_FLASH );
+}
+
+void app_sec_update_param( void * data )
+{
+    struct gapc_conn_param conn_param;
+    conn_param.intv_min = CONN_INTERVAL_MIN;//ble_svc.con_min_intv;
+    conn_param.intv_max = CONN_INTERVAL_MAX;//ble_svc.con_max_intv;
+    conn_param.latency = SLAVE_LATENCY;//ble_svc.latency;
+    conn_param.time_out = CONN_TIMEOUT;//ble_svc.con_param_timeout;
+    ble_update_con_param( &conn_param );
+
+}
+
+void app_sec_send_security_req( uint8_t conidx )
+{
+    bx_rtt_log( "!#########################app_sec_send_security_req" );
+
     // Send security request
-    struct gapc_security_cmd *cmd = KE_MSG_ALLOC(GAPC_SECURITY_CMD,
-                                                 KE_BUILD_ID(TASK_GAPC, conidx), TASK_APP,
-                                                 gapc_security_cmd);
+    struct gapc_security_cmd * cmd = KE_MSG_ALLOC( GAPC_SECURITY_CMD,
+                                     KE_BUILD_ID( TASK_GAPC, conidx ), TASK_APP,
+                                     gapc_security_cmd );
 
     cmd->operation = GAPC_SECURITY_REQ;
 
-    #if (BLE_APP_HID || BLE_APP_HT)
-    cmd->auth      = GAP_AUTH_REQ_MITM_BOND;
-    #elif defined(BLE_APP_AM0)
-    cmd->auth      = GAP_AUTH_REQ_NO_MITM_BOND;
-    #else
-    cmd->auth      = GAP_AUTH_REQ_NO_MITM_NO_BOND;
-    #endif //(BLE_APP_HID || BLE_APP_HT)
+    cmd->auth      = GAP_AUTH_REQ_NO_MITM_BOND;//GAP_AUTH_REQ_MITM_BOND;
+
 
     // Send the message
-    ke_msg_send(cmd);
+    ke_msg_send( cmd );
 }
+
+
 
 /*
  * MESSAGE HANDLERS
  ****************************************************************************************
  */
 
-static int gapc_bond_req_ind_handler(ke_msg_id_t const msgid,
-                                     struct gapc_bond_req_ind const *param,
-                                     ke_task_id_t const dest_id,
-                                     ke_task_id_t const src_id)
+static int gapc_bond_req_ind_handler( ke_msg_id_t const msgid,
+                                      struct gapc_bond_req_ind const * param,
+                                      ke_task_id_t const dest_id,
+                                      ke_task_id_t const src_id )
 {
+
+
     // Prepare the GAPC_BOND_CFM message
-    struct gapc_bond_cfm *cfm = KE_MSG_ALLOC(GAPC_BOND_CFM,
-                                             src_id, TASK_APP,
-                                             gapc_bond_cfm);
+    struct gapc_bond_cfm * cfm = KE_MSG_ALLOC( GAPC_BOND_CFM,
+                                 src_id, TASK_APP,
+                                 gapc_bond_cfm );
 
-    switch (param->request)
-    {
-        case (GAPC_PAIRING_REQ):
-        {
+    bx_rtt_log( "gapc_bond_req_ind_handler\tparam->request = %d", param->request );
+
+    switch ( param->request ) {
+        case ( GAPC_PAIRING_REQ ): {
+
             cfm->request = GAPC_PAIRING_RSP;
-
-            #ifndef BLE_APP_AM0
+#ifndef BLE_APP_AM0
             cfm->accept  = false;
-
+            app_sec_remove_bond();
             // Check if we are already bonded (Only one bonded connection is supported)
-            if (!app_sec_env.bonded)
-            #endif // !BLE_APP_AM0
+            if ( !app_sec_env.bonded )
+#endif // !BLE_APP_AM0
             {
+                bx_rtt_log( "already bonded\r\n" );
                 cfm->accept  = true;
-
-                #if (BLE_APP_HID || BLE_APP_HT)
                 // Pairing Features
-                cfm->data.pairing_feat.auth      = GAP_AUTH_REQ_MITM_BOND;
-                #elif defined(BLE_APP_AM0)
-                #if (BLE_APP_SEC_CON == 1)
-                if (param->data.auth_req & GAP_AUTH_SEC_CON)
-                {
-                    cfm->data.pairing_feat.auth      = GAP_AUTH_REQ_SEC_CON_BOND;
-                    app_env.sec_con_enabled = true;
-                }
-                else
-                {
-                    cfm->data.pairing_feat.auth      = GAP_AUTH_REQ_NO_MITM_BOND;
-                    app_env.sec_con_enabled = false;
-                }
-                #else  // !(BLE_APP_SEC_CON)
                 cfm->data.pairing_feat.auth      = GAP_AUTH_REQ_NO_MITM_BOND;
-                app_env.sec_con_enabled = false;
-                #endif // (BLE_APP_SEC_CON)
-                #else
-                cfm->data.pairing_feat.auth      = GAP_AUTH_REQ_NO_MITM_NO_BOND;
-                #endif //(BLE_APP_HID || BLE_APP_HT)
 
-                #if (BLE_APP_HT)
-                cfm->data.pairing_feat.iocap     = GAP_IO_CAP_DISPLAY_ONLY;
-                #else
                 cfm->data.pairing_feat.iocap     = GAP_IO_CAP_NO_INPUT_NO_OUTPUT;
-                #endif //(BLE_APP_HT)
-
                 cfm->data.pairing_feat.key_size  = 16;
                 cfm->data.pairing_feat.oob       = GAP_OOB_AUTH_DATA_NOT_PRESENT;
-                cfm->data.pairing_feat.sec_req   = GAP_NO_SEC;
-                #if (defined(BLE_APP_AM0))
-                cfm->data.pairing_feat.rkey_dist = GAP_KDIST_ENCKEY | GAP_KDIST_IDKEY;
-                cfm->data.pairing_feat.ikey_dist = GAP_KDIST_ENCKEY | GAP_KDIST_IDKEY;
-                #else
-                cfm->data.pairing_feat.ikey_dist = GAP_KDIST_NONE;
-                cfm->data.pairing_feat.rkey_dist = GAP_KDIST_ENCKEY;
-                #endif // (defined(BLE_APP_AM0))
-            }
-        } break;
 
-        case (GAPC_LTK_EXCH):
-        {
+                cfm->data.pairing_feat.sec_req   = GAP_SEC1_NOAUTH_PAIR_ENC;
+                cfm->data.pairing_feat.ikey_dist = GAP_KDIST_ENCKEY | GAP_KDIST_IDKEY;//GAP_KDIST_NONE;
+                cfm->data.pairing_feat.rkey_dist = GAP_KDIST_ENCKEY | GAP_KDIST_IDKEY;//GAP_KDIST_ENCKEY;
+
+
+            }
+        }
+        break;
+
+        case ( GAPC_LTK_EXCH ): {
+            bx_rtt_log( "GAPC_LTK_EXCH\r\n" );
             // Counter
             uint8_t counter;
 
@@ -237,285 +251,311 @@ static int gapc_bond_req_ind_handler(ke_msg_id_t const msgid,
             cfm->request = GAPC_LTK_EXCH;
 
             // Generate all the values
-            cfm->data.ltk.ediv = (uint16_t)co_rand_word();
+            cfm->data.ltk.ediv = ( uint16_t )co_rand_word();
 
-            for (counter = 0; counter < RAND_NB_LEN; counter++)
-            {
-                cfm->data.ltk.ltk.key[counter]    = (uint8_t)co_rand_word();
-                cfm->data.ltk.randnb.nb[counter] = (uint8_t)co_rand_word();
+            for ( counter = 0; counter < RAND_NB_LEN; counter++ ) {
+                cfm->data.ltk.ltk.key[counter]    = ( uint8_t )co_rand_word();
+                cfm->data.ltk.randnb.nb[counter] = ( uint8_t )co_rand_word();
             }
 
-            for (counter = RAND_NB_LEN; counter < KEY_LEN; counter++)
-            {
-                cfm->data.ltk.ltk.key[counter]    = (uint8_t)co_rand_word();
+            for ( counter = RAND_NB_LEN; counter < KEY_LEN; counter++ ) {
+                cfm->data.ltk.ltk.key[counter]    = ( uint8_t )co_rand_word();
             }
 
-            #if (NVDS_SUPPORT)
+
             // Store the generated value in NVDS
-            if (nvds_put(NVDS_TAG_LTK, NVDS_LEN_LTK,
-                         (uint8_t *)&cfm->data.ltk) != NVDS_OK)
-            {
-                ASSERT_ERR(0);
-            }
-            #endif // #if (NVDS_SUPPORT)
-        } break;
+            memcpy( &app_sec_env.sec_ltk, &cfm->data.ltk, NVDS_LEN_LTK );
+        }
+        break;
 
 
-        case (GAPC_IRK_EXCH):
-        {
-            #if (NVDS_SUPPORT)
+        case ( GAPC_IRK_EXCH ): {
+            bx_rtt_log( "GAPC_IRK_EXCH\r\n" );
+
             uint8_t addr_len = BD_ADDR_LEN;
-            #endif //(NVDS_SUPPORT)
 
+
+            bx_rtt_log( "GAPC_IRK_EXCH2\r\n" );
             cfm->accept  = true;
             cfm->request = GAPC_IRK_EXCH;
 
             // Load IRK
-            memcpy(cfm->data.irk.irk.key, app_env.loc_irk, KEY_LEN);
+            memcpy( cfm->data.irk.irk.key, app_env.loc_irk, KEY_LEN );
             // load device address
             cfm->data.irk.addr.addr_type = ADDR_PUBLIC;
-            #if (NVDS_SUPPORT)
-            if (nvds_get(NVDS_TAG_BD_ADDRESS, &addr_len, cfm->data.irk.addr.addr.addr) != NVDS_OK)
-            #endif //(NVDS_SUPPORT)
-            {
-                ASSERT_ERR(0);
-            }
-        } break;
+            uint8_t sec_buf[256] = {0};
+            flash_std_read(  APP_SEC_OFFSET, FLASH_SIZE, sec_buf );
+            memcpy( cfm->data.irk.addr.addr.addr, &sec_buf[APP_SEC_BD_ADDR_OFFSET], addr_len );
 
 
-        #if (BLE_APP_HT)
-        case (GAPC_TK_EXCH):
-        {
+
+//              ef_get_env_blob( bd_addr, cfm->data.irk.addr.addr.addr, addr_len ,NULL);
+
+        }
+        break;
+        case ( GAPC_TK_EXCH ): {
+            bx_rtt_log( "GAPC_TK_EXCH\r\n" );
             // Generate a PIN Code- (Between 100000 and 999999)
-            uint32_t pin_code = (100000 + (co_rand_word()%900000));
+            uint32_t pin_code = ( 100000 + ( co_rand_word() % 900000 ) );
 
-            #if DISPLAY_SUPPORT
-            // Display the PIN Code
-            app_display_pin_code(pin_code);
-            #endif //DISPLAY_SUPPORT
 
             cfm->accept  = true;
             cfm->request = GAPC_TK_EXCH;
 
             // Set the TK value
-            memset(cfm->data.tk.key, 0, KEY_LEN);
+            memset( cfm->data.tk.key, 0, KEY_LEN );
 
-            cfm->data.tk.key[0] = (uint8_t)((pin_code & 0x000000FF) >>  0);
-            cfm->data.tk.key[1] = (uint8_t)((pin_code & 0x0000FF00) >>  8);
-            cfm->data.tk.key[2] = (uint8_t)((pin_code & 0x00FF0000) >> 16);
-            cfm->data.tk.key[3] = (uint8_t)((pin_code & 0xFF000000) >> 24);
-        } break;
-        #endif //(BLE_APP_HT)
-
-        default:
-        {
-            ASSERT_ERR(0);
-        } break;
-    }
-
-    // Send the message
-    ke_msg_send(cfm);
-
-    return (KE_MSG_CONSUMED);
-}
-
-static int gapc_bond_ind_handler(ke_msg_id_t const msgid,
-                                 struct gapc_bond_ind const *param,
-                                 ke_task_id_t const dest_id,
-                                 ke_task_id_t const src_id)
-{
-    switch (param->info)
-    {
-        case (GAPC_PAIRING_SUCCEED):
-        {
-            // Update the bonding status in the environment
-            app_sec_env.bonded = true;
-
-            // Update the bonding status in the environment
-            #if (PLF_NVDS)
-            if (nvds_put(NVDS_TAG_PERIPH_BONDED, NVDS_LEN_PERIPH_BONDED,
-                         (uint8_t *)&app_sec_env.bonded) != NVDS_OK)
-            {
-                // An error has occurred during access to the NVDS
-                ASSERT_ERR(0);
-            }
-
-            // Set the BD Address of the peer device in NVDS
-            if (nvds_put(NVDS_TAG_PEER_BD_ADDRESS, NVDS_LEN_PEER_BD_ADDRESS,
-                         (uint8_t *)gapc_get_bdaddr(0, SMPC_INFO_PEER)) != NVDS_OK)
-            {
-                // An error has occurred during access to the NVDS
-                ASSERT_ERR(0);
-            }
-
-            #if (DISPLAY_SUPPORT)
-            // Update the bond status screen value
-            app_display_set_bond(app_sec_env.bonded);
-            #endif //(DISPLAY_SUPPORT)
-            #endif //(PLF_NVDS)
-
-            #ifdef BLE_APP_AM0
-            am0_app_send_audio_init(KE_IDX_GET(src_id));
-            #endif // BLE_APP_AM0
-        } break;
-
-        case (GAPC_REPEATED_ATTEMPT):
-        {
-            appm_disconnect();
-        } break;
-
-        case (GAPC_IRK_EXCH):
-        {
-           #if (NVDS_SUPPORT)
-           // Store peer identity in NVDS
-           if (nvds_put(NVDS_TAG_PEER_IRK, NVDS_LEN_PEER_IRK, (uint8_t *)&param->data.irk) != NVDS_OK)
-           {
-               ASSERT_ERR(0);
-           }
-           #endif // (NVDS_SUPPORT)
-        } break;
-
-        case (GAPC_PAIRING_FAILED):
-        {
-            app_sec_send_security_req(0);
-        } break;
-
-        // In Secure Connections we get BOND_IND with SMPC calculated LTK
-        case (GAPC_LTK_EXCH) :
-        {
-            #if (BLE_APP_SEC_CON)
-            if (app_env.sec_con_enabled == true)
-            {
-                #if (NVDS_SUPPORT)
-                // Store LTK in NVDS
-                if (nvds_put(NVDS_TAG_LTK, NVDS_LEN_LTK,(uint8_t *)&param->data.ltk.ltk.key[0]) != NVDS_OK)
-                {
-                    ASSERT_ERR(0);
-                }
-                #endif // (NVDS_SUPPORT)
-            }
-            #endif // (BLE_APP_SEC_CON)
+            cfm->data.tk.key[0] = ( uint8_t )( ( pin_code & 0x000000FF ) >>  0 );
+            cfm->data.tk.key[1] = ( uint8_t )( ( pin_code & 0x0000FF00 ) >>  8 );
+            cfm->data.tk.key[2] = ( uint8_t )( ( pin_code & 0x00FF0000 ) >> 16 );
+            cfm->data.tk.key[3] = ( uint8_t )( ( pin_code & 0xFF000000 ) >> 24 );
         }
         break;
 
-        default:
-        {
-            ASSERT_ERR(0);
-        } break;
+        default: {
+            ASSERT_ERR( 0 );
+        }
+        break;
     }
 
-    return (KE_MSG_CONSUMED);
+    // Send the message
+    ke_msg_send( cfm );
+
+    return ( KE_MSG_CONSUMED );
 }
 
-static int gapc_encrypt_req_ind_handler(ke_msg_id_t const msgid,
-                                        struct gapc_encrypt_req_ind const *param,
-                                        ke_task_id_t const dest_id,
-                                        ke_task_id_t const src_id)
+
+static int gapc_bond_ind_handler( ke_msg_id_t const msgid,
+                                  struct gapc_bond_ind const * param,
+                                  ke_task_id_t const dest_id,
+                                  ke_task_id_t const src_id )
 {
-    #if (NVDS_SUPPORT)
+
+    bx_rtt_log( "gapc_bond_ind_handler\tparam->info = %d", param->info );
+
+    switch ( param->info ) {
+        case ( GAPC_PAIRING_SUCCEED ): {
+            bx_rtt_log( "bond succees\r\n" );
+
+            // Update the bonding status in the environment
+            app_sec_env.bonded = true;
+
+
+
+            // Set the BD Address of the peer device in NVDS
+            memcpy( &app_sec_env.bdaddr, ( uint8_t * )gapc_get_bdaddr( app_env.conidx, SMPC_INFO_PEER ), NVDS_LEN_PEER_BD_ADDRESS );
+
+
+            bx_dwork( app_sec_update_param, NULL, 3000, 1 );
+            bx_dwork( app_sec_bond_data_save, NULL, 4000, 1 );
+        }
+        break;
+
+        case ( GAPC_REPEATED_ATTEMPT ): {
+            bx_rtt_log( "bond disconnect\r\n" );
+        }
+        break;
+
+        case ( GAPC_IRK_EXCH ): {
+
+            bx_rtt_log( "GAPC_IRK_EXCH3\r\n" );
+            // Store peer identity in NVDS
+            memcpy( &app_sec_env.peer_irk, ( uint8_t * )&param->data.irk, NVDS_LEN_PEER_IRK );
+        }
+        break;
+
+        case ( GAPC_PAIRING_FAILED ): {
+            bx_rtt_log( "bond FAILED\r\n" );
+            app_sec_send_security_req( 0 );
+        }
+        break;
+
+        // In Secure Connections we get BOND_IND with SMPC calculated LTK
+        case ( GAPC_LTK_EXCH ) : {
+            bx_rtt_log( "GAPC_LTK_EXCH2\r\n" );
+            if ( app_env.sec_con_enabled == true ) {
+
+                bx_rtt_log( "GAPC_LTK_EXCH3" );
+                // Store LTK in NVDS
+                memcpy( &app_sec_env.sec_ltk, &param->data.ltk.ltk.key[0], NVDS_LEN_LTK );
+            }
+        }
+        break;
+
+        default: {
+            ASSERT_ERR( 0 );
+        }
+        break;
+    }
+
+    return ( KE_MSG_CONSUMED );
+}
+
+static int gapc_encrypt_req_ind_handler( ke_msg_id_t const msgid,
+        struct gapc_encrypt_req_ind const * param,
+        ke_task_id_t const dest_id,
+        ke_task_id_t const src_id )
+{
+
+    bx_rtt_log( "encrypt msgid\r\n" );
     // LTK value
     struct gapc_ltk ltk;
     // Length
     uint8_t length = NVDS_LEN_LTK;
-    #endif // #if (NVDS_SUPPORT)
 
     // Prepare the GAPC_ENCRYPT_CFM message
-    struct gapc_encrypt_cfm *cfm = KE_MSG_ALLOC(GAPC_ENCRYPT_CFM,
-                                                src_id, TASK_APP,
-                                                gapc_encrypt_cfm);
+    struct gapc_encrypt_cfm * cfm = KE_MSG_ALLOC( GAPC_ENCRYPT_CFM,
+                                    src_id, TASK_APP,
+                                    gapc_encrypt_cfm );
 
-    cfm->found    = false;
+    cfm->found    = true;
 
-    if (app_sec_env.bonded)
+//    if ( app_sec_env.bonded ) {
+    // Retrieve the required informations from NVDS
+//    ef_get_env_blob( sec_ltk, &ltk, length, NULL );
+
+    uint8_t sec_buf[256] = {0};
+    flash_std_read(  APP_SEC_OFFSET, FLASH_SIZE, sec_buf );
+    memcpy( &ltk, &sec_buf[APP_SEC_LTK_OFFSET], length );
+
     {
-        #if (NVDS_SUPPORT)
-        // Retrieve the required informations from NVDS
-        if (nvds_get(NVDS_TAG_LTK, &length, (uint8_t *)&ltk) == NVDS_OK)
-        {
-            // Check if the provided EDIV and Rand Nb values match with the stored values
-            if ((param->ediv == ltk.ediv) &&
-                !memcmp(&param->rand_nb.nb[0], &ltk.randnb.nb[0], sizeof(struct rand_nb)))
-            {
-                cfm->found    = true;
-                cfm->key_size = 16;
-                memcpy(&cfm->ltk, &ltk.ltk, sizeof(struct gap_sec_key));
-            }
-            /*
-             * else we are bonded with another device, disconnect the link
-             */
+        // Check if the provided EDIV and Rand Nb values match with the stored values
+        if ( ( param->ediv == ltk.ediv ) &&
+             !memcmp( &param->rand_nb.nb[0], &ltk.randnb.nb[0], sizeof( struct rand_nb ) ) ) {
+            bx_rtt_log( "else encrypt msgid is :%d\r\n", msgid );
+            bx_rtt_log( "else encrypt src_id is :%d\r\n", src_id );
+            cfm->found    = true;
+            cfm->key_size = 16;
+            memcpy( &cfm->ltk, &ltk.ltk, sizeof( struct gap_sec_key ) );
         }
-        else
-        {
-            ASSERT_ERR(0);
-        }
-        #endif // #if (NVDS_SUPPORT)
+        /*
+         * else we are bonded with another device, disconnect the link
+         */
     }
+//      else {
+//            ASSERT_ERR( 0 );
+//        }
+//    }
+
     /*
      * else the peer device is not known, an error should trigger a new pairing procedure.
      */
 
     // Send the message
-    ke_msg_send(cfm);
+    ke_msg_send( cfm );
 
-    return (KE_MSG_CONSUMED);
+    return ( KE_MSG_CONSUMED );
 }
 
 
-static int gapc_encrypt_ind_handler(ke_msg_id_t const msgid,
-                                    struct gapc_encrypt_ind const *param,
-                                    ke_task_id_t const dest_id,
-                                    ke_task_id_t const src_id)
+static int gapc_encrypt_ind_handler( ke_msg_id_t const msgid,
+                                     struct gapc_encrypt_ind const * param,
+                                     ke_task_id_t const dest_id,
+                                     ke_task_id_t const src_id )
 {
     // encryption/ re-encryption succeeded
 
-    #ifdef BLE_APP_AM0
-    am0_app_send_audio_init(KE_IDX_GET(src_id));
-    #endif // BLE_APP_AM0
+    bx_rtt_log( "auth is :%d\r\n", param->auth );
 
-    return (KE_MSG_CONSUMED);
+
+    return ( KE_MSG_CONSUMED );
 }
 
-static int app_sec_msg_dflt_handler(ke_msg_id_t const msgid,
-                                    void *param,
-                                    ke_task_id_t const dest_id,
-                                    ke_task_id_t const src_id)
+static int app_sec_msg_dflt_handler( ke_msg_id_t const msgid,
+                                     void * param,
+                                     ke_task_id_t const dest_id,
+                                     ke_task_id_t const src_id )
 {
     // Drop the message
 
-    return (KE_MSG_CONSUMED);
+    return ( KE_MSG_CONSUMED );
 }
 
- /*
-  * LOCAL VARIABLE DEFINITIONS
-  ****************************************************************************************
-  */
+static void app_gapm_cmp_evt_handler( ke_msg_id_t const msgid, struct gapm_cmp_evt const * param, ke_task_id_t const dest_id, ke_task_id_t const src_id )
+{
+    struct gapm_cmp_evt const * cmp_evt = param;
+
+    bx_rtt_log( "app_sec\tapp_gapm_cmp_evt_handler\tcmp_evt->operation = %d\n", cmp_evt->operation );
+    switch( cmp_evt->operation ) {
+        case GAPM_RESOLV_ADDR:
+            if( cmp_evt->status == GAP_ERR_NOT_FOUND ) {
+                bx_rtt_log( "bond manage  IRK matched fail!!!\n" );
+            }
+            break;
+        case GAPM_ADV_UNDIRECT:
+        case GAPM_ADV_DIRECT:
+        case GAPM_ADV_DIRECT_LDC:
+            if( cmp_evt->status == GAP_ERR_NO_ERROR ) {
+                bx_rtt_log( "===slave===" );
+
+            }
+            break;
+        case GAPM_CONNECTION_DIRECT:
+        case GAPM_CONNECTION_AUTO:
+        case GAPM_CONNECTION_SELECTIVE:
+            if( cmp_evt->status == GAP_ERR_NO_ERROR ) {
+                bx_rtt_log( "===master===" );
+
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static int gapc_disconnect_ind_handler( ke_msg_id_t const msgid,
+                                        struct gapc_disconnect_ind const * param,
+                                        ke_task_id_t const dest_id,
+                                        ke_task_id_t const src_id )
+{
+    // ke_state_set( TASK_APP, APPM_READY );
+    bx_rtt_log( "=== app_sec ===== gapc_disconnect_ind_handler ========dest_id = %d\t src_id = %d\tgapc_disconnect_ind.reason = %d=========", dest_id, src_id, param->reason );
+//    bx_public( us_ble_id(), BXM_BLE_DISCONNECTED, 0, 0x02 );
+
+    /*  if(app_sec_env.bonded == true)
+          {
+          app_sec_remove_bond();
+    platform_reset(RESET_MEM_ALLOC_FAIL);
+          }*/
+    return ( KE_MSG_CONSUMED );
+}
+
+/*
+ * LOCAL VARIABLE DEFINITIONS
+ ****************************************************************************************
+ */
 
 /// Default State handlers definition
-const struct ke_msg_handler app_sec_msg_handler_list[] =
-{
+const struct ke_msg_handler app_sec_msg_handler_list[] = {
     // Note: first message is latest message checked by kernel so default is put on top.
-    {KE_MSG_DEFAULT_HANDLER,  (ke_msg_func_t)app_sec_msg_dflt_handler},
+    ///GAPM event complete
+    {GAPM_CMP_EVT, ( ke_msg_func_t )app_gapm_cmp_evt_handler},
 
-    {GAPC_BOND_REQ_IND,       (ke_msg_func_t)gapc_bond_req_ind_handler},
-    {GAPC_BOND_IND,           (ke_msg_func_t)gapc_bond_ind_handler},
+    {KE_MSG_DEFAULT_HANDLER,  ( ke_msg_func_t )app_sec_msg_dflt_handler},
 
-    {GAPC_ENCRYPT_REQ_IND,    (ke_msg_func_t)gapc_encrypt_req_ind_handler},
-    {GAPC_ENCRYPT_IND,        (ke_msg_func_t)gapc_encrypt_ind_handler},
+    {GAPC_BOND_REQ_IND,       ( ke_msg_func_t )gapc_bond_req_ind_handler},
+    {GAPC_BOND_IND,           ( ke_msg_func_t )gapc_bond_ind_handler},
+
+    {GAPC_ENCRYPT_REQ_IND,    ( ke_msg_func_t )gapc_encrypt_req_ind_handler},
+    {GAPC_ENCRYPT_IND,        ( ke_msg_func_t )gapc_encrypt_ind_handler},
+
+    {GAPC_DISCONNECT_IND,       ( ke_msg_func_t )gapc_disconnect_ind_handler},
 };
 
 const struct ke_state_handler app_sec_table_handler =
-    {&app_sec_msg_handler_list[0], (sizeof(app_sec_msg_handler_list)/sizeof(struct ke_msg_handler))};
-
-#endif //(BLE_APP_SEC)
+{&app_sec_msg_handler_list[0], ( sizeof( app_sec_msg_handler_list ) / sizeof( struct ke_msg_handler ) )};
 
 
-bool app_sec_get_bond_status(void)
+
+bool app_sec_get_bond_status( void )
 {
-    #if (BLE_APP_SEC)
     return app_sec_env.bonded;
-    #else
-    return false;
-    #endif //(BLE_APP_SEC)
 }
 
 /// @} APP

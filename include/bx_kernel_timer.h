@@ -46,7 +46,11 @@ enum bx_kernel_timer_msg {
 };
 
 
-
+struct kernel_timer_config {
+    u16         id;
+    s32         repeat;
+    u32         time;
+};
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/
@@ -69,7 +73,7 @@ u32     bx_kernel_timer_id_to_array_index( u16 id );
 void    bx_kernel_timer_timeout_callback(u16 id, bool end_of_repeat);
 void    bx_kernel_timer_add_shell_cmd(void);
 
-
+struct kernel_timer_config * bx_kernel_timer_get_config(u16 id);
 
 #ifdef __cplusplus
 }

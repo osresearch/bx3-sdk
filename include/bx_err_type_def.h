@@ -48,7 +48,8 @@ typedef int bx_err_t;
 #define BX_ERR_HIGH             11        /* 值过高              */
 #define BX_ERR_LOW              12        /* 值过低              */
 #define BX_ERR_TIMEOUT          13        /* 超时                */
-#define BX_ERR_POINTER_EMPTY    13        /* 空指针              */
+#define BX_ERR_POINTER_EMPTY    14        /* 空指针              */
+#define BX_ERR_STA              15        /* 状态错误            */
 
 /* exported macros -----------------------------------------------------------*/
 

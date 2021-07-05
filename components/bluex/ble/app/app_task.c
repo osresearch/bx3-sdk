@@ -490,7 +490,7 @@ static int gapc_connection_req_ind_handler(ke_msg_id_t const msgid,
 
         #if (BLE_APP_HID)
         // Enable HID Service
-        app_hid_enable_prf(app_env.conhdl);
+//        app_hid_enable_prf(app_env.conhdl);
         #endif //(BLE_APP_HID)
 
         // We are now in connected State
@@ -498,7 +498,7 @@ static int gapc_connection_req_ind_handler(ke_msg_id_t const msgid,
         
         
         #if (BLE_APP_SEC && !defined(BLE_APP_AM0))
-        if (app_sec_get_bond_status())
+        if (app_sec_get_bond_status() == false)
         {
             // Ask for the peer device to either start encryption
             app_sec_send_security_req(app_env.conidx);

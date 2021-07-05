@@ -241,6 +241,123 @@ N_XIP_SECTION periph_err_t app_qspi_std_write( periph_inst_handle_t hdl, uint8_t
     periph_unlock( &inst->qspi_lock );
     return PERIPH_NO_ERROR;
 }
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t app_qspi_4wire_write( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t * data, uint32_t length )
+{
+    app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
+    ble_reg_ssi_t * reg = inst->reg;
+    if( periph_lock( &inst->qspi_lock ) == false ) {
+        return PERIPH_BUSY;
+    }
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_SET_QSPI );
+    qspi_sys_stat( inst, QSPI_OP_START );
+
+    reg->SPI_CTRLR0 =  FIELD_BUILD(SSI_WAIT_CYCLES,0) | FIELD_BUILD(SSI_INST_L,Instruction_Length_8_bits)|
+                                FIELD_BUILD(SSI_ADDR_L,Addr_Width_8_bits)|FIELD_BUILD(SSI_TRANS_TYPE, Both_Specific_Mode);
+    
+    reg->CTRLR0 = FIELD_BUILD(SSI_SPI_FRF,Quad_SPI_Format) | FIELD_BUILD(SSI_DFS,DFS_32_8_bits) | FIELD_BUILD(SSI_TMOD, Transmit_Only) |
+        FIELD_BUILD(SSI_SCPOL,Inactive_Low)|FIELD_BUILD(SSI_SCPH, SCLK_Toggle_In_Middle) | FIELD_BUILD(SSI_FRF, Motorola_SPI);
+    reg->DMATDLR = QSPI_FIFO_DEPTH - 4;
+    reg->DMACR = 0;
+    reg->DMACR = FIELD_BUILD(SSI_TDMAE,Transmit_DMA_Enabled);
+    
+    reg->SER = cs_sel_mask;
+    reg->SSIENR = SSI_Enabled;
+    app_dmac_transfer_param_t dma_param;
+    dma_param.src = data;
+    dma_param.dst = ( uint8_t * )&reg->DR;
+    dma_param.length = length;
+    dma_param.src_tr_width = Transfer_Width_8_bits;
+    dma_param.dst_tr_width = Transfer_Width_8_bits;
+    dma_param.src_msize = Burst_Transaction_Length_4;
+    dma_param.dst_msize = Burst_Transaction_Length_4;
+    dma_param.tt_fc = Memory_to_Peripheral_DMAC_Flow_Controller;
+    dma_param.src_per = dmac_qspi_rx_handshake_enum( 0 );
+    dma_param.dst_per = dmac_qspi_tx_handshake_enum( 0 );
+    dma_param.int_en = Interrupt_Disabled;
+    uint8_t ch_idx;
+    periph_err_t error = app_dmac_start_wrapper( &dma_param, &ch_idx );
+    BX_ASSERT( error == PERIPH_NO_ERROR );
+    reg->SER = cs_sel_mask;
+    error = app_dmac_transfer_wait_wrapper( ch_idx );
+    BX_ASSERT( error == PERIPH_NO_ERROR );
+    while( FIELD_RD( reg, SR, SSI_TFE ) == Transmit_FIFO_Not_Empty );
+    while( FIELD_RD( reg, SR, SSI_BUSY ) == SSI_Busy );
+    reg->SSIENR = SSI_Disabled;
+    reg->SER = 0;
+    
+    
+    qspi_sys_stat( inst, QSPI_OP_DONE );
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_CLR_QSPI );
+    periph_unlock( &inst->qspi_lock );
+    return PERIPH_NO_ERROR;
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t app_qspi_4wire_write_ex( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t cmd, uint32_t addr, uint8_t * data, uint32_t length )
+{
+    app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
+    ble_reg_ssi_t * reg = inst->reg;
+    if( periph_lock( &inst->qspi_lock ) == false ) {
+        return PERIPH_BUSY;
+    }
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_SET_QSPI );
+    qspi_sys_stat( inst, QSPI_OP_START );
+
+    reg->SPI_CTRLR0 =  FIELD_BUILD(SSI_WAIT_CYCLES,0) | FIELD_BUILD(SSI_INST_L,Instruction_Length_8_bits)|
+                                FIELD_BUILD(SSI_ADDR_L,Addr_Width_24_bits)|FIELD_BUILD(SSI_TRANS_TYPE, Instruction_Standard_Address_Specific);
+    
+    reg->CTRLR0 = FIELD_BUILD(SSI_SPI_FRF,Quad_SPI_Format) | FIELD_BUILD(SSI_DFS,DFS_32_32_bits) | FIELD_BUILD(SSI_TMOD, Transmit_Only) |
+        FIELD_BUILD(SSI_SCPOL,Inactive_Low)|FIELD_BUILD(SSI_SCPH, SCLK_Toggle_In_Middle) | FIELD_BUILD(SSI_FRF, Motorola_SPI);
+    reg->DMATDLR = QSPI_FIFO_DEPTH - 4;
+    reg->DMACR = 0;
+    reg->DMACR = FIELD_BUILD(SSI_TDMAE,Transmit_DMA_Enabled);
+    
+    reg->SER = cs_sel_mask;
+    reg->SSIENR = SSI_Enabled;
+    reg->DR = cmd;
+    reg->DR = addr;
+    uint32_t *p = (uint32_t *)data;
+    app_dmac_transfer_param_t dma_param;
+    dma_param.src = ( uint8_t * )p;
+    dma_param.dst = ( uint8_t * )&reg->DR;
+    dma_param.length = length/4;
+        dma_param.src_tr_width = Transfer_Width_32_bits;
+        dma_param.dst_tr_width = Transfer_Width_32_bits;
+        dma_param.src_msize = Burst_Transaction_Length_8;
+        dma_param.dst_msize = Burst_Transaction_Length_8;
+    dma_param.tt_fc = Memory_to_Peripheral_DMAC_Flow_Controller;
+    dma_param.src_per = dmac_qspi_rx_handshake_enum( 0 );
+    dma_param.dst_per = dmac_qspi_tx_handshake_enum( 0 );
+    dma_param.int_en = Interrupt_Disabled;
+    uint8_t ch_idx;
+    periph_err_t error = app_dmac_start_wrapper( &dma_param, &ch_idx );
+    BX_ASSERT( error == PERIPH_NO_ERROR );
+    reg->SER = cs_sel_mask;
+    error = app_dmac_transfer_wait_wrapper( ch_idx );
+    BX_ASSERT( error == PERIPH_NO_ERROR );
+    while( FIELD_RD( reg, SR, SSI_TFE ) == Transmit_FIFO_Not_Empty );
+    while( FIELD_RD( reg, SR, SSI_BUSY ) == SSI_Busy );
+    reg->SSIENR = SSI_Disabled;
+    reg->SER = 0;
+    
+    
+    qspi_sys_stat( inst, QSPI_OP_DONE );
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_CLR_QSPI );
+    periph_unlock( &inst->qspi_lock );
+    return PERIPH_NO_ERROR;
+}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -250,8 +367,7 @@ N_XIP_SECTION periph_err_t app_qspi_std_write( periph_inst_handle_t hdl, uint8_t
 N_XIP_SECTION periph_err_t app_qspi_std_write_no_dma( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t * data, uint16_t length )
 {
     app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
-    uint16_t fifo_depth = QSPI_FIFO_DEPTH;
-    BX_ASSERT( length <= fifo_depth );
+    BX_ASSERT( length <= QSPI_FIFO_DEPTH );
     ble_reg_ssi_t * reg = inst->reg;
     if( periph_lock( &inst->qspi_lock ) == false ) {
         return PERIPH_BUSY;

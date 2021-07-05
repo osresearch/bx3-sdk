@@ -48,8 +48,7 @@ static int diss_value_req_ind_handler(ke_msg_id_t const msgid,
     uint8_t len = 0;
     // Pointer to the data
     uint8_t *data = NULL;
-    
-    //bxs_log( "diss_value_req_ind_handler:%u\r\n",param->value );
+
     // Check requested value
     switch (param->value)
     {
@@ -160,7 +159,7 @@ void app_dis_add_dis(void)
                                                   gapm_profile_task_add_cmd, sizeof(struct diss_db_cfg));
     // Fill message
     req->operation = GAPM_PROFILE_TASK_ADD;
-    req->sec_lvl = PERM(SVC_AUTH, NO_AUTH);
+    req->sec_lvl = PERM(SVC_AUTH, ENABLE);
     req->prf_task_id = TASK_ID_DISS;
     req->app_task = TASK_APP;
     req->start_hdl = 0;
@@ -173,7 +172,6 @@ void app_dis_add_dis(void)
     ke_msg_send(req);
 }
 
-    
 /*
  * GLOBAL VARIABLE DEFINITIONS
  ****************************************************************************************
@@ -189,68 +187,5 @@ const struct ke_state_handler app_dis_table_handler =
     {&app_dis_msg_handler_list[0], (sizeof(app_dis_msg_handler_list)/sizeof(struct ke_msg_handler))};
 
 #endif //BLE_APP_DIS
-
-    
-    
-#include "user_profile.h"
-#include "user_profile_task.h"
-
-void app_user_add_profile(void)
-{
-    struct hfs_db_cfg* db_cfg;
-    // Allocate the DISS_CREATE_DB_REQ
-    struct gapm_profile_task_add_cmd *req = KE_MSG_ALLOC_DYN(GAPM_PROFILE_TASK_ADD_CMD,
-                                                  TASK_GAPM, TASK_APP,
-                                                  gapm_profile_task_add_cmd, sizeof(struct hfs_db_cfg));
-    // Fill message
-    req->operation = GAPM_PROFILE_TASK_ADD;
-    req->sec_lvl = PERM(SVC_AUTH, NO_AUTH);
-    req->prf_task_id = TASK_ID_HOOFOO;
-    req->app_task = TASK_APP;
-    req->start_hdl = 0;
-
-    // Set parameters
-    db_cfg = (struct hfs_db_cfg* ) req->param;
-    db_cfg->features = HFS_ALL_SUP;
-
-    // Send the message
-    ke_msg_send(req);
-}
-
-
-
-#include "bxotas.h"
-#include "bxotas_task.h"
-/****************************************************************************************
- * @function name : osapp_bxotas_config
- * @brief   : config bxota service
- * @param[in] none
- * @param[out] none
- * @return none
- *****************************************************************************************/
-void osapp_bxotas_config()
-{
-    struct bxotas_firmware_dest_cmd *cmd =KE_MSG_ALLOC(BXOTAS_FIRMWARE_DEST_CMD,TASK_ID_GATTC,TASK_APP,bxotas_firmware_dest_cmd);
-    
-    cmd->firmware_dest = LOCAL_FLASH;
-    
-    ke_msg_send(cmd);
-}
-
-
-void app_bxotas(void)
-{
-    // Allocate the DISS_CREATE_DB_REQ
-    struct gapm_profile_task_add_cmd *req = KE_MSG_ALLOC(GAPM_PROFILE_TASK_ADD_CMD,
-                                                  TASK_GAPM, TASK_APP,
-                                                  gapm_profile_task_add_cmd);
-    req->operation = GAPM_PROFILE_TASK_ADD;
-    req->sec_lvl = PERM(SVC_AUTH,NO_AUTH);
-    req->prf_task_id = TASK_ID_BXOTAS;
-    req->app_task = TASK_APP;
-    req->start_hdl = 0;
-    
-    ke_msg_send(req);
-}
 
 /// @} APP

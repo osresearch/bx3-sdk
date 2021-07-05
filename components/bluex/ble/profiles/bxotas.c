@@ -39,7 +39,7 @@
  #include "ota_image.h"
  
 #include "bx_fifo.h"
-#include "bx_shell.h"
+#include "bx_dbg.h"
  /*
  * MACROS
  ****************************************************************************************
@@ -148,24 +148,24 @@ void bxotas_image_validation(struct bxotas_env_tag *bxotas_env)
     header.crc32        = bxotas_env->ota_image_content_crc32;
     header.image_length = bxotas_env->ota_image_content_size;
 
-    bxsh_log("app_info.ota_base  = 0x%x\r\n"      , app_info.ota_base);
-    bxsh_log("header.image_length  = 0x%x\r\n"    , header.image_length);
-    bxsh_log("header.crc32 = 0x%x\r\n"            , header.crc32);
+    bx_log("app_info.ota_base  = 0x%x\r\n"      , app_info.ota_base);
+    bx_log("header.image_length  = 0x%x\r\n"    , header.image_length);
+    bx_log("header.crc32 = 0x%x\r\n"            , header.crc32);
     uint32_t remain;
     bx_fifo_pop_all( &xfifo, flash_page_buff ,&remain );
     if( remain > 0 ) {
         uint32_t addr = (app_info.ota_base + sizeof(ota_image_header_t));
         addr += program_length;
-        bxsh_logln("%08X",addr);
+        bx_logln("%08X",addr);
         
         flash_program(addr,remain,flash_page_buff);
         program_length += remain;
-        bxsh_logln("program total len :%d %x",program_length,program_length);
+        bx_logln("program total len :%d %x",program_length,program_length);
     }
     
     flash_program(app_info.ota_base,sizeof(header),(void*)&header);
     
-    bxsh_logln("end ota");
+    bx_logln("end ota");
 }
 
 void bxotas_erase_flash(uint32_t offset,uint32_t image_limit)
@@ -186,10 +186,10 @@ void bxotas_flash_cleanup_for_ota(struct bxotas_env_tag *bxotas_env)
     //ota_image_full_size  = 0xcb74
     //ota_image_crc32 = 0x3aeab920
 
-    bxsh_log("ota_image_base  = 0x%x\r\n"         , app_info.ota_base + sizeof(ota_image_header_t));
-    bxsh_log("ota_image_content_size  = 0x%x\r\n" , bxotas_env->ota_image_content_size);
-    bxsh_log("ota_image_full_size  = 0x%x\r\n"    , bxotas_env->ota_image_full_size);
-    bxsh_log("ota_image_crc32 = 0x%x\r\n"         , bxotas_env->ota_image_content_crc32);
+    bx_log("ota_image_base  = 0x%x\r\n"         , app_info.ota_base + sizeof(ota_image_header_t));
+    bx_log("ota_image_content_size  = 0x%x\r\n" , bxotas_env->ota_image_content_size);
+    bx_log("ota_image_full_size  = 0x%x\r\n"    , bxotas_env->ota_image_full_size);
+    bx_log("ota_image_crc32 = 0x%x\r\n"         , bxotas_env->ota_image_content_crc32);
     
     bx_fifo_init(&xfifo,&flash_data_buff[0],sizeof( flash_data_buff ));
     program_length = 0;
@@ -200,17 +200,17 @@ void bxotas_program_flash(struct bxotas_env_tag *bxotas_env,uint16_t segment_id,
 {
     //uint32_t addr = (app_info.ota_base + sizeof(ota_image_header_t)) + (bxotas_env->current_block *(BXOTA_ACK_MAP_SIZE * 8) + segment_id) * bxotas_env->segment_data_length;
     
-    //bxsh_logln("%08X %08X",addr,length);
+    //bx_logln("%08X %08X",addr,length);
     //FLASH_PAGE_SIZE
     if( !bx_fifo_push(&xfifo,(uint8_t *)data, length) ){
-       bxsh_logln("push fail-------------------------------------");
+       bx_logln("push fail-------------------------------------");
     }
     if( bx_fifo_pop( &xfifo, flash_page_buff, FLASH_PAGE_SIZE ) ) {
         uint32_t addr = (app_info.ota_base + sizeof(ota_image_header_t));
         addr += program_length;
         flash_program(addr,FLASH_PAGE_SIZE,&flash_page_buff[0]);
         program_length+= FLASH_PAGE_SIZE;
-        //bxsh_logln("%08X",addr);
+        //bx_logln("%08X",addr);
     }
 }
 

@@ -41,35 +41,32 @@
  */
 
 /// Manufacturer Name Value
-//#define APP_DIS_MANUFACTURER_NAME       ("Homeylab.us")
-//#define APP_DIS_MANUFACTURER_NAME_LEN   (11)
+#define APP_DIS_MANUFACTURER_NAME       ("RivieraWaves SAS")
+#define APP_DIS_MANUFACTURER_NAME_LEN   (16)
 
-#define APP_DIS_MANUFACTURER_NAME       ("AiHere")
-#define APP_DIS_MANUFACTURER_NAME_LEN   (sizeof(APP_DIS_MANUFACTURER_NAME) - 1)
-    
 /// Model Number String Value
 #define APP_DIS_MODEL_NB_STR            ("RW-BLE-1.0")
 #define APP_DIS_MODEL_NB_STR_LEN        (10)
 
 /// Serial Number
-#define APP_DIS_SERIAL_NB_STR           ("BLE-NEW-1001")
-#define APP_DIS_SERIAL_NB_STR_LEN       (11)
+#define APP_DIS_SERIAL_NB_STR           ("1.0.0.0-LE")
+#define APP_DIS_SERIAL_NB_STR_LEN       (10)
 
 /// Firmware Revision
-#define APP_DIS_FIRM_REV_STR            ("CKF")
-#define APP_DIS_FIRM_REV_STR_LEN        (3)
+#define APP_DIS_FIRM_REV_STR            ("6.1.2")
+#define APP_DIS_FIRM_REV_STR_LEN        (5)
 
 /// System ID Value - LSB -> MSB
 #define APP_DIS_SYSTEM_ID               ("\x12\x34\x56\xFF\xFE\x9A\xBC\xDE")
 #define APP_DIS_SYSTEM_ID_LEN           (8)
 
 /// Hardware Revision String
-#define APP_DIS_HARD_REV_STR            ("CKF10")
-#define APP_DIS_HARD_REV_STR_LEN        (5)
+#define APP_DIS_HARD_REV_STR           ("1.0.0")
+#define APP_DIS_HARD_REV_STR_LEN       (5)
 
 /// Software Revision String
-#define APP_DIS_SW_REV_STR              ("FWV 2.0.0.2")
-#define APP_DIS_SW_REV_STR_LEN          (11)
+#define APP_DIS_SW_REV_STR              ("6.3.0")
+#define APP_DIS_SW_REV_STR_LEN          (5)
 
 /// IEEE
 #define APP_DIS_IEEE                    ("\xFF\xEE\xDD\xCC\xBB\xAA")
@@ -102,7 +99,7 @@
 
 /// Table of message handlers
 extern const struct ke_state_handler app_dis_table_handler;
-extern const struct ke_state_handler app_hfs_table_handler;
+
 /*
  * GLOBAL FUNCTIONS DECLARATION
  ****************************************************************************************
@@ -121,14 +118,6 @@ void app_dis_init(void);
  ****************************************************************************************
  */
 void app_dis_add_dis(void);
-void app_user_add_profile(void);
-void app_user_add_proxr(void);
-void app_bxotas(void);
-void osapp_bxotas_config(void);
-void app_user_add_glps(void);
-
-void app_user_add_bass(void);
-void app_user_batt_send_lvl(uint8_t lvl);
 
 /**
  ****************************************************************************************

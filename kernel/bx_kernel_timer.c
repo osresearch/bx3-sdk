@@ -20,24 +20,18 @@
 #include "ke_task.h"
 #include "ke_timer.h"
 #include "bx_kernel_timer.h"
-#include "bx_shell.h"
 #include "bx_kernel.h"
-
+#include "bx_dbg.h"
 
 /* private define ------------------------------------------------------------*/
 
 
 /* private typedef -----------------------------------------------------------*/
-struct config {
-    u16         id;
-    s32         repeat;
-    u32         time;
-};
 
 /* private function prototypes -----------------------------------------------*/
 
 /* private variables ---------------------------------------------------------*/
-static struct config cfg_hub[BXKE_DELAY_MSG_CONFIG_MAX_COUNT] = { 0 };
+static struct kernel_timer_config cfg_hub[BXKE_DELAY_MSG_CONFIG_MAX_COUNT] = { 0 };
 
 //有一个消息用于创建定时器
 static struct ke_msg_handler msg_hub[BXKE_DELAY_MSG_CONFIG_MAX_COUNT + 1] = { 0 };
@@ -70,9 +64,7 @@ static int prv_timer_handler( ke_msg_id_t const msgid, void const * param, ke_ta
         cfg_hub[index].id = 0;
         end_of_repeat = true;
     } else {
-        //repeat < 0 
-        //for testing
-        bxsh_logln("kernel err ");
+        bx_logln("kernel err ");
         while(1);
     }
 
@@ -114,7 +106,7 @@ void bx_kernel_timer_init( void )
     static struct ke_task_desc task_desc = {NULL, &handler, NULL, 1, 1};
     uint8_t state = ke_task_create( TASK_BX_KERNEL_TIMER, &task_desc );
     if( state != KE_TASK_OK ) {
-        bxsh_log( "ke_task_create false %x\r\n", state );
+        bx_logln( "ke_task_create false %x", state );
     }
 
     msg_hub[0].id = BKT_MSG_CREAT_TIMER;
@@ -165,7 +157,7 @@ u16 bx_kernel_timer_creat( u32 time, s32 repeat )
     
     GLOBAL_ENABLE_IRQ();
     if( timer_id == 0 ) {
-        bxsh_logln("creat fail");
+        bx_logln("creat fail");
     }
     return timer_id;
 }
@@ -198,6 +190,17 @@ bool bx_kernel_timer_is_active( u16 timer_id )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+struct kernel_timer_config * bx_kernel_timer_get_config(u16 id)
+{
+    u32 index = bx_kernel_timer_id_to_array_index(id);
+    return &cfg_hub[index];
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 void bx_kernel_timer_stop_all(void)
 {
     for( u32 i = 0; i < BXKE_DELAY_MSG_CONFIG_MAX_COUNT; i++ ) {
@@ -217,7 +220,7 @@ u32 bx_kernel_timer_id_to_array_index( u16 id )
     u32 index = BKT_ID_TO_INDEX(id);
     //for testing
     if( index >= BXKE_DELAY_MSG_CONFIG_MAX_COUNT ) {
-        bxsh_logln("kernel timer err");
+        bx_logln("kernel timer err");
         while(1);
     }
     return index;
@@ -233,14 +236,14 @@ static void prv_sftim_cmd_handler( char argc, char * argv )
 {
     if ( argc > 1 ) {
         if ( !strcmp( "-h", &argv[argv[1]] ) ) {
-            bxsh_logln( "useage: help [options]" );
-            bxsh_logln( "options:" );
-            bxsh_logln( "\t -c1 \t: creat , time = 10S" );
-            bxsh_logln( "\t -c2 \t: creat , time = 5S " );
-            bxsh_logln( "\t -c3 \t: creat , time = 1S " );
-            bxsh_logln( "\t -c4 \t: creat , time = 2S no-repeat " );
+            bx_logln( "useage: help [options]" );
+            bx_logln( "options:" );
+            bx_logln( "\t -c1 \t: creat , time = 10S" );
+            bx_logln( "\t -c2 \t: creat , time = 5S " );
+            bx_logln( "\t -c3 \t: creat , time = 1S " );
+            bx_logln( "\t -c4 \t: creat , time = 2S no-repeat " );
             
-            bxsh_logln( "\t -s \t: stop all " );
+            bx_logln( "\t -s \t: stop all " );
         } else if ( !strcmp( "-c1", &argv[argv[1]] ) ) {
             bx_kernel_timer_creat(10000,BX_FOREVER);
         } else if ( !strcmp( "-c2", &argv[argv[1]] ) ) {
@@ -281,7 +284,7 @@ void bx_kernel_timer_add_shell_cmd(void)
 -----------------------------------------------------------------------------*/
 __weak void bx_kernel_timer_timeout_callback( u16 timer_id ,bool end_of_repeat)
 {
-    bxsh_logln( "timer_id:%X %X", timer_id, BKT_ID_TO_INDEX(timer_id) );
+    bx_logln( "timer_id:%X %X", timer_id, BKT_ID_TO_INDEX(timer_id) );
     
     //ke_timer_set( timer_id, TASK_BX_KERNEL_TIMER, 100 );
 }

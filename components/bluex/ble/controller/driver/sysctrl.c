@@ -24,10 +24,9 @@
 #include "awo_apollo_00.h"
 #include "plf.h"
 #include "clk_gate.h"
-#include "log.h"
 #include "compiler_flag.h"
 #include "ll.h"
-
+#include "bx_dbg.h"
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
@@ -108,7 +107,7 @@ N_XIP_SECTION void sysctrl_io_config_mask( uint32_t mask, uint32_t config )
         io_mngt.util_io_ret_val &= ~mask;
     }
 
-    sysc_awo_gpio_ie_set( io_mngt.active_ie );
+    //sysc_awo_gpio_ie_set( io_mngt.active_ie );
     GLOBAL_INT_RESTORE();
 }
 /** ---------------------------------------------------------------------------
@@ -227,7 +226,7 @@ void sysctrl_awo_init()
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void sysctrl_close_32m_rc()
+N_XIP_SECTION void sysctrl_close_32m_rc()
 {
     sysc_awo_dr_16m_rcosc_en_setf( 1 );
     sysc_awo_reg_16m_rcosc_en_setf( 0 );
@@ -289,7 +288,6 @@ void sysctrl_set_ahb_apb_blemac_clk()
             sysc_awo_clk_div_ble_mac_para0_m1_setf( 5 );
             break;
         default:
-            LOG( LOG_LVL_ERROR, "ahb freq not implemented in sw" );
             BX_ASSERT( 0 );
             break;
     }

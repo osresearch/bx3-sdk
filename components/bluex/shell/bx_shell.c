@@ -197,6 +197,39 @@ void bxsh_init( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+void bxsh_open( void )
+{
+#if ( BX_USE_UART_LOG <= 0 )  //?uart????,????????
+    bxsh_uart_init();
+#endif
+    memset( static_cmd, 0, sizeof( static_cmd ) );
+    is_open = true;
+    shell_init();
+    bxsh_add_cmd( "mw", prv_memory_write, "memory write" );
+    bxsh_add_cmd( "mr", prv_memory_read, "memory read" );
+    bxsh_add_cmd( "ls", prv_list_cmd, "show all command" );
+    bxsh_add_cmd( "reset", prv_reset_cmd, "reset chip" );	//uart shell???4???,???????
+    bx_pm_lock( BX_PM_UART );
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void bxsh_close( void )
+{
+    is_open = false;
+    bx_pm_unlock( BX_PM_UART );		//??uart shell
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 bool bxsh_add_cmd( char * cmd, void ( *fp )( char argc, char * argv ), char * description )
 {
     static_cmd_st xcmd;

@@ -15,7 +15,7 @@
   */
 /* config --------------------------------------------------------------------*/
 #define __RAM_CODE__
-
+#define LOG_TAG "ARCH INIT"
 /* includes ------------------------------------------------------------------*/
 
 #include "bx_config.h"
@@ -56,12 +56,14 @@
 #include "bxfs.h"
 #include "ota_image.h"
 #include "compiler_flag.h"
-#define LOG_TAG "ARCH INIT"
 #include "bx_log.h"
 #include "log.h"
 #include "reg_sysc_awo_apollo_00.h"
 #include "flash_wrapper.h"
 #include "bx_sdk3_config.h"
+#include "app_adc_utils.h"
+#include "rf_temp_adjust.h"
+
 /* private define ------------------------------------------------------------*/
 #define XIP_REGION_MPU_NUM          7
 #define XIP_REGION_BASE             0x800000
@@ -77,13 +79,8 @@
 #define BOOT_TUNNEL
 #endif
 
-struct unloaded_area_tag {
-    // status error
-    uint32_t error;
-};
-
 /* private variables ---------------------------------------------------------*/
-
+uint32_t mark_count = 0;
 struct unloaded_area_tag * unloaded_area;
 flash_info_t flash_info BOOT_TUNNEL;
 app_info_t app_info BOOT_TUNNEL;
@@ -171,8 +168,8 @@ void app_rtc_init_wrapper()
 static void sys_setup()
 {
     rc_calib_start();
-    sysctrl_set_ahb_apb_blemac_clk();
     rf_reg_settings_init_mp();
+    sysctrl_set_ahb_apb_blemac_clk();
     rc_calib_end( true );
 
     generate_random_seed();
@@ -213,9 +210,25 @@ static void sys_setup()
  * @retval  :
 -----------------------------------------------------------------------------*/
 #if defined(CFG_APP)
-static void dummy_eif_cb( uint8_t * bufptr, uint32_t size, rwip_eif_callback callback, void * dummy )
+static void dummy_eif_read( uint8_t * bufptr, uint32_t size, rwip_eif_callback callback, void * dummy )
 {
-    LOG( LOG_LVL_ERROR, "in dummy_eif\n" );
+    //LOG_V( "in dummy_eif_read\n" );
+}
+
+static void dummy_eif_write( uint8_t * bufptr, uint32_t size, rwip_eif_callback callback, void * dummy )
+{
+    //LOG_V( "in dummy_eif_write\n" );
+}
+
+static void dummy_eif_on(void)
+{
+    //LOG_V( "in dummy_eif_on\n" );
+}
+
+static bool dummy_eif_off(void)
+{
+    //LOG_V( "in dummy_eif_off\n" );
+    return true;
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -226,10 +239,10 @@ static void dummy_eif_cb( uint8_t * bufptr, uint32_t size, rwip_eif_callback cal
 static const struct rwip_eif_api * dummy_eif_get()
 {
     static const struct rwip_eif_api dummy_eif = {
-        dummy_eif_cb,
-        dummy_eif_cb,
-        ( void ( * )( void ) )dummy_eif_cb,
-        ( bool ( * )( void ) )dummy_eif_cb,
+        dummy_eif_read,
+        dummy_eif_write,
+        dummy_eif_on,
+        dummy_eif_off,
     };
     return &dummy_eif;
 }
@@ -309,77 +322,6 @@ N_XIP_SECTION void cache_disable()
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void enable_disable_3v2(void)
-{
-	const uint32_t READ_WRITE_LEN=10;
-	bool read_flash_bool = false;
-	bool write_flash_bool = false;
-	uint8_t read_flash_test[READ_WRITE_LEN];
-	uint8_t write_flash_test[READ_WRITE_LEN];
-	extern int memcmp(const void *str1, const void *str2, uint32_t n);
-	
-	for(int i=0;i<READ_WRITE_LEN;i++)
-	{
-		write_flash_test[i] = 0xaa;
-		read_flash_test[i]  = 0xff;
-	}
-	flash_erase_security_reg(2);
-	flash_program_security_reg(2,0,READ_WRITE_LEN,write_flash_test);
-	flash_read_security_reg(2,0,READ_WRITE_LEN,read_flash_test);
-	if(memcmp(read_flash_test,write_flash_test,READ_WRITE_LEN) != 0)
-	{
-		read_flash_bool = false;
-	}
-	else
-	{
-		read_flash_bool = true;
-	}
-	
-	
-	if(read_flash_bool== false)
-	{
-		LOG(LOG_LVL_INFO,"read flash fail.\r\n"); 
-		sysc_awo_pwr_pwm_ctrl_set(0x100);
-		BX_DELAY_US(2*1000);
-		for(int i=0;i<READ_WRITE_LEN;i++)
-		{
-			write_flash_test[i] = 0x55;
-			read_flash_test[i]  = 0xff;
-		}
-		flash_erase_security_reg(2);
-		flash_program_security_reg(2,0,READ_WRITE_LEN,write_flash_test);
-		flash_read_security_reg(2,0,READ_WRITE_LEN,read_flash_test);
-		if(memcmp(read_flash_test,write_flash_test,READ_WRITE_LEN) != 0)
-		{
-			write_flash_bool = false;
-		}
-		else
-		{
-			write_flash_bool = true;
-		}
-		
-		if(write_flash_bool == true)
-		{
-			LOG(LOG_LVL_INFO,"3V2 open success!!\r\n");				
-		}
-		else
-		{
-			LOG(LOG_LVL_INFO,"3V2 open fail!!\r\n"); 
-		}
-	}
-	else
-	{
-		LOG(LOG_LVL_INFO,"read flash pass.\r\n"); 
-		LOG(LOG_LVL_INFO,"3V2 close.\r\n"); 
-	}
-}
-
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
 void soc_init()
 {
     srst_cpu( WDT_SRST_CPU );
@@ -393,11 +335,13 @@ void soc_init()
     unloaded_area_init();
 #endif
 
-	enable_disable_3v2();
-
     patch_init();
     modem_init();
 
+    app_adc_util_init();
+	#if (defined BX_TEMP_SENSOR) && (BX_TEMP_SENSOR == 1) 
+	init_rf_temp_adjust();
+	#endif
     modem_dev_calib_in_main();
 
     bxfs_init( app_info.data_base );

@@ -17,6 +17,9 @@ LR_FLASH IMAGE_BASE_IN_FLASH{
         *(RESET, +First)
         *(jump_table_area)
     }
+	RAM_KERNEL 0x110000{
+        *(kernel_data_section)
+    }
     RAM_CODE_2 +0 {
         *(n_xip_section)
         *(n_xip_variable)
@@ -26,12 +29,13 @@ LR_FLASH IMAGE_BASE_IN_FLASH{
         queue.o(+RO)
         tasks.o(+RO)
         list.o(+RO)
-        *(:gdef:main)
+        ;*(:gdef:main)
         ;*(+RO)
         *(+RW)
     }
 
-    FLASH_CODE IMAGE_BASE_IN_FLASH + ImageLength(RAM_CODE) + ImageLength(RAM_CODE_2){
+
+    FLASH_CODE IMAGE_BASE_IN_FLASH + ImageLength(RAM_CODE) + ImageLength(RAM_CODE_2) + ImageLength(RAM_KERNEL) {
         *(InRoot$$Sections)
         *(xip_section)
         *(+RO)
@@ -77,4 +81,4 @@ LR_FLASH IMAGE_BASE_IN_FLASH{
     }
     ScatterAssert(ImageLimit(RAM_UNLOADED)<=ROM_CODE_ZI_BASE)
     
-} 
+}

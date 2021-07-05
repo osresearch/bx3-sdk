@@ -276,17 +276,13 @@ N_XIP_SECTION void flash_recovery()
 -----------------------------------------------------------------------------*/
 N_XIP_SECTION void post_deepsleep_processing_mp()
 {
-    uint32_t current_time = config_and_enable_32m_xtal();
-    
-	#if ( RC32K_USED == 0 )
-    //pwr_pwm_setting_for_active();
-	#endif
-    
     gpio_status_restore();
     ble_clk_gate_clr_all_clk();
     flash_recovery();
+    uint32_t current_time = config_and_enable_32m_xtal();
     switch_to_32m_xtal( current_time );
     sysctrl_close_32m_rc();
+    wait_rtc_until( current_time + XTAL_STARTUP_TIME + 2 );
     
 #if ( RC32K_USED == 1 )
     rc_test_start();

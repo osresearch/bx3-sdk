@@ -41,6 +41,7 @@ extern "C" {
 #define BX_PM_TIM                                       ( ( ( u32 ) 0x01UL ) << 5 )
 #define BX_PM_UART                                      ( ( ( u32 ) 0x01UL ) << 6 )
 #define BX_PM_WDT                                       ( ( ( u32 ) 0x01UL ) << 7 )
+#define BX_PM_FLASH                                     ( ( ( u32 ) 0x01UL ) << 8 )
 #define BX_PM_ALL                                       ( 0xFFFFFFFF )
 
 /* exported macros -----------------------------------------------------------*/

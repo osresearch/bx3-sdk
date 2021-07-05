@@ -1,0 +1,2099 @@
+#include "rf_power_set.h"
+#include "rf_reg_typedef.h"
+extern int32_t adc_cp_RO;
+extern void refresh_rf_param_with_ro(uint32_t ro);
+
+//4V2 32M
+void rf_18_7G_4v2_32m_dcoff_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcoff_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB18D000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcoff_rf3v3_2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcoff_rf1v8_2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C5008;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C7000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x0DC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_rf3v3_n2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_0dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_n2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_n5dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x25000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_n10dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_n15dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000284;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_n20dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_n30dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+
+//4V2 96M
+void rf_18_7G_4v2_96m_dcoff_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcoff_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB18D000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcoff_rf3v3_2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcoff_rf1v8_2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C5008;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C7000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x0DC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_rf3v3_n2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_0dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_n2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_n5dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x25000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_n10dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_n15dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000284;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_n20dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_n30dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+//3V3 32M
+void rf_18_7G_3v3_32m_dcoff_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcoff_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB18D000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcoff_rf3v3_2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcoff_rf1v8_2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C5008;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C7000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x0DC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_rf3v3_n2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_0dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_n2dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_n5dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x25000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_n10dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_n15dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000284;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_n20dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_n30dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+//3V3 96M
+void rf_18_7G_3v3_96m_dcoff_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcoff_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB18D000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcoff_rf3v3_2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcoff_rf1v8_2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_rf3v3_8dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C5008;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_rf3v3_4dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1C7000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x0DC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_rf3v3_n2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_0dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_n2dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_n5dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x25000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_n10dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_n15dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000284;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_n20dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_n30dbm()
+{
+	RF_REG_0 = 0x00C75CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+//custom
+//2416
+void rf_18_7G_3v3_32m_dcoff_rf3v3_bx2416_single_5dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB1CF008;
+	RF_REG_c = 0x610003C4;
+	RF_REG_d = 0xFDC00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+//zlg
+void rf_18_7G_4v2_32m_dcon_dcoutput_zlg_2dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_zlg_0dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_zlg_n2dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_zlg_n10dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_zlg_n20dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_32m_dcon_dcoutput_zlg_n30dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_zlg_2dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_zlg_0dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n2dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n10dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n20dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n30dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x85C10775;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000020;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_zlg_2dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_zlg_0dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n2dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n10dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n20dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n30dbm()
+{
+	RF_REG_0 = 0x00C80000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_zlg_2dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185008;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_zlg_0dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E820;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB187000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01400DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n2dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x4C800DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n10dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB185000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n20dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n30dbm()
+{
+	RF_REG_0 = 0x00CF5CB3;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003990;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB184000;
+	RF_REG_c = 0x61000304;
+	RF_REG_d = 0x01C00DB0;
+	RF_REG_e = 0x46E36493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_18_7G_3v3_32m_dcon_dcoutput_bqb_1dbm()
+{
+	RF_REG_0 = 0x00C00000;
+	RF_REG_1 = 0x0001E825;
+	RF_REG_2 = 0x00000000;
+	RF_REG_3 = 0x00000000;
+	RF_REG_4 = 0x87C10F70;
+	RF_REG_5 = 0x00000000;
+	RF_REG_6 = 0x00000120;
+	RF_REG_7 = 0x00003980;	//adc
+	RF_REG_8 = 0x0301F8C4;
+	RF_REG_9 = 0x3F231400;
+	RF_REG_a = 0xDB100DAC;
+	RF_REG_b = 0xDB105000;
+	RF_REG_c = 0x61000204;
+	RF_REG_d = 0xFC000DB0;
+	RF_REG_e = 0x46FF6493;
+	RF_REG_f = 0x10000000;
+	refresh_rf_param_with_ro(adc_cp_RO);
+}
+
+void rf_power_setting(void)
+{
+	//4.2V	32M
+	#ifdef RF_18_7G_4V2_32M_DCOFF_RF3V3_8dBm
+	rf_18_7G_4v2_32m_dcoff_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOFF_RF3V3_4dBm
+	rf_18_7G_4v2_32m_dcoff_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOFF_RF3V3_2dBm
+	rf_18_7G_4v2_32m_dcoff_rf3v3_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOFF_RF1V8_2dBm
+	rf_18_7G_4v2_32m_dcoff_rf1v8_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_RF3V3_8dBm
+	rf_18_7G_4v2_32m_dcon_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_RF3V3_4dBm
+	rf_18_7G_4v2_32m_dcon_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_RF3V3_N2dBm
+	rf_18_7G_4v2_32m_dcon_rf3v3_n2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_2dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_0dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_0dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_N2dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_n2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_N5dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_n5dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_N10dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_n10dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_N15dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_n15dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_N20dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_n20dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCOUTPUT_N30dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_n30dbm();
+	#endif
+
+	//4.2V	96M
+	#ifdef RF_18_7G_4V2_96M_DCOFF_RF3V3_8dBm
+	rf_18_7G_4v2_96m_dcoff_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOFF_RF3V3_4dBm
+	rf_18_7G_4v2_96m_dcoff_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOFF_RF3V3_2dBm
+	rf_18_7G_4v2_96m_dcoff_rf3v3_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOFF_RF1V8_2dBm
+	rf_18_7G_4v2_96m_dcoff_rf1v8_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_RF3V3_8dBm
+	rf_18_7G_4v2_96m_dcon_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_RF3V3_4dBm
+	rf_18_7G_4v2_96m_dcon_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_RF3V3_N2dBm
+	rf_18_7G_4v2_96m_dcon_rf3v3_n2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_2dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_0dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_0dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_N2dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_n2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_N5dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_n5dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_N10dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_n10dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_N15dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_n15dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_N20dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_n20dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCOUTPUT_N30dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_n30dbm();
+	#endif
+
+	//3.3V	32M
+	#ifdef RF_18_7G_3V3_32M_DCOFF_RF3V3_8dBm
+	rf_18_7G_3v3_32m_dcoff_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOFF_RF3V3_4dBm
+	rf_18_7G_3v3_32m_dcoff_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOFF_RF3V3_2dBm
+	rf_18_7G_3v3_32m_dcoff_rf3v3_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOFF_RF1V8_2dBm
+	rf_18_7G_3v3_32m_dcoff_rf1v8_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_RF3V3_8dBm
+	rf_18_7G_3v3_32m_dcon_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_RF3V3_4dBm
+	rf_18_7G_3v3_32m_dcon_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_RF3V3_N2dBm
+	rf_18_7G_3v3_32m_dcon_rf3v3_n2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_2dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_0dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_0dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_N2dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_n2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_N5dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_n5dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_N10dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_n10dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_N15dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_n15dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_N20dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_n20dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCOUTPUT_N30dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_n30dbm();
+	#endif
+
+	//3.3V	96M
+	#ifdef RF_18_7G_3V3_96M_DCOFF_RF3V3_8dBm
+	rf_18_7G_3v3_96m_dcoff_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOFF_RF3V3_4dBm
+	rf_18_7G_3v3_96m_dcoff_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOFF_RF3V3_2dBm
+	rf_18_7G_3v3_96m_dcoff_rf3v3_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOFF_RF1V8_2dBm
+	rf_18_7G_3v3_96m_dcoff_rf1v8_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_RF3V3_8dBm
+	rf_18_7G_3v3_96m_dcon_rf3v3_8dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_RF3V3_4dBm
+	rf_18_7G_3v3_96m_dcon_rf3v3_4dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_RF3V3_N2dBm
+	rf_18_7G_3v3_96m_dcon_rf3v3_n2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_2dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_0dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_0dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_N2dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_n2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_N5dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_n5dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_N10dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_n10dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_N15dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_n15dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_N20dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_n20dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCOUTPUT_N30dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_n30dbm();
+	#endif
+
+	//custom ------------------------------------------------------
+	//2416 - 3.3V 32M
+	#ifdef RF_18_7G_3V3_32M_DCOFF_RF3V3_BX2416_SINGLE_5dBm
+	rf_18_7G_3v3_32m_dcoff_rf3v3_bx2416_single_5dbm();
+	#endif
+	//zlg - 4.2V 32M
+	#ifdef RF_18_7G_4V2_32M_DCON_DCDCOUTPUT_ZLG_2dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_zlg_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_DCDCOUTPUT_ZLG_0dBm
+	rf_18_7G_4v2_32m_dcon_dcoutput_zlg_0dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_DCDCOUTPUT_ZLG_N2dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_DCDCOUTPUT_ZLG_N10dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n10dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_DCDCOUTPUT_ZLG_N20dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n20dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_32M_DCON_DCDCOUTPUT_ZLG_N30dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n30dbm();
+	#endif
+	//zlg - 4.2V 96M
+	#ifdef RF_18_7G_4V2_96M_DCON_DCDCOUTPUT_ZLG_2dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_DCDCOUTPUT_ZLG_0dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_0dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_DCDCOUTPUT_ZLG_N2dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n2dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_DCDCOUTPUT_ZLG_N10dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n10dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_DCDCOUTPUT_ZLG_N20dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n20dbm();
+	#endif
+	#ifdef RF_18_7G_4V2_96M_DCON_DCDCOUTPUT_ZLG_N30dBm
+	rf_18_7G_4v2_96m_dcon_dcoutput_zlg_n30dbm();
+	#endif
+	//zlg - 3.3V 32M
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_ZLG_2dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_zlg_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_ZLG_0dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_zlg_0dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_ZLG_N2dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_ZLG_N10dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n10dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_ZLG_N20dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n20dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_ZLG_N30dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_zlg_n30dbm();
+	#endif
+	//zlg - 3.3V 96M
+	#ifdef RF_18_7G_3V3_96M_DCON_DCDCOUTPUT_ZLG_2dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_zlg_2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_DCDCOUTPUT_ZLG_0dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_zlg_0dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_DCDCOUTPUT_ZLG_N2dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n2dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_DCDCOUTPUT_ZLG_N10dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n10dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_DCDCOUTPUT_ZLG_N20dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n20dbm();
+	#endif
+	#ifdef RF_18_7G_3V3_96M_DCON_DCDCOUTPUT_ZLG_N30dBm
+	rf_18_7G_3v3_96m_dcon_dcoutput_zlg_n30dbm();
+	#endif
+	//bqb - 3.3V 32M
+	#ifdef RF_18_7G_3V3_32M_DCON_DCDCOUTPUT_BQB_1dBm
+	rf_18_7G_3v3_32m_dcon_dcoutput_bqb_1dbm();
+	#endif
+	//custom ------------------------------------------------------
+}
+

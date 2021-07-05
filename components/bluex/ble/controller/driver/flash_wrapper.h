@@ -66,7 +66,7 @@ periph_err_t flash_erase_security_reg(uint8_t reg_num);
 periph_err_t flash_program_security_reg(uint8_t reg_num, uint16_t offset, uint16_t length, uint8_t * buffer);
 //periph_err_t flash_write_status_reg(uint8_t cmd,uint8_t *data,uint8_t length);
 
-//periph_err_t flash_std_read(uint32_t offset,uint32_t length,uint8_t *buffer);
+periph_err_t flash_std_read(uint32_t offset,uint32_t length,uint8_t *buffer);
 //periph_err_t flash_multi_read(uint32_t offset, uint32_t length, uint8_t *buffer);
 //periph_err_t flash_read_memory_density(uint32_t *mem_density);
 //periph_err_t flash_read_sfdp(uint32_t addr,uint8_t *buf,uint8_t buf_len);

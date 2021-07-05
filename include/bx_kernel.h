@@ -68,7 +68,7 @@ bx_err_t bx_post( s32 svc, u32 msg, u32 param0, u32 param1 );
 bx_err_t bx_defer( s32 svc, u32 msg, u32 param0, u32 param1, u32 time );
 bx_err_t bx_repeat( s32 svc, u32 msg, u32 param0, u32 param1, u32 period );
 bx_err_t bx_repeatn( s32 svc, u32 msg, u32 param0, u32 param1, u32 period, s32 num );
-bx_err_t bx_cancel( s32 svc, u32 msg );
+void     bx_cancel( s32 svc, u32 msg );
 
 bx_err_t bx_subscibe( s32 svc, u32 msg, u32 param0, u32 param1 );
 bx_err_t bx_subscibeex( s32 src, s32 dst, u32 msg );
@@ -76,13 +76,17 @@ bx_err_t bx_public( s32 svc, u32 msg, u32 param0, u32 param1 );
 void     bx_err( s32 svc, u32 msg, u32 param0, u32 param1, bx_err_t err );
 
 bx_err_t bx_set( s32 svc, u32 prop, u32 param0, u32 param1 );
-bx_err_t bx_get( s32 svc, u32 prop, u8 * buff, u32 len );
+bx_err_t bx_get( s32 svc, u32 prop, u32 param0, u32 param1 );
+bx_err_t bx_dwork( void (*cb)(void *),void * data,u32 time, s32 num );
+void     bx_dwork_cancel( void (func)(void *) );
 
 u32                 bx_get_service_count( void );
 struct bx_service * bx_get_service( s32 id );
 s32                 bx_msg_source( void );
 
 bool                bx_ke_busy(void);
+
+void bx_kernel_show_data( void );
 #ifdef __cplusplus
 }
 #endif

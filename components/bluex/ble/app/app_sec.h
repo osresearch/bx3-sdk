@@ -28,25 +28,40 @@
 
 #include "rwip_config.h"
 
-#if (BLE_APP_SEC)
 
 #include <stdint.h>          // Standard Integer Definition
-
+#include "bx_type_def.h"
 /*
  * DEFINES
  ****************************************************************************************
  */
+#define APP_SEC_OFFSET              0x802000
+#define FLASH_SIZE                  256
+#define APP_SEC_BOND_STATE_OFFSET   16
+#define APP_SEC_BD_ADDR_OFFSET      32
+#define APP_SEC_MOUSE_NTF_OFFSET    48
+#define APP_SEC_LTK_OFFSET          64
+#define APP_SEC_PEER_IRK_OFFSET     96
+
+#define CONN_INTERVAL_MIN   10//20//40//  // Unit:1.25ms
+#define CONN_INTERVAL_MAX   40//40//20//40//   // Unit:1.25ms
+#define SLAVE_LATENCY       24//20//48//10//
+#define CONN_TIMEOUT        600//1100//500//1500//800// //unit:10ms
 
 /*
  * STRUCTURES DEFINITIONS
  ****************************************************************************************
  */
 
-struct app_sec_env_tag
-{
+struct app_sec_env_tag {
     // Bond status
     bool bonded;
+    u8 sec_ltk[32];
+    u8 peer_irk[32];
+    u8 bdaddr[8];
 };
+
+
 
 /*
  * GLOBAL VARIABLE DECLARATIONS
@@ -59,6 +74,7 @@ extern struct app_sec_env_tag app_sec_env;
 /// Table of message handlers
 extern const struct ke_state_handler app_sec_table_handler;
 
+extern char mouse_ntf[];
 /*
  * GLOBAL FUNCTIONS DECLARATIONS
  ****************************************************************************************
@@ -70,7 +86,7 @@ extern const struct ke_state_handler app_sec_table_handler;
  ****************************************************************************************
  */
 void app_sec_init(void);
-
+bool app_sec_get_bond_status( void );
 
 #if (NVDS_SUPPORT)
 /**
@@ -92,7 +108,7 @@ void app_sec_remove_bond(void);
  */
 void app_sec_send_security_req(uint8_t conidx);
 
-#endif //(BLE_APP_SEC)
+//#endif //(BLE_APP_SEC)
 
 #endif // APP_SEC_H_
 

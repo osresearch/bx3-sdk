@@ -3,6 +3,7 @@
 
     AREA    |n_xip_section|, CODE, READONLY
     FRAME UNWIND ON
+		
 rwip_assert_asm PROC
     EXPORT rwip_assert_asm
     IMPORT rwip_assert_c
@@ -14,8 +15,9 @@ rwip_assert_asm PROC
     ENDP
 
     ALIGN
-    AREA    |BX_DELAY_ASM|, CODE, READONLY
+    AREA    |n_xip_section|, CODE, READONLY
     FRAME UNWIND ON
+		
 bx_delay_asm PROC
     EXPORT bx_delay_asm
     SUBS R0,R0,#1
@@ -27,6 +29,7 @@ bx_delay_asm PROC
 	ALIGN
 	AREA    |n_xip_section|, CODE, READONLY
 	FRAME UNWIND ON
+		
 hardfault_env_save PROC
 	EXPORT  hardfault_env_save
 	STR R1,[R0,#0]

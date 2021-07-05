@@ -54,19 +54,19 @@ void reg_set_pll(uint32_t freq);
 void reg_wait_pll_stable(void);
 void reg_set_xtal_current(uint32_t iboost_current,uint32_t xtal_current,uint32_t vboost,uint32_t iboost);
 void reg_set_xtal_current_startup(void);
+void reg_set_xtal_current_below_temp0(void);
 void reg_set_xtal_current_normal(void);
 
 void rf_setting_differential_mode_adc(void);
 void rf_setting_single_mode_adc(void);
 void rf_setting_battery_monitor_adc(void);
 void rf_setting_temperature_adc(void);
-void rf_setPA_0dbm(void);
-void rf_setPA_8dbm(void);
 
-void rf_low_battery_config(void);
-void rf_reg_adjust_bat(uint16_t);
-void rf_reg_adjust_temp(int16_t);
 void rf_reg_settings_init_mp(void);
+#if (defined BX_BATTERY_MONITOR) && (BX_BATTERY_MONITOR == 1)
+void rf_reg_adjust_bat(uint16_t);
+#endif
+
 
 #ifdef __cplusplus
 }

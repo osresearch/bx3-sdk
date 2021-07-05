@@ -1,0 +1,9 @@
+[submodule "components/3rdparty/cmd-parser"]
+	path = components/3rdparty/cmd-parser
+	url = https://github.com/jiejieTop/cmd-parser.git
+[submodule "components/3rdparty/easylogger"]
+	path = components/3rdparty/easylogger
+	url = https://gitee.com/Armink/EasyLogger.git
+[submodule "components/3rdparty/FlashDB"]
+	path = components/3rdparty/FlashDB
+	url = https://gitee.com/Armink/FlashDB.git

@@ -491,6 +491,7 @@ void rwip_assert_err(const char * file, int line, int param0, int param1);
 
 void rwip_sleep_enable_set(bool val);
 
+uint32_t system_time( void );
 ///@} ROOT
 
 #endif // _RWIP_H_

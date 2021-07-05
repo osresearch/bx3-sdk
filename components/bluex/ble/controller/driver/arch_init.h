@@ -55,8 +55,16 @@ typedef struct{
     quad_enable_config_t quad_enable_config;
 }flash_info_t;
 
+struct unloaded_area_tag {
+    // status error
+    uint32_t error;
+    uint32_t data;
+    uint32_t mark_count;
+    uint32_t mark[32];
+};
 /* exported variables --------------------------------------------------------*/
-
+extern struct unloaded_area_tag * unloaded_area;
+extern uint32_t mark_count;
 /* exported constants --------------------------------------------------------*/
 
 /* exported macros -----------------------------------------------------------*/
@@ -66,6 +74,10 @@ typedef struct{
             SCB->VTOR = val;    \
             __DSB();            \
         }while(0)
+        
+//#define MARK(); ( ( void ) 0U )
+#define MARK();  unloaded_area->mark[mark_count++ & 0x1F] = (FILE_ID + __LINE__);unloaded_area->mark_count = mark_count;
+
 /* exported functions --------------------------------------------------------*/
 
 void mpu_enable_for_xip_region(void);

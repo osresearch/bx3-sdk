@@ -63,6 +63,8 @@ void bxsh_arg_err( char * cmd );
 #define bxsh_logln( fmt, args... )                      ( ( void ) 0U )
         
 #define bxsh_init()                                     ( ( void ) 0U )
+#define bxsh_open()                                     ( ( void ) 0U )
+#define bxsh_close()                                     ( ( void ) 0U )
 #define bxsh_add_cmd( cmd, fp, description )            ( ( void ) 0U )
 #define bxsh_run()                                      ( ( void ) 0U )
 #define bxsh_option_unsupport( cmd )                    ( ( void ) 0U )

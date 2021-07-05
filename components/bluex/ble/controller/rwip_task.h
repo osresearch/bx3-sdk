@@ -169,11 +169,11 @@ enum TASK_API_ID
 
     TASK_ID_GATTSC = 246,
     
+    TASK_ID_SOFT_TIMER = 250,
+    
+    TASK_ID_KERNEL_TIMER = 251,
+    
     TASK_ID_USER = 252,
-    
-    TASK_ID_USER_TIMER = 253,
-    
-    TASK_ID_KERNEL_TIMER = 254,
     
     TASK_ID_INVALID      = 0xFF, // Invalid Task Identifier
 };

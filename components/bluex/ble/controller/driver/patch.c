@@ -112,9 +112,7 @@ void patch_init()
     set_llm_end_evt_defer_patch();
 #endif
     patch_adv_int();
-#if(RC32K_USED == 1 && SYSTICK_USED == 0)
-    set_rc32k_patch();
-#endif
+
     set_lld_pdu_tx_flush_patch();
 #if(ENABLE_CANNEL_CONN_PARA_UPD_FEATURE_PATCH == 1)
     cancel_conn_para_updata_feature_patch();
@@ -123,10 +121,8 @@ void patch_init()
     llc_con_upd_req_ind_handler_init();
 #endif
 
-#if ((RF_PARAM == 1) || (RF_PARAM == 2) || (RF_PARAM == 3))
 #ifdef HOST_TEST
     set_llm_util_gen_pattern_tx_patch();
-#endif
 #endif
 
     set_lld_slave_instant_patch();
@@ -140,7 +136,7 @@ void patch_init()
 #endif
     set_lld_evt_schedule_scan_patch();
     set_slave_latency_patch();
-//    llc_llcp_version_ind_pdu_send_patch_creat();
+    llc_llcp_version_ind_pdu_send_patch_creat();
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

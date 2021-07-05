@@ -34,7 +34,7 @@ extern "C" {
 
 
 enum bx_message {
-    //“ª∞„œ˚œ¢
+
     BXM_OPEN,
     BXM_CLOSE,
     
@@ -63,7 +63,7 @@ enum bx_message {
 };
 
 /* exported macros -----------------------------------------------------------*/
-#define BX_FIRST_USER_MSG(x)        ( BXM_FIRST_USER_MSG + (x) )
+
 
 /* exported functions --------------------------------------------------------*/
 

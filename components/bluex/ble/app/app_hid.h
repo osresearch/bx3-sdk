@@ -32,7 +32,7 @@
 
 #include "rwip_config.h"     // SW configuration
 
-#if (BLE_APP_HID)
+
 
 #include <stdint.h>          // Standard Integer Definition
 #include "ke_task.h"         // Kernel Task Definition
@@ -40,6 +40,10 @@
 #if (PS2_SUPPORT)
 #include "ps2.h"             // PS2 Mouse Driver
 #endif //(PS2_SUPPORT)
+
+
+#include "hogpd_task.h"
+
 
 /*
  * STRUCTURES DEFINITION
@@ -65,6 +69,19 @@ struct app_hid_env_tag
  * GLOBAL VARIABLES DECLARATIONS
  ****************************************************************************************
  */
+
+#define REPORT_LENGTH_ID0		3
+#define REPORT_LENGTH_ID1		6
+
+#define REPORT_KEYBOARD     0 //keyboard
+#define REPORT_MOUSE        2 //mouse
+
+extern uint8_t botton_ctrl_buffer[REPORT_LENGTH_ID0];
+extern uint8_t pos_ctrl_buffer[REPORT_LENGTH_ID1];
+
+extern int8_t report_lenght;
+extern int8_t report_id ;
+extern uint8_t ios_or_android;
 
 /// Table of message handlers
 extern const struct ke_state_handler app_hid_table_handler;
@@ -96,6 +113,11 @@ void app_hid_init(void);
  */
 void app_hid_start_mouse(void);
 
+
+
+void app_hid_start_keyboard(void);
+void app_hid_send_keyboard_report(uint8_t *array);
+
 /**
  ****************************************************************************************
  * @brief Add a HID Service instance in the DB
@@ -119,9 +141,11 @@ void app_hid_enable_prf(uint8_t conidx);
  * @param[in]:  report - Mouse report sent by the PS2 driver
  ****************************************************************************************
  */
-void app_hid_send_mouse_report(struct ps2_mouse_msg report);
+//void app_hid_send_mouse_report(struct ps2_mouse_msg report);
 
-#endif //(BLE_APP_HID)
+//void app_hid_send_keyboard_report_ex( struct hogpd_report_upd_req * p_upd );
+void app_hid_send_keyboard_report_ex( struct hogpd_report_upd_req * p_upd,uint8_t key_type,uint8_t key );
+void app_hid_send_mouse_report_ex( struct hogpd_report_upd_req * p_upd,uint8_t key_type,uint8_t key );
 
 /// @} APP
 

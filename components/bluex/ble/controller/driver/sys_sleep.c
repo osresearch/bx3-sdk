@@ -39,11 +39,11 @@
 #include "ke.h"
 #include "rc_calib.h"
 #include "compiler_flag.h"
-
-#include "bx_shell.h"
 #include "bx_pm.h"
 #include "bx_kernel.h"
+#include "rf_power_set.h"
 #include "rf_temp_adjust.h"
+#include "rf_battery_adjust.h"
 
 
 /* private define ------------------------------------------------------------*/
@@ -140,7 +140,13 @@ N_XIP_SECTION uint8_t sleep_prepare_and_check()
         sleep_type = rwip_sleep();
         if( sleep_type & BLE_DEEP_SLEEP ) {
             mac_status = sleep_low_power_clk;
+			#if (defined BX_TEMP_SENSOR) && (BX_TEMP_SENSOR == 1) 
 			try_to_update_rf_param_with_temp();
+			#endif
+
+			#if (defined BX_BATTERY_MONITOR) && (BX_BATTERY_MONITOR == 1) 
+			try_to_update_rf_param_with_bat();
+			#endif
         }
     } else if( mac_status == sleep_low_power_clk ) {
         sleep_type = ke_sleep_check() ? PROCESSOR_SLEEP | BLE_DEEP_SLEEP : 0 ;
@@ -164,16 +170,21 @@ N_XIP_SECTION uint8_t sleep_prepare_and_check()
 N_XIP_SECTION void sleep_check(void)
 {
     if( bx_pm_check( BX_PM_ALL ) || bx_ke_busy() ) {
-        bxsh_logln("not sleep");
         return ;
     }
     uint8_t sleep_type;
     GLOBAL_INT_DISABLE();
     sleep_type = sleep_prepare_and_check();
     if( sleep_type == ( SYS_DEEP_SLEEP | BLE_DEEP_SLEEP | PROCESSOR_SLEEP ) ) {
-        pre_deepsleep_processing_mp();
+        sys_before_enter_sleep();
+        #ifdef BX2416_IDLE_MODE
+		WFI();
+		#else
+		pre_deepsleep_processing_mp();
         WFI();
         post_deepsleep_processing_mp();
+		#endif
+        sys_after_wakeup();
     } else if( sleep_type & PROCESSOR_SLEEP ) {
         WFI();
     }
@@ -219,9 +230,6 @@ N_XIP_SECTION void system_recovery()
     patch_init();
     periph_recovery( periph_domain_recovery_buf, PERIPH_DOMAIN_MAX );
     periph_recovery( cpu_domain_recovery_buf, CPU_DOMAIN_MAX );
-#if (defined(CFG_DYNAMIC_UPDATE)&&(CFG_DYNAMIC_UPDATE==1))
-//    sys_param_periodic_update();
-#endif
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -294,6 +302,26 @@ N_XIP_SECTION void set_vdd_in_systeminit( void )
 
 
 /*============================= import function ==============================*/
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+__weak void sys_before_enter_sleep( void )
+{
+
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+__weak void sys_after_wakeup( void )
+{
+
+}
 
 /*=========================== end of import function =========================*/
 
