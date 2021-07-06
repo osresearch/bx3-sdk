@@ -59,6 +59,11 @@ struct uart_baudrate_cfg {
     u32 div;
 };
 static struct uart_baudrate_cfg bd_cfg_hub[] = {
+    {0, 0, 0, 0, 8},   /*250000*/
+    {0, 0, 0, 0, 4},   /*500000*/
+    {0,  0, 0, 0, 2},  /*1000000*/
+    {0,  0, 0, 0, 1},  /*2000000*/
+
     {2, 12, 2, 1, 768},/*1200*/
     {2, 12, 2, 1, 384},/*2400*/
     {2, 12, 2, 1, 192},/*4800*/
@@ -70,14 +75,33 @@ static struct uart_baudrate_cfg bd_cfg_hub[] = {
     {2, 12, 2, 1, 12}, /*76800*/
     {2, 12, 2, 1, 8},  /*115200*/
     {2, 12, 2, 1, 4},  /*230400*/
-
-    {0, 0, 0, 0, 8},   /*250000*/
     {1, 29, 4, 7, 1},  /*256000*/
     {2, 12, 2, 1, 2},  /*460800*/
-    {0, 0, 0, 0, 4},   /*500000*/
     {12, 2, 1, 2, 1},  /*921600*/
-    {0,  0, 0, 0, 2},  /*1000000*/
-    {0,  0, 0, 0, 1},  /*2000000*/
+
+};
+
+enum uart_baudrate {
+    BX_UART_BD_250000,
+    BX_UART_BD_500000,
+    BX_UART_BD_1000000,
+    BX_UART_BD_2000000,
+
+    BX_UART_BD_1200,
+    BX_UART_BD_2400,
+    BX_UART_BD_4800,
+    BX_UART_BD_9600,
+    BX_UART_BD_14400,
+    BX_UART_BD_19200,
+    BX_UART_BD_38400,
+    BX_UART_BD_57600,
+    BX_UART_BD_76800,
+    BX_UART_BD_115200,
+    BX_UART_BD_230400,
+    BX_UART_BD_256000,
+    BX_UART_BD_460800,
+    BX_UART_BD_921600,
+    BX_UART_BD_MAX,
 };
 
 static bool uart_init_flag = false;
@@ -114,13 +138,18 @@ void uart_log_init( void )
     BX_PER->CLKG0 |= PER_CLKG0_32M_CLR_UART0;
     BX_PER->CLKG0 |= PER_CLKG0_PLL_CLR_UART0;
 
-    struct uart_baudrate_cfg * p_cfg = &bd_cfg_hub[9];
+    uint8_t baudrate = BX_UART_BD_115200;
+    struct uart_baudrate_cfg * p_cfg = &bd_cfg_hub[baudrate];
 
     BX_PER->CDP1  = ( ( ( uint32_t )p_cfg->num1 << 24 )     \
                       | ( ( uint32_t )p_cfg->num0 << 16 )  \
                       | ( ( uint32_t )p_cfg->len1 << 8 )   \
                       | ( ( uint32_t )p_cfg->len0 << 0 ) );
-    BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_DIV_UART0 );
+    if( baudrate > BX_UART_BD_2000000 ) {
+        BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_DIV_UART0 );
+    } else {
+        BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_UART0 );
+    }
 
     /* open clock */
     BX_PER->CLKG0 |= PER_CLKG0_32M_SET_UART0;
@@ -274,7 +303,7 @@ void log_init( void )
 #if ( BX_USE_SYS_TICK_FOR_LOG > 0 )
     SysTick_init();
 #endif
-    
+
     // u32 unloaded_area_data = unloaded_area->data;
     // SHOW_VAR(unloaded_area_data);
     // for( u32 i = 0; i < 32; i++ ) {

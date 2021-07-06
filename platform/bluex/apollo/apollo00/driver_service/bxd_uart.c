@@ -87,6 +87,11 @@ struct uart_baudrate_cfg {
 /* private variables ---------------------------------------------------------*/
 //baudrate = MAIN_CLK/16/div*(num0+num1+2)/( (num0+1)*(len0+1) + (num1+1)*(len1+1) )
 static struct uart_baudrate_cfg bd_cfg_hub[] = {
+    {0, 0, 0, 0, 8},   /*250000*/
+    {0, 0, 0, 0, 4},   /*500000*/
+    {0,  0, 0, 0, 2},  /*1000000*/
+    {0,  0, 0, 0, 1},  /*2000000*/
+
     {2, 12, 2, 1, 768},/*1200*/
     {2, 12, 2, 1, 384},/*2400*/
     {2, 12, 2, 1, 192},/*4800*/
@@ -98,14 +103,10 @@ static struct uart_baudrate_cfg bd_cfg_hub[] = {
     {2, 12, 2, 1, 12}, /*76800*/
     {2, 12, 2, 1, 8},  /*115200*/
     {2, 12, 2, 1, 4},  /*230400*/
-
-    {0, 0, 0, 0, 8},   /*250000*/
     {1, 29, 4, 7, 1},  /*256000*/
     {2, 12, 2, 1, 2},  /*460800*/
-    {0, 0, 0, 0, 4},   /*500000*/
     {12, 2, 1, 2, 1},  /*921600*/
-    {0,  0, 0, 0, 2},  /*1000000*/
-    {0,  0, 0, 0, 1},  /*2000000*/
+
 };
 
 /* exported variables --------------------------------------------------------*/
@@ -249,9 +250,9 @@ bx_err_t bxd_uart_disable_intr( void * hdl )
 {
     CHECK_HANDLE( hdl );
     reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
-    
+
     BX_UARTx->DI = 0;
-    
+
     if( BX_UARTx == BX_UART0 ) {
         NVIC_DisableIRQ( UART0_IRQn );
     } else if( BX_UARTx == BX_UART1 ) {
@@ -272,7 +273,7 @@ bx_err_t bxd_uart_intr_read_start( void * hdl )
 {
     CHECK_HANDLE( hdl );
     reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
-    
+
     BX_SET_BIT( BX_UARTx->DI, UART_DI_IE_RDA_AND_IDLE );
     BX_SET_BIT( BX_UARTx->IF, UART_IF_FIFO_EN );
 
@@ -288,10 +289,10 @@ bx_err_t bxd_uart_intr_read_stop( void * hdl )
 {
     CHECK_HANDLE( hdl );
     reg_uart_t * BX_UARTx = ( reg_uart_t * )hdl;
-    
+
     BX_UARTx->DI = 0;
     BX_CLR_BIT( BX_UARTx->IF, UART_IF_FIFO_EN );
-    
+
     return BX_OK;
 }
 /** ---------------------------------------------------------------------------
@@ -312,13 +313,21 @@ bx_err_t bxd_uart_set_speed( void * hdl, u8 baudrate )
                           | ( ( uint32_t )p_cfg->num0 << 16 )  \
                           | ( ( uint32_t )p_cfg->len1 << 8 )   \
                           | ( ( uint32_t )p_cfg->len0 << 0 ) );
-        BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_DIV_UART0 );
+        if( baudrate > BX_UART_BD_2000000 ) {
+            BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_DIV_UART0 );
+        } else {
+            BX_MODIFY_REG( BX_PER->CS, PER_CS_UART0, PER_CS_TYPE_16M_UART0 );
+        }
     } else if( BX_UARTx == BX_UART1 ) {
         BX_PER->CDP2  = ( ( ( uint32_t )p_cfg->num1 << 24 )     \
                           | ( ( uint32_t )p_cfg->num0 << 16 )  \
                           | ( ( uint32_t )p_cfg->len1 << 8 )   \
                           | ( ( uint32_t )p_cfg->len0 << 0 ) );
-        BX_MODIFY_REG( BX_PER->CS, PER_CS_UART1, PER_CS_TYPE_16M_DIV_UART1 );
+        if( baudrate > BX_UART_BD_2000000 ) {
+            BX_MODIFY_REG( BX_PER->CS, PER_CS_UART1, PER_CS_TYPE_16M_DIV_UART1 );
+        } else {
+            BX_MODIFY_REG( BX_PER->CS, PER_CS_UART1, PER_CS_TYPE_16M_UART1 );
+        }
     } else {
         return BX_ERR_INVAL;
     }

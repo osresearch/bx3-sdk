@@ -187,7 +187,7 @@ bx_err_t bxd_pwm_open( void * hdl )
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
- * @note    :
+ * @note    :Note that the clocks for all channels will be modified
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/

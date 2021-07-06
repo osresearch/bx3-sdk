@@ -41,7 +41,7 @@ extern "C" {
 bx_err_t    bxd_pwm_set_pin(void * hdl, u8 pin_num );
 
 bx_err_t    bxd_pwm_open(void * hdl );
-bx_err_t	bxd_pwm_set_clock_div( u8 div );
+bx_err_t    bxd_pwm_set_clock_div( u8 div );
 bx_err_t    bxd_pwm_close(void * hdl );
 
 bx_err_t    bxd_pwm_start(void * hdl,u32 freq, u8 duty );

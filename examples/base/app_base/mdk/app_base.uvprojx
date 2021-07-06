@@ -773,6 +773,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_power_exchange.c</FilePath>
             </File>
+            <File>
+              <FileName>rc32k_patch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\rc32k_patch.c</FilePath>
+            </File>
+            <File>
+              <FileName>rc32k_patch_asm.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\rc32k_patch_asm.s</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1896,6 +1906,16 @@
               <FileName>rf_power_exchange.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_power_exchange.c</FilePath>
+            </File>
+            <File>
+              <FileName>rc32k_patch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\rc32k_patch.c</FilePath>
+            </File>
+            <File>
+              <FileName>rc32k_patch_asm.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\rc32k_patch_asm.s</FilePath>
             </File>
           </Files>
         </Group>

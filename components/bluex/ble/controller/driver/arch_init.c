@@ -173,7 +173,7 @@ static void sys_setup()
     rc_calib_end( true );
 
     generate_random_seed();
-#if (RC32K_USED == 0)
+#if ( RC32K_USED == 0 )
     sysctrl_32k_clk_init();
 #endif
     sysctrl_awo_init();

@@ -102,10 +102,6 @@ extern "C" {
 #define LOCAL_NVDS                                      1
 #endif 
 
-#ifndef RC32K_USED
-#define RC32K_USED                                      0
-#endif
-
 #ifndef SYSTICK_USED
 #define SYSTICK_USED                                    0
 #endif
@@ -126,7 +122,7 @@ extern "C" {
 #endif
 
 #ifndef BX_MAC_ADDR
-#define BX_MAC_ADDR                                     {0x88,0x99,0x16,0xAB,0xCD,0xEF}
+#define BX_MAC_ADDR                                     {0x88,0x99,0x63,0xAB,0xCD,0xEF}
 #endif
 
 #ifndef BLE_SOFT_WAKEUP_TIME
@@ -145,13 +141,6 @@ extern "C" {
 #define EXT_WAKE_UP_ENABLE                              1
 #endif
 
-#if(RC32K_USED == 0)
-#ifndef LPCLK_DRIFT_MAX
-#define LPCLK_DRIFT_MAX                                 20
-#endif
-#else
-#define LPCLK_DRIFT_MAX                                 500
-#endif
 
 /*------------- Debug ---------- */
 #ifndef DEBUGGER_ATTACHED
@@ -185,12 +174,28 @@ extern "C" {
 #define BYPASS_VOLTAGE                                  3400
 #endif
 
-#ifndef BX_BATTERY_MONITOR
-#define BX_BATTERY_MONITOR                              1
+#ifndef RC32K_USED
+#define RC32K_USED                                      0
+#endif
+
+#ifndef PATCH_USE_PPM_PATCH
+#define PATCH_USE_PPM_PATCH                             0
 #endif
 
 #ifndef BX_TEMP_SENSOR
 #define BX_TEMP_SENSOR                                  1
+#endif
+
+#ifndef BX_BATTERY_MONITOR
+#define BX_BATTERY_MONITOR                              1
+#endif
+
+#if ( RC32K_USED == 0 )
+#ifndef LPCLK_DRIFT_MAX
+#define LPCLK_DRIFT_MAX                                 20
+#endif
+#else
+#define LPCLK_DRIFT_MAX                                 500
 #endif
 
 //define for APOLLO_00 Version

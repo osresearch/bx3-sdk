@@ -132,7 +132,7 @@ __attribute__( ( weak ) ) bool deep_sleep_check()
 -----------------------------------------------------------------------------*/
 N_XIP_SECTION uint8_t sleep_prepare_and_check()
 {
-#if(RC32K_USED == 1)
+#if ( RC32K_USED == 1 )
     rc_test_end();
 #endif
     uint8_t sleep_type = 0;

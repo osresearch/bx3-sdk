@@ -67,14 +67,10 @@ void rc_calib_end( bool wait )
         }
         i++;
     }
-    if( wait ) {
-        //LOG( LOG_LVL_INFO, "rc_calib loop count i=%d\n", i );
-    }
     uint32_t value = sysc_cpu_calb32k_rslt_getf();
     if( value != 0 ) {
         calib32k = value;
     }
-    //BX_ASSERT( calib32k );
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -86,6 +82,7 @@ uint32_t get_rc32k_calib_val()
 {
     return calib32k;
 }
+
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -103,9 +100,9 @@ void rc_test_start( void )
         tick_temp = ( portMAX_32_BIT_NUMBER - tick_count_last ) + tick_count_current;
     }
 
-    if( ( tick_temp >= 0x40000 ) && ( 0 == rc_calib_10s ) ) {
+    if( ( tick_temp >= (0x40000>>2) ) && ( 0 == rc_calib_10s ) ) {
         tick_count_last = tick_count_current;
-        rc_calib_start(); //开始校准
+        rc_calib_start();
         rc_calib_10s = 1;
     }
 }

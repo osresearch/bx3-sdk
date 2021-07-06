@@ -18,6 +18,10 @@
 
 #include "bxd_tim.h"
 
+static timer_intr_cb timer_intr_cb_0 = NULL;
+static timer_intr_cb timer_intr_cb_1 = NULL;
+
+
 /* private define ------------------------------------------------------------*/
 #define CHECK_HANDLE(hdl)                                   \
 do{                                                         \
@@ -141,6 +145,51 @@ bx_err_t bxd_timer_start( void * hdl, u32 periode_us )
 
     return BX_OK;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t bxd_timer_set_intr_callback( void * hdl, timer_intr_cb cb )
+{
+    CHECK_HANDLE( hdl );
+	if(hdl == BX_TIM0)
+	{
+		timer_intr_cb_0 =  cb;
+	}
+	else if(hdl == BX_TIM1)
+	{
+		timer_intr_cb_1 =  cb;
+	}
+	else
+	{
+		return BX_ERR_INVAL;
+	}
+    return BX_OK;
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void TIMER_IRQHandler( void )
+{
+    uint32_t timer_isr_status0, timer_isr_status1;
+    timer_isr_status0 = BX_TIM0->IS & 0x01;
+    timer_isr_status1 = BX_TIM1->IS & 0x01;
+    if( timer_isr_status0 ) {
+        BX_READ_REG( BX_TIM0->EOI );
+		timer_intr_cb_0();
+    }
+    if( timer_isr_status1 ) {
+        BX_READ_REG( BX_TIM1->EOI );
+		timer_intr_cb_1();
+    }
+}
+
 /*========================= end of exported function =========================*/
 
 

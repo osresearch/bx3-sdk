@@ -46,7 +46,6 @@ extern "C" {
 /* exported macros -----------------------------------------------------------*/
 
 /* exported functions --------------------------------------------------------*/
-void reg_config_touch(void);
 bool reg_pll_lock(void);
 void reg_pll_enable(uint8_t en);
 
@@ -56,11 +55,6 @@ void reg_set_xtal_current(uint32_t iboost_current,uint32_t xtal_current,uint32_t
 void reg_set_xtal_current_startup(void);
 void reg_set_xtal_current_below_temp0(void);
 void reg_set_xtal_current_normal(void);
-
-void rf_setting_differential_mode_adc(void);
-void rf_setting_single_mode_adc(void);
-void rf_setting_battery_monitor_adc(void);
-void rf_setting_temperature_adc(void);
 
 void rf_reg_settings_init_mp(void);
 #if (defined BX_BATTERY_MONITOR) && (BX_BATTERY_MONITOR == 1)

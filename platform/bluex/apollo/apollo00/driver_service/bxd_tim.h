@@ -28,7 +28,7 @@ extern "C" {
 #include "apollo_00_reg.h"
 
 /* exported types ------------------------------------------------------------*/
-
+typedef void( *timer_intr_cb )(void);
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/
@@ -37,10 +37,12 @@ extern "C" {
 
 /* exported functions --------------------------------------------------------*/
 
+
 bx_err_t    bxd_timer_open(void * hdl );
 bx_err_t    bxd_timer_close(void * hdl );
 
 bx_err_t    bxd_timer_start( void * hdl, u32 periode_us );
+bx_err_t 	bxd_timer_set_intr_callback( void * hdl, timer_intr_cb cb );
 
 #ifdef __cplusplus
 }

@@ -61,11 +61,7 @@ void ble_init()
     
 #if (DEFAULT_HCI  == 1)
     gapm_set_embedded_host( false );
-#endif
-    
-    app_adc_util_init();
-	init_rf_temp_adjust();
-    
+#endif 
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

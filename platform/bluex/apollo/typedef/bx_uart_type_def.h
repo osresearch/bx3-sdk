@@ -25,7 +25,12 @@ extern "C" {
 /* includes ------------------------------------------------------------------*/
 
 /* exported types ------------------------------------------------------------*/
-enum bx_uart_baudrate{
+enum bx_uart_baudrate {
+    BX_UART_BD_250000,
+    BX_UART_BD_500000,
+    BX_UART_BD_1000000,
+    BX_UART_BD_2000000,
+
     BX_UART_BD_1200,
     BX_UART_BD_2400,
     BX_UART_BD_4800,
@@ -37,18 +42,13 @@ enum bx_uart_baudrate{
     BX_UART_BD_76800,
     BX_UART_BD_115200,
     BX_UART_BD_230400,
-    BX_UART_BD_250000,
     BX_UART_BD_256000,
     BX_UART_BD_460800,
-    BX_UART_BD_500000,
     BX_UART_BD_921600,
-    BX_UART_BD_1000000,
-    BX_UART_BD_2000000,
-    
     BX_UART_BD_MAX,
 };
 
-enum bx_uart_stop_bit{
+enum bx_uart_stop_bit {
     BX_UART_SB_ONE,
     BX_UART_SB_TWO,
     BX_UART_SB_ONE_POINT_FIVE,
@@ -56,16 +56,16 @@ enum bx_uart_stop_bit{
     BX_UART_SB_MAX
 };
 
-enum bx_uart_data_bit{
+enum bx_uart_data_bit {
     BX_UART_DB_5B,
     BX_UART_DB_6B,
     BX_UART_DB_7B,
     BX_UART_DB_8B,
-    
+
     BX_UART_DB_MAX
 };
 
-enum bx_uart_parity{
+enum bx_uart_parity {
     //     不发生奇偶校验检查。
     BX_UART_PARITY_NONE,
     //     设置奇偶校验位，使位数等于奇数。
@@ -76,7 +76,7 @@ enum bx_uart_parity{
     BX_UART_PARITY_MARK,
     //     将奇偶校验位保留为 0。
     BX_UART_PARITY_SPACE,
-    
+
     BX_UART_PARITY_MAX,
 };
 /* exported variables --------------------------------------------------------*/

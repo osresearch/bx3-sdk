@@ -38,7 +38,8 @@
 #include "rc_calib.h"
 #include "app_qspi_wrapper.h"
 #include "compiler_flag.h"
-
+#include "rc_calib.h"
+#include "bx_sys_config.h"
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
@@ -284,13 +285,15 @@ N_XIP_SECTION void post_deepsleep_processing_mp()
     sysctrl_close_32m_rc();
     wait_rtc_until( current_time + XTAL_STARTUP_TIME + 2 );
     
-#if ( RC32K_USED == 1 )
-    rc_test_start();
-#endif
-    
     sysctrl_set_ahb_apb_blemac_clk();
     system_recovery();
     SCB->SCR &= ~( 1 << 2 );
+    
+    hwp_sysc_awo->pwr_pwm_ctrl.bit_field.pwm2_fc_h = 1;
+    
+#if( RC32K_USED == 1 )
+    rc_test_start();
+#endif
 }
 /*========================= end of exported function =========================*/
 

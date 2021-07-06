@@ -102,9 +102,6 @@ extern "C" {
 #define LOCAL_NVDS                                      1
 #endif 
 
-#ifndef RC32K_USED
-#define RC32K_USED                                      0
-#endif
 
 #ifndef SYSTICK_USED
 #define SYSTICK_USED                                    0
@@ -145,14 +142,6 @@ extern "C" {
 #define EXT_WAKE_UP_ENABLE                              1
 #endif
 
-#if(RC32K_USED == 0)
-#ifndef LPCLK_DRIFT_MAX
-#define LPCLK_DRIFT_MAX                                 20
-#endif
-#else
-#define LPCLK_DRIFT_MAX                                 500
-#endif
-
 /*------------- Debug ---------- */
 #ifndef DEBUGGER_ATTACHED
 #define DEBUGGER_ATTACHED                               0
@@ -185,12 +174,28 @@ extern "C" {
 #define BYPASS_VOLTAGE                                  3400
 #endif
 
-#ifndef BX_BATTERY_MONITOR
-#define BX_BATTERY_MONITOR                              1
+#ifndef RC32K_USED
+#define RC32K_USED                                      1
+#endif
+
+#ifndef PATCH_USE_PPM_PATCH
+#define PATCH_USE_PPM_PATCH                             1
 #endif
 
 #ifndef BX_TEMP_SENSOR
 #define BX_TEMP_SENSOR                                  1
+#endif
+
+#ifndef BX_BATTERY_MONITOR
+#define BX_BATTERY_MONITOR                              1
+#endif
+
+#if ( RC32K_USED == 0 )
+#ifndef LPCLK_DRIFT_MAX
+#define LPCLK_DRIFT_MAX                                 20
+#endif
+#else
+#define LPCLK_DRIFT_MAX                                 500
 #endif
 
 //define for APOLLO_00 Version

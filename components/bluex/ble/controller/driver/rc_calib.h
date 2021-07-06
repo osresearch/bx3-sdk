@@ -44,6 +44,7 @@ void        rc_calib_end(bool wait);
 uint32_t    get_rc32k_calib_val(void);
 void        rc_test_start(void);
 void        rc_test_end(void);
+
 #ifdef __cplusplus
 }
 #endif

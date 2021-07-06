@@ -338,7 +338,7 @@ static uint32_t rwip_slot_2_lpcycles(uint32_t slot_cnt)
 
     // Sanity check: The number of slots should not be too high to avoid overflow
     ASSERT_ERR(slot_cnt < 1000000);
-    #if (RC32K_USED)
+    #if ( RC32K_USED == 1 )
     lpcycles = (slot_cnt<<11)*625/get_rc32k_calib_val();
     #else
     #if HZ32000
@@ -992,13 +992,16 @@ void rwip_schedule(void)
     #endif //KE_SUPPORT
 }
 
-#if(RC32K_USED)
-static void ble_wakeup_time_update()
+#if ( RC32K_USED == 1 )
+static void ble_wakeup_time_update( void )
 {
     bx_lld_wakeup_time_set();
 }
 #else
-static void ble_wakeup_time_update(){}
+static void ble_wakeup_time_update( void )
+{
+
+}
 #endif
 
 uint8_t rwip_sleep()
@@ -1320,7 +1323,7 @@ N_XIP_SECTION uint32_t rwip_sleep_lpcycles_2_us(uint32_t lpcycles)
 
     // Sanity check: The number of lp cycles should not be too high to avoid overflow
     ASSERT_ERR(lpcycles < 1000000);
-    #if (RC32K_USED)
+    #if ( RC32K_USED == 1 )
     rwip_env.sleep_acc_error = lpcycles*get_rc32k_calib_val() + rwip_env.sleep_acc_error;
     res = rwip_env.sleep_acc_error >> 11;
     rwip_env.sleep_acc_error = rwip_env.sleep_acc_error - (res<<11);
@@ -1364,7 +1367,7 @@ N_XIP_SECTION uint32_t rwip_sleep_lpcycles_2_us(uint32_t lpcycles)
 uint32_t rwip_us_2_lpcycles(uint32_t us)
 {
     uint32_t lpcycles;
-    #if (RC32K_USED)
+    #if ( RC32K_USED == 1 )
     lpcycles = (us<<11)/get_rc32k_calib_val() ;
     #else
     #if (HZ32000)

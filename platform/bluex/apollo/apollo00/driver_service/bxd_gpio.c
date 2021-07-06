@@ -607,7 +607,6 @@ void GPIO_IRQHandler( void )
 {
     uint32_t int_stat = BX_GPIOA->IS;
     BX_GPIOA->EOI |= int_stat;
-    bx_logln("BXM_GPIO_INTR");
 }
 /** ---------------------------------------------------------------------------
  * @brief   :

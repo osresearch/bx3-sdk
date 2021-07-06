@@ -312,54 +312,54 @@ int32_t adc_cp_RO = 0;
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-//void rf_setting_battery_monitor_adc( void ) // typical value 0x22D80(bit 7/8/10/11/13/17)
-//{
-//	#if(MAIN_CLOCK == 96000000)
-//	{
-//		RF_REG_7 = 0x00022d90;
-//	}
-//	#else
-// 	{
-//		RF_REG_7 = 0x00022d80;
-//	}
-//	#endif
-//}
+void rf_setting_battery_monitor_adc( void ) // typical value 0x22D80(bit 7/8/10/11/13/17)
+{
+	#if(MAIN_CLOCK == 96000000)
+	{
+		RF_REG_7 = 0x00022d90;
+	}
+	#else
+ 	{
+		RF_REG_7 = 0x00022d80;
+	}
+	#endif
+}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-//void rf_setting_temperature_adc( void ) // typical value 0x12580(bit 7/8/10/13/16)
-//{
-//	#if(MAIN_CLOCK == 96000000)
-//	{
-//		RF_REG_7 = 0x00013d90;
-//	}
-//	#else
-//	{
-//		RF_REG_7 = 0x00013d80;
-//	}
-//	#endif
-//}
+void rf_setting_temperature_adc( void ) // typical value 0x12580(bit 7/8/10/13/16)
+{
+	#if(MAIN_CLOCK == 96000000)
+	{
+		RF_REG_7 = 0x00013d90;
+	}
+	#else
+	{
+		RF_REG_7 = 0x00013d80;
+	}
+	#endif
+}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-//void rf_setting_single_mode_adc( void ) // typical value 0x3980(bit 7/8/11/12/13)
-//{
-//	#if(MAIN_CLOCK == 96000000)
-//	{
-//		RF_REG_7 = 0x00003990;
-//	}
-//	#else
-//	{
-//		RF_REG_7 = 0x00003980;
-//	}
-//	#endif
-//}
+void rf_setting_single_mode_adc( void ) // typical value 0x3980(bit 7/8/11/12/13)
+{
+	#if(MAIN_CLOCK == 96000000)
+	{
+		RF_REG_7 = 0x00003990;
+	}
+	#else
+	{
+		RF_REG_7 = 0x00003980;
+	}
+	#endif
+}
 
 uint16_t AvgArray(uint16_t* numbers)
 {

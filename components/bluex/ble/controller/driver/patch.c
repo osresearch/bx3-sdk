@@ -20,7 +20,7 @@
 #include "reg_bus_ptch.h"
 #include <stdbool.h>
 #include "patch.h"
-
+#include "bx_sys_config.h"
 
 /* private define ------------------------------------------------------------*/
 #define MAX_PATCH_NUM               16
@@ -67,7 +67,7 @@ void patch_adv_int( void );
 void set_h4tl_read_start_skip_patch( void );
 void set_task_id_patch( void );
 void set_llm_end_evt_defer_patch( void );
-void set_rc32k_patch( void );
+void set_ppm_patch( void );
 void set_lld_pdu_tx_flush_patch( void );
 void set_lld_slave_instant_patch( void );
 void set_slave_finetimecnt_patch( void );
@@ -112,6 +112,10 @@ void patch_init()
     set_llm_end_evt_defer_patch();
 #endif
     patch_adv_int();
+
+#if ( defined( PATCH_USE_PPM_PATCH )&& ( PATCH_USE_PPM_PATCH == 1 ) )
+    set_ppm_patch();
+#endif
 
     set_lld_pdu_tx_flush_patch();
 #if(ENABLE_CANNEL_CONN_PARA_UPD_FEATURE_PATCH == 1)

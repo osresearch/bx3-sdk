@@ -42,25 +42,6 @@
 
 
 /*============================= exported function ============================*/
-
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void reg_config_touch( void )
-{
-    hwp_rf_reg->rf_reg_2.RG_OPT_TK_CKDEL_09V = 0x01;
-    hwp_rf_reg->rf_reg_2.RG_OPT_TK_ADCK_09V = 0x1;
-    hwp_rf_reg->rf_reg_2.RG_TK_IGEN_N_09V = 0xc;//0x7;
-    hwp_rf_reg->rf_reg_2.RG_clk_ctrl = 0x6;//0x4;
-    hwp_rf_reg->rf_reg_2.RG_TK_SHIELD_MODE_09V = 0x1;
-
-    hwp_rf_reg->rf_reg_3.RG_TK_IGEN_D_09V = 0x3;
-    hwp_rf_reg->rf_reg_3.RG_TK_IGEN_l2X_09V = 0x1;
-    hwp_rf_reg->rf_reg_3.RG_OPT_AFE_l2X_09V = 1;
-}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -162,86 +143,6 @@ bool reg_pll_lock()
 {
     return hwp_rf_reg->rf_reg_ro.PLL_96MHz_Lock ? true : false;
 }
-
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void rf_setting_battery_monitor_adc( void ) // typical value 0x22D80(bit 7/8/10/11/13/17)
-{
-	#if(MAIN_CLOCK == 96000000)
-	{
-		RF_REG_7 = 0x00022d90;
-	}
-	#else
-	{
-		RF_REG_7 = 0x00022d80;
-	}
-	#endif
-}
-
-
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void rf_setting_temperature_adc( void ) // typical value 0x12580(bit 7/8/10/13/16)
-{
-	#if(MAIN_CLOCK == 96000000)
-	{
-		RF_REG_7 = 0x00013d90;
-	}
-	#else
-	{
-		RF_REG_7 = 0x00013d80;
-	}
-	#endif
-}
-
-
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void rf_setting_differential_mode_adc( void ) // typical value 0x1980(bit 7/8/11/12)
-{
-	#if(MAIN_CLOCK == 96000000)
-	{
-		RF_REG_7 = 0x00001990;
-	}
-	#else
-	{
-		RF_REG_7 = 0x00001980;
-	}
-	#endif
-}
-
-
-/** ---------------------------------------------------------------------------
- * @brief   :
- * @note    :
- * @param   :
- * @retval  :
------------------------------------------------------------------------------*/
-void rf_setting_single_mode_adc( void ) // typical value 0x3980(bit 7/8/11/12/13)
-{
-	#if(MAIN_CLOCK == 96000000)
-	{
-		RF_REG_7 = 0x00003990;
-	}
-	#else
-	{
-		RF_REG_7 = 0x00003980;
-	}
-	#endif
-}
-
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -259,6 +160,7 @@ void reg_wait_pll_stable()
     while( reg_pll_lock() == false );
 #endif
 }
+
 #if (defined BX_BATTERY_MONITOR) && (BX_BATTERY_MONITOR == 1)
 /** ---------------------------------------------------------------------------
  * @brief   :
