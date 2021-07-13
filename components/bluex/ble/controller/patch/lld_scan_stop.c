@@ -59,7 +59,7 @@
 
 /* private macros ------------------------------------------------------------*/
 
-void LLD_SCAN_STOP_PATCH( void );
+void LLD_SCAN_STOP_PATCH_ASM( void );
 
 /*============================= private function =============================*/
 
@@ -142,7 +142,7 @@ void set_lld_scan_stop_patch( void )
     if( patch_alloc( &patch_no ) == false ) {
         BX_ASSERT( 0 );
     }
-    uint32_t code = cal_patch_bl( LLD_SCAN_STOP_ADDR, ( uint32_t )LLD_SCAN_STOP_PATCH - 1 );
+    uint32_t code = cal_patch_bl( LLD_SCAN_STOP_ADDR, ( uint32_t )LLD_SCAN_STOP_PATCH_ASM - 1 );
     patch_entrance_exit_addr( patch_no, LLD_SCAN_STOP_ADDR, code );
     PATCH_ENABLE( patch_no );
 }

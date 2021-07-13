@@ -689,9 +689,9 @@
               <FilePath>..\..\..\..\components\bluex\ble\controller\patch\lld_pdu_tx_flush_list_patch_asm.s</FilePath>
             </File>
             <File>
-              <FileName>lld_scan_stop.s</FileName>
+              <FileName>lld_scan_stop_patch_asm.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\lld_scan_stop.s</FilePath>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\lld_scan_stop_patch_asm.s</FilePath>
             </File>
             <File>
               <FileName>lld_slave_instant_patch_asm.s</FileName>
@@ -739,9 +739,9 @@
               <FilePath>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.c</FilePath>
             </File>
             <File>
-              <FileName>llc_version_patch.s</FileName>
+              <FileName>llc_version_patch_asm.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.s</FilePath>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch_asm.s</FilePath>
             </File>
             <File>
               <FileName>adc_integration.c</FileName>
@@ -1741,9 +1741,9 @@
               <FilePath>..\..\..\..\components\bluex\ble\controller\patch\lld_pdu_tx_flush_list_patch_asm.s</FilePath>
             </File>
             <File>
-              <FileName>lld_scan_stop.s</FileName>
+              <FileName>lld_scan_stop_patch_asm.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\lld_scan_stop.s</FilePath>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\lld_scan_stop_patch_asm.s</FilePath>
             </File>
             <File>
               <FileName>lld_slave_instant_patch_asm.s</FileName>
@@ -1791,9 +1791,9 @@
               <FilePath>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.c</FilePath>
             </File>
             <File>
-              <FileName>llc_version_patch.s</FileName>
+              <FileName>llc_version_patch_asm.s</FileName>
               <FileType>2</FileType>
-              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.s</FilePath>
+              <FilePath>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch_asm.s</FilePath>
             </File>
             <File>
               <FileName>adc_integration.c</FileName>

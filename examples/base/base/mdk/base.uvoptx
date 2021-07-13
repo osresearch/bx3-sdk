@@ -1199,8 +1199,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\components\bluex\ble\controller\patch\lld_scan_stop.s</PathWithFileName>
-      <FilenameWithoutPath>lld_scan_stop.s</FilenameWithoutPath>
+      <PathWithFileName>..\..\..\..\components\bluex\ble\controller\patch\lld_scan_stop_patch_asm.s</PathWithFileName>
+      <FilenameWithoutPath>lld_scan_stop_patch_asm.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1319,8 +1319,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch.s</PathWithFileName>
-      <FilenameWithoutPath>llc_version_patch.s</FilenameWithoutPath>
+      <PathWithFileName>..\..\..\..\components\bluex\ble\controller\patch\llc_version_patch_asm.s</PathWithFileName>
+      <FilenameWithoutPath>llc_version_patch_asm.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
