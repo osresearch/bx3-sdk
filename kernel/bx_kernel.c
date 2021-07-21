@@ -393,6 +393,8 @@ bx_err_t bx_defer( s32 dst, u32 msg, u32 param0, u32 param1, u32 time )
     pmsg->param1 = param1;
     pmsg->bkt_id = tm_id;
     pmsg->used = true;
+    pmsg->cb = 0;
+    pmsg->data = 0;
     GLOBAL_ENABLE_IRQ();
     return BX_OK;
 }
