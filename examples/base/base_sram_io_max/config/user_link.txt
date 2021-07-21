@@ -17,7 +17,7 @@ LR_FLASH IMAGE_BASE_IN_FLASH{
         *(RESET, +First)
         *(jump_table_area)
     }
-	RAM_KERNEL 0x110000{
+	RAM_KERNEL +0{
         *(kernel_data_section)
     }
     RAM_CODE_2 +0 {
