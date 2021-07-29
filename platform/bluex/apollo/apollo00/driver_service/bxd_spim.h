@@ -53,6 +53,7 @@ bx_err_t    bxd_spim_write( void * hdl,u8 * buff, u32 len );
 
 bx_err_t    bxd_spim_transmit_recieve(void * hdl, u8 * tx_data, u32 tx_len, u8 * rx_data, u32 rx_len );
 
+bx_err_t    bxd_spim_write_dma( void * hdl, u8 * tx_data, u32 tx_len,void (*cb)(void *),void *cb_param );
 
 #ifdef __cplusplus
 }

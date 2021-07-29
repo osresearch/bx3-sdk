@@ -17,6 +17,9 @@
 /* includes ------------------------------------------------------------------*/
 #include "bxd_spim.h"
 #include "bxd_io_mux.h"
+#include "bx_sys_config.h"
+
+#include "app_dmac_wrapper.h"
 
 /* includes ------------------------------------------------------------------*/
 
@@ -207,7 +210,7 @@ bx_err_t bxd_spim_write( void * hdl, u8 * tx_data, u32 tx_len )
     CHECK_POINTER( tx_data );
     reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
 
-    BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_TXRX );
+    BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_TX );
 
     uint32_t wr_len;
     while( 1 ) {
@@ -216,14 +219,14 @@ bx_err_t bxd_spim_write( void * hdl, u8 * tx_data, u32 tx_len )
             BX_SPIMx->DATA = *tx_data;
             tx_data++;
         }
-        while( wr_len > 0 &&  BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+        while( wr_len > 0 &&  BX_READ_REG( BX_SPIMx->TXFL ) > SPIM_TX_FIFO_MAX_LEN/2 );
 
         tx_len -= wr_len;
         if( tx_len == 0 ) {
             break;
         }
     }
-
+    while( wr_len > 0 &&  BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
     return BX_OK;
 }
 /** ---------------------------------------------------------------------------
@@ -270,9 +273,15 @@ bx_err_t bxd_spim_set_speed( void * hdl, u32 speed_hz )
 {
     CHECK_HANDLE( hdl );
     reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
-
-    uint32_t div = 16000000 / speed_hz;
-    BX_MODIFY_REG( BX_SPIMx->BRS, SPIM_BRS_CD, div );
+    uint32_t div=0;
+#if ( MAIN_CLOCK == 32000000 )
+    div = 16000000 / speed_hz;
+#elif ( MAIN_CLOCK == 96000000 )
+    div = 48000000 / speed_hz;
+#else
+    return BX_ERROR;
+#endif
+    BX_MODIFY_REG( BX_SPIMx->BRS, SPIM_BRS_CD,div );
 
     return BX_OK;
 }
@@ -389,6 +398,56 @@ bx_err_t bxd_spim_transmit_recieve( void * hdl, u8 * tx_data, u32 tx_len, u8 * r
     }
     return BX_OK;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t bxd_spim_write_dma( void * hdl, u8 * tx_data, u32 tx_len,void (*cb)(void *),void *cb_param )
+{
+    CHECK_HANDLE( hdl );
+    CHECK_POINTER( tx_data );
+    CHECK_POINTER( cb );
+    
+    reg_spim_t * BX_SPIMx = ( reg_spim_t * )hdl;
+    u8 index = 0;
+    if( BX_SPIMx == BX_SPIM0 ){
+        index = 0;
+    }else{
+        index = 1;
+    }
+
+    BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_TX );
+    
+    BX_SPIMx->DMATDL = SPIM_TX_FIFO_MAX_LEN/2;
+    
+    BX_SPIMx->DMAC |= SPIM_DMAC_TX_EN;
+    BX_SPIMx->IM &= ~SPIM_IM_TFE;
+    
+    app_dmac_transfer_param_t dma_param;
+    dma_param.src = tx_data;
+    dma_param.dst = ( uint8_t * )&BX_SPIMx->DATA;
+    dma_param.length = tx_len;
+    dma_param.src_tr_width = Transfer_Width_8_bits;
+    dma_param.dst_tr_width = Transfer_Width_8_bits;
+    dma_param.src_msize = Burst_Transaction_Length_4;
+    dma_param.dst_msize = Burst_Transaction_Length_4;
+    dma_param.tt_fc = Memory_to_Peripheral_DMAC_Flow_Controller;
+    dma_param.src_per = dmac_spi_master_rx_handshake_enum( index );
+    dma_param.dst_per = dmac_spi_master_tx_handshake_enum( index );
+    dma_param.int_en = Interrupt_Enabled;
+    dma_param.callback = cb;
+    dma_param.callback_param = cb_param;
+    
+    uint8_t ch_idx;
+    app_dmac_start_wrapper( &dma_param, &ch_idx );
+
+//    while(  BX_READ_REG( BX_SPIMx->TXFL ) != 0 );
+    
+    return BX_OK;
+}
+
 /*========================= end of exported function =========================*/
 
 
