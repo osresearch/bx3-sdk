@@ -76,6 +76,9 @@ do{                                                         \
         return BX_ERR_POINTER_EMPTY;                        \
     }                                                       \
 }while(0)
+
+static uart_intr_cb interrupt_callback = NULL;
+
 /* private typedef -----------------------------------------------------------*/
 struct uart_baudrate_cfg {
     u8  num1;
@@ -515,6 +518,74 @@ bx_err_t bxd_uart_set_rts_pin( void * hdl, u8 pin_num )
 
 /*============================ interrupt function ============================*/
 
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t bxd_uart_set_intr_callback( void * hdl, uart_intr_cb cb )
+{
+    CHECK_HANDLE( hdl );
+
+    interrupt_callback =  cb;
+
+    return BX_OK;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void UART0_IRQHandler( void )
+{
+    u8 irq_status = BX_READ_REG( BX_UART0->IF ) & 0x0F;
+
+    switch( irq_status ) {
+        case BX_UART_IRQ_RLS:
+        case BX_UART_IRQ_CT:
+        case BX_UART_IRQ_RDA: {
+            while( 1 == BX_READ_BIT( BX_UART0->LS, UART_LS_DATA_READY ) ) {
+                u8 data = BX_UART0->RTD;
+
+                interrupt_callback( BX_UART0, data );
+            }
+        }
+        break;
+
+        default:
+            break;
+    }
+}
+
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+void UART1_IRQHandler( void )
+{
+    u8 irq_status = BX_READ_REG( BX_UART1->IF ) & 0x0F;
+
+    switch( irq_status ) {
+        case BX_UART_IRQ_RLS:
+        case BX_UART_IRQ_CT:
+        case BX_UART_IRQ_RDA: {
+            while( 1 == BX_READ_BIT( BX_UART1->LS, UART_LS_DATA_READY ) ) {
+                u8 data = BX_UART1->RTD;
+
+                interrupt_callback( BX_UART1, data );
+            }
+        }
+        break;
+
+        default:
+            break;
+    }
+}
 /*========================= end of interrupt function ========================*/
 
 

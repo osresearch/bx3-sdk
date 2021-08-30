@@ -28,6 +28,9 @@ extern "C" {
 #include "apollo_00_reg.h"
 
 /* exported types ------------------------------------------------------------*/
+
+typedef void( *uart_intr_cb )( void * hdl, u8 data );
+
 enum bx_intr_id_uart{
 	BX_UART_IRQ_MS = 0,     // modem status
 	BX_UART_IRQ_NIP = 1,    // no interrupt pending
@@ -66,6 +69,8 @@ bx_err_t    bxd_uart_disable_intr( void * hdl );
 bx_err_t    bxd_uart_intr_write_start( void * hdl );
 bx_err_t    bxd_uart_intr_read_start( void * hdl );
 bx_err_t    bxd_uart_intr_read_stop( void * hdl );
+
+bx_err_t bxd_uart_set_intr_callback( void * hdl, uart_intr_cb cb );
 
 #ifdef __cplusplus
 }

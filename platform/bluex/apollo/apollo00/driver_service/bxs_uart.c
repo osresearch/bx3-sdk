@@ -264,50 +264,50 @@ s32 bxs_uart1_id( void )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void UART0_IRQHandler( void )
-{
-    u8 irq_status = BX_READ_REG( BX_UART0->IF ) & 0x0F;
+//void UART0_IRQHandler( void )
+//{
+//    u8 irq_status = BX_READ_REG( BX_UART0->IF ) & 0x0F;
 
-    switch( irq_status ) {
-        case BX_UART_IRQ_RLS:
-        case BX_UART_IRQ_CT:
-        case BX_UART_IRQ_RDA: {
-            while( 1 == BX_READ_BIT( BX_UART0->LS, UART_LS_DATA_READY ) ) {
-                u8 data = BX_UART0->RTD;
-                bx_fifo_push( &( uart0_svc.rx_fifo ), &data, 1 );
-            }
-        }
-        break;
+//    switch( irq_status ) {
+//        case BX_UART_IRQ_RLS:
+//        case BX_UART_IRQ_CT:
+//        case BX_UART_IRQ_RDA: {
+//            while( 1 == BX_READ_BIT( BX_UART0->LS, UART_LS_DATA_READY ) ) {
+//                u8 data = BX_UART0->RTD;
+//                bx_fifo_push( &( uart0_svc.rx_fifo ), &data, 1 );
+//            }
+//        }
+//        break;
 
-        default:
-            break;
-    }
-}
+//        default:
+//            break;
+//    }
+//}
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void UART1_IRQHandler( void )
-{
-    u8 irq_status = BX_READ_REG( BX_UART1->IF ) & 0x0F;
+//void UART1_IRQHandler( void )
+//{
+//    u8 irq_status = BX_READ_REG( BX_UART1->IF ) & 0x0F;
 
-    switch( irq_status ) {
-        case BX_UART_IRQ_RLS:
-        case BX_UART_IRQ_CT:
-        case BX_UART_IRQ_RDA: {
-            while( 1 == BX_READ_BIT( BX_UART1->LS, UART_LS_DATA_READY ) ) {
-                u8 data = BX_UART1->RTD;
-                bx_fifo_push( &( uart1_svc.rx_fifo ), &data, 1 );
-            }
-        }
-        break;
+//    switch( irq_status ) {
+//        case BX_UART_IRQ_RLS:
+//        case BX_UART_IRQ_CT:
+//        case BX_UART_IRQ_RDA: {
+//            while( 1 == BX_READ_BIT( BX_UART1->LS, UART_LS_DATA_READY ) ) {
+//                u8 data = BX_UART1->RTD;
+//                bx_fifo_push( &( uart1_svc.rx_fifo ), &data, 1 );
+//            }
+//        }
+//        break;
 
-        default:
-            break;
-    }
-}
+//        default:
+//            break;
+//    }
+//}
 /*========================= end of interrupt function ========================*/
 
 
