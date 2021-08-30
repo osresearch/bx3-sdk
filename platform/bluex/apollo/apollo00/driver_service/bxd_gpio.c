@@ -443,7 +443,7 @@ bx_err_t bxd_gpio_set_mode( void * hdl, u8 pin_num, u8 mode )
         case BX_GPIO_MODE_OUTPUT:
             BX_GPIOA->DIR |= ( pin_mask );
             break;
-        
+
         case BX_GPIO_MODE_NO_IT:
         case BX_GPIO_MODE_IT_LOW:
         case BX_GPIO_MODE_IT_HIGH:
@@ -569,32 +569,46 @@ u32 ext_int_stat_2_pin_state( u32 ext_int_stat )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-u8 get_reason( u8 pin_num )
+u8 get_reason( u8 pin_num, enum bx_intr_mode intr_mode )
 {
-    switch( pin_intr_mode[pin_num] ) {
-        case BX_GPIO_MODE_IT_LOW:
-        case BX_GPIO_MODE_EIT_LOW:
-            return BX_GPIO_INTR_LOW;
 
-        case BX_GPIO_MODE_IT_HIGH:
-        case BX_GPIO_MODE_EIT_HIGH:
-            return BX_GPIO_INTR_HIGH;
+    if( intr_mode == BX_GPIO_MODE_IT ) {
+        switch( pin_intr_mode[pin_num] ) {
+            case BX_GPIO_MODE_IT_LOW:
+                return BX_GPIO_INTR_LOW;
 
-        case BX_GPIO_MODE_IT_RISING:
-        case BX_GPIO_MODE_EIT_RISING:
-            return BX_GPIO_INTR_RISING;
+            case BX_GPIO_MODE_IT_HIGH:
+                return BX_GPIO_INTR_HIGH;
 
-        case BX_GPIO_MODE_IT_FALLING:
-        case BX_GPIO_MODE_EIT_FALLING:
-            return BX_GPIO_INTR_FALLING;
+            case BX_GPIO_MODE_IT_RISING:
+                return BX_GPIO_INTR_RISING;
 
-        case BX_GPIO_MODE_IT_RISING_FALLING:
-        case BX_GPIO_MODE_EIT_RISING_FALLING:
-            return BX_GPIO_INTR_RISING_FALLING;
+            case BX_GPIO_MODE_IT_FALLING:
+                return BX_GPIO_INTR_FALLING;
 
-        default :
-            return BX_GPIO_INTR_NONE;
+            default :
+                return BX_GPIO_INTR_NONE;
+        }
+    } else if( intr_mode == BX_GPIO_MODE_EIT ) {
+        switch( pin_intr_mode[pin_num] ) {
+            case BX_GPIO_MODE_EIT_LOW:
+                return BX_GPIO_INTR_LOW;
+
+            case BX_GPIO_MODE_EIT_HIGH:
+                return BX_GPIO_INTR_HIGH;
+
+            case BX_GPIO_MODE_EIT_RISING:
+                return BX_GPIO_INTR_RISING;
+
+            case BX_GPIO_MODE_EIT_FALLING:
+                return BX_GPIO_INTR_FALLING;
+
+            default :
+                return BX_GPIO_INTR_NONE;
+        }
+
     }
+
 }
 
 /** ---------------------------------------------------------------------------
@@ -607,6 +621,19 @@ void GPIO_IRQHandler( void )
 {
     uint32_t int_stat = BX_GPIOA->IS;
     BX_GPIOA->EOI |= int_stat;
+
+    if( interrupt_callback != NULL ) {
+        for( u8 i = 0; i < 32; i++ ) {
+            if( int_stat & ( 0x1 << i ) ) {
+                u8 reason = get_reason( i, BX_GPIO_MODE_IT );
+                if( reason != BX_GPIO_INTR_NONE ) {
+                    interrupt_callback( BX_GPIOA, i, reason );
+                } else {
+                    //something error
+                }
+            }
+        }
+    }
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -619,10 +646,11 @@ void EXT_INTR_IRQHandler( void )
     uint32_t ext_int_stat = BX_FIELD_RD( BX_AWO->EIVAL, AWO_EIVAL_VAL ) ;
     BX_AWO->EICLR |= ext_int_stat;
     u32 pin_state = ext_int_stat_2_pin_state( ext_int_stat );
+
     if( interrupt_callback != NULL ) {
         for( u8 i = 0; i < 32; i++ ) {
             if( pin_state & ( 0x1 << i ) ) {
-                u8 reason = get_reason( i );
+                u8 reason = get_reason( i, BX_GPIO_MODE_EIT );
                 if( reason != BX_GPIO_INTR_NONE ) {
                     interrupt_callback( BX_GPIOA, i, reason );
                 } else {

@@ -67,6 +67,12 @@ enum bx_pin_pull{
     BX_GPIO_PULL_MAX,
 };
 
+enum bx_intr_mode{
+	BX_GPIO_MODE_NONE,
+	BX_GPIO_MODE_IT,
+	BX_GPIO_MODE_EIT,
+};
+
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/
