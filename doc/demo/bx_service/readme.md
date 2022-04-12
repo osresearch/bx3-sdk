@@ -6,6 +6,10 @@
 
 本文以一个LED服务为例，介绍如何从0开始新建一个service，并且使用它，同时阐述service的意义，并介绍与service相关的配置
 
+关于service的概念和定义以及相关的API请参考SDK3/doc目录下的<编程手册> [编程手册.pdf](..\..\编程手册.pdf) 
+
+
+
 ## 2、新建service
 
 - 新建us_led.c和us_led.h文档

@@ -2,7 +2,7 @@
 
 ​		本文档介绍消息方式的uart外设例程，打开SDK3/examples/demo路径下的bxs_uart工程
 
-
+关于service的概念和定义以及相关的API请参考SDK3/doc目录下的<编程手册> [编程手册.pdf](..\..\编程手册.pdf) 
 
 # 2.收发数据
 

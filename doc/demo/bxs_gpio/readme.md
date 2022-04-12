@@ -1,6 +1,8 @@
 # 1.概述
 
-​		本文档介绍消息方式的GPIO外设例程，打开SDK3/examples/demo路径下的bxs_gpio工程
+本文档介绍消息方式的GPIO外设例程，打开SDK3/examples/demo路径下的bxs_gpio工程
+
+关于service的概念和定义以及相关的API请参考SDK3/doc目录下的<编程手册> [编程手册.pdf](..\..\编程手册.pdf) 
 
 # 2.OUTPUT
 

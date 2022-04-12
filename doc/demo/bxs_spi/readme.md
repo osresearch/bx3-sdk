@@ -2,7 +2,7 @@
 
 ​		本文的介绍消息方式的spi主机功能例程，打开SDK3/examples/demo路径下的bxs_spi工程
 
-
+关于service的概念和定义以及相关的API请参考SDK3/doc目录下的<编程手册> [编程手册.pdf](..\..\编程手册.pdf) 
 
 # 2.SPI使用
 
