@@ -40,7 +40,7 @@ extern "C" {
 #define APP_DEVICE_NAME_MAX_LEN         (18)
 #define APP_IDX_MAX                     (1)
 
-#define SPI_FIFO_DEPTH					2
+#define SPI_FIFO_DEPTH					2  //spi …Ó∂»
 
 /* exported paras ------------------------------------------------------------*/
 

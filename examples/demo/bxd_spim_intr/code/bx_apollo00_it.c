@@ -56,14 +56,13 @@ static void spim_rx_full_isr( void )//master spi rx接收中断回调函数
 			m_p_rx_buff += 4;
 			
 		}
-		--m_rx_len;
+			--m_rx_len;
 
 		if(m_rx_len == 0){
 			break;
 		}
 
 	}
-
 	
 	if(m_rx_len > 0)
 		BX_SPIM0->RXFTL = m_rx_len > SPI_FIFO_DEPTH ? SPI_FIFO_DEPTH / 2 - 1:m_rx_len - 1;
@@ -86,58 +85,58 @@ static void spim_tx_empty_isr( void )//master spi tx发送中断回调函数
 
    if(m_tx_len)
    	{
-		while(BX_READ_BIT(BX_SPIM0->STA, SPIM_STA_TFNF)>>SPIM_STA_TFNF_POS)
-		{
-			if(BX_READ_BIT(BX_SPIM0->CTRL, SPIM_CTRL_DFS32) <= SPIM_CTRL_DFS32_T_8_BITS)
+			while(BX_READ_BIT(BX_SPIM0->STA, SPIM_STA_TFNF)>>SPIM_STA_TFNF_POS)
 			{
-				BX_SPIM0->DATA = *(uint8_t *)m_p_tx_buff;
-				m_p_tx_buff += 1;
-			}
-			else if(BX_READ_BIT(BX_SPIM0->CTRL, SPIM_CTRL_DFS32) <= SPIM_CTRL_DFS32_T_16_BITS)
-			{
-				BX_SPIM0->DATA = *(uint16_t *)m_p_tx_buff;
-				m_p_tx_buff += 2;
-			}
-			else
-			{
-				BX_SPIM0->DATA = *(uint32_t *)m_p_tx_buff;
-				m_p_tx_buff += 4;
+				if(BX_READ_BIT(BX_SPIM0->CTRL, SPIM_CTRL_DFS32) <= SPIM_CTRL_DFS32_T_8_BITS)
+				{
+					BX_SPIM0->DATA = *(uint8_t *)m_p_tx_buff;
+					m_p_tx_buff += 1;
+				}
+				else if(BX_READ_BIT(BX_SPIM0->CTRL, SPIM_CTRL_DFS32) <= SPIM_CTRL_DFS32_T_16_BITS)
+				{
+					BX_SPIM0->DATA = *(uint16_t *)m_p_tx_buff;
+					m_p_tx_buff += 2;
+				}
+				else
+				{
+					BX_SPIM0->DATA = *(uint32_t *)m_p_tx_buff;
+					m_p_tx_buff += 4;
+					
+				}
 				
-			}
-			
-			--m_tx_len;
+					--m_tx_len;
 
-			
-			if(m_tx_len == 0)
-			{
-				BX_MODIFY_REG(BX_SPIM0->TXFTL, SPIM_TXFTL_VAL,(uint32_t) 0);
-				BX_SET_BIT(BX_SPIM0->IM, SPIM_IM_TFE);
+				
+				if(m_tx_len == 0)
+				{
+					BX_MODIFY_REG(BX_SPIM0->TXFTL, SPIM_TXFTL_VAL,(uint32_t) 0);
+					BX_SET_BIT(BX_SPIM0->IM, SPIM_IM_TFE);
 
-				break;
+					break;
+				}
 			}
-		}
-		if((BX_READ_BIT(BX_SPIM0->STA, SPIM_STA_BUSY) == 0)&&(BX_READ_REG(BX_SPIM0->SE) == 0))
-		{
-				BX_MODIFY_REG(BX_SPIM0->SE,SPIM_SE_VAL,( uint32_t ) 0x01);
-		}
-   	}
-   else
-   {
-		if(BX_READ_REG(BX_SPIM0->TXFL))
-		{
-			BX_MODIFY_REG(BX_SPIM0->TXFTL, SPIM_TXFTL_VAL,(uint32_t) 0);
-		}
-		else
-		{
-			BX_CLR_BIT(BX_SPIM0->IM, SPIM_IM_TFE);
-			if(BX_READ_BIT(BX_SPIM0->CTRL,SPIM_CTRL_TM) == SPIM_CTRL_TM_T_TX)
+			if((BX_READ_BIT(BX_SPIM0->STA, SPIM_STA_BUSY) == 0)&&(BX_READ_REG(BX_SPIM0->SE) == 0))
 			{
-				while(BX_READ_BIT(BX_SPIM0->STA,SPIM_STA_BUSY) == 1)
-				BX_CLR_BIT(BX_SPIM0->SSIE, SPIM_SSIE_BIT);
-				BX_MODIFY_REG(BX_SPIM0->SE, SPIM_SE_VAL,(uint32_t) 0 );
+					BX_MODIFY_REG(BX_SPIM0->SE,SPIM_SE_VAL,( uint32_t ) 0x01);
 			}
-		}
-   }
+			}
+		  else
+		  {
+				if(BX_READ_REG(BX_SPIM0->TXFL))
+				{
+					  BX_MODIFY_REG(BX_SPIM0->TXFTL, SPIM_TXFTL_VAL,(uint32_t) 0);
+				}
+				else
+				{
+						BX_CLR_BIT(BX_SPIM0->IM, SPIM_IM_TFE);
+						if(BX_READ_BIT(BX_SPIM0->CTRL,SPIM_CTRL_TM) == SPIM_CTRL_TM_T_TX)
+						{
+							while(BX_READ_BIT(BX_SPIM0->STA,SPIM_STA_BUSY) == 1)
+							BX_CLR_BIT(BX_SPIM0->SSIE, SPIM_SSIE_BIT);
+							BX_MODIFY_REG(BX_SPIM0->SE, SPIM_SE_VAL,(uint32_t) 0 );
+						 }
+				 }
+		  }
 
 }
 
@@ -151,7 +150,7 @@ static void spim_tx_empty_isr( void )//master spi tx发送中断回调函数
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-void SPIM0_IRQHandler( void )// spim0中断向量函数
+void SPIM0_IRQHandler( void )//spim0中断向量函数
 {
 {
 	uint32_t irq_stat = BX_SPIM0->IS;
@@ -165,7 +164,7 @@ void SPIM0_IRQHandler( void )// spim0中断向量函数
 	}
 	if(irq_stat & SPIM_IS_RFF)
 	{
-	    spim_rx_full_isr();//master spi rx接收中断回调函数
+	    spim_rx_full_isr();//spi rx接收中断回调函数
 	}
 	if(irq_stat & SPIM_IS_RFO)
 	{
@@ -179,7 +178,7 @@ void SPIM0_IRQHandler( void )// spim0中断向量函数
 	}
 	if(irq_stat & SPIM_IS_TFE)
 	{
-	    spim_tx_empty_isr();//master spi tx发送中断回调函数
+	    spim_tx_empty_isr();//spi tx发送中断回调函数
 	}
 	if(irq_stat & SPIM_IS_TFO)
 	{	   
@@ -189,9 +188,9 @@ void SPIM0_IRQHandler( void )// spim0中断向量函数
 }
     if(BX_READ_BIT( BX_SPIM0->SSIE, SPIM_SSIE_BIT ) == 0)
     {
-		BX_PER->CLKG0 &= ~PER_CLKG0_32M_SET_SPIM0;
+		  BX_PER->CLKG0 &= ~PER_CLKG0_32M_SET_SPIM0;
     	BX_PER->CLKG0 &= ~PER_CLKG0_PLL_SET_SPIM0;
-	}
+	  }
 }
 
 

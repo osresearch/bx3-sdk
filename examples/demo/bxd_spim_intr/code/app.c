@@ -48,18 +48,17 @@ static const appm_add_svc_func_t appm_add_svc_func_list[] = {
 };
 
 /* exported variables --------------------------------------------------------*/
-uint8_t m_tx_len = 0;					//spi tx 长度
-uint8_t m_rx_len = 0;					//spi rx 长度
-uint8_t * m_p_tx_buff = 0;		//spi tx buffer
-uint8_t * m_p_rx_buff = 0;		//spi rx buffer
+uint8_t m_tx_len = 0;      //spi tx 长度
+uint8_t m_rx_len = 0;      //spi rx 长度
+uint8_t * m_p_tx_buff = 0; //spi tx buffer
+uint8_t * m_p_rx_buff = 0; //spi rx buffer
 
 struct user_service us_svc = {0};
 
 u8 w_data[5] = {0xCC, 0x22, 0x33, 0x44, 0x55};    //spi master tx data
 u8 w_data1[5] = {0xFF, 0xBB, 0xCC, 0xDD, 0xEE};   //spi master tx data
-u8 r_data[5] = {0};																//spi master rx data , feedback from slave
+u8 r_data[5] = {0};                               //spi master rx data , feedback from slave
 static bool send_flag = false;
-
 u32 tx_rx_count = 0;
 /*============================= private function =============================*/
 
@@ -171,16 +170,15 @@ void spim_intr_mask( void )
     BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_TFE );		//Transmit FIFO Empty Interrupt Mask
 }
 
-//master spi 初始化
+
 void spim_init( void )
 {
-    NVIC_DisableIRQ( SPIM0_IRQn );       //disable interrupt
-
-    bxd_spim_open( BX_SPIM0 );	//初始化spim0			
+    NVIC_DisableIRQ( SPIM0_IRQn );//disable interrupt
+    bxd_spim_open( BX_SPIM0 );//初始化spim0
     bxd_spim_set_speed( BX_SPIM0, 100000 );//设置spi传输速度，单位：hz，此处设为100khz
     bxd_spim_set_data_bit( BX_SPIM0, BX_SPI_DATA_BIT_8B );//spi数据位，此处为8bit
-    bxd_spim_use_cs( BX_SPIM0, 0x01 );//设置片选引脚( 0x01->cs0 0x02->cs1)
-    bxd_spim_set_cs1_pin( BX_SPIM0, 3 );//设置设备上与片选引脚与之对应的引脚( 3->cs0 2->cs1 )
+    bxd_spim_use_cs( BX_SPIM0, 0x01 );//spi cs选择
+    bxd_spim_set_cs1_pin( BX_SPIM0, 3 );//cs pin 3:cs0 2:cs1
 
     spim_fifo_depth();
     spim_intr_mask();
@@ -211,6 +209,7 @@ bx_err_t spim_transmit_data( uint8_t * pbuff, uint32_t len )
 
     return BX_OK;
 }
+
 //master spi rx
 bx_err_t spim_receive_data( uint8_t * pbuff, uint32_t len )
 {
@@ -224,7 +223,7 @@ bx_err_t spim_receive_data( uint8_t * pbuff, uint32_t len )
     BX_PER->CLKG0 |= PER_CLKG0_PLL_SET_SPIM0;
 
     BX_MODIFY_REG( BX_SPIM0->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_RX );
-
+	
     BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_TFE  );
     BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_RFF  );
 
@@ -233,6 +232,7 @@ bx_err_t spim_receive_data( uint8_t * pbuff, uint32_t len )
 
     return BX_OK;
 }
+
 //master spi tx&rx
 bx_err_t spim_transmit_receive_data( uint8_t * tx_pbuff, uint32_t tx_len, uint8_t * rx_pbuff, uint32_t rx_len )
 {
@@ -249,8 +249,8 @@ bx_err_t spim_transmit_receive_data( uint8_t * tx_pbuff, uint32_t tx_len, uint8_
     BX_MODIFY_REG( BX_SPIM0->CTRL, SPIM_CTRL_TM, SPIM_CTRL_TM_T_TXRX );
 
 
-    BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_TFE  );
-    BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_RFF  );
+    BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_TFE  );//Transmit FIFO Empty Interrupt Mask
+    BX_SET_BIT( BX_SPIM0->IM, SPIM_IM_RFF  );//Receive FIFO Full Interrupt Mask
 
     /*set ssie enable*/
     BX_SET_BIT( BX_SPIM0->SSIE, SPIM_SSIE_BIT );
@@ -267,17 +267,17 @@ bx_err_t spim_transmit_receive_data( uint8_t * tx_pbuff, uint32_t tx_len, uint8_
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-//GPIO callback function , do master spi tx/rx
 void gpio_callback( void * hdl, u8 pin_num, u8 reason )
 {
-	  //tx_rx_count++;
-	  //set spi tx data[1-4]
-    w_data[1] = 0x01; 
-    w_data[2] = 0x02;
-    w_data[3] = 0x03;
-    w_data[4] = 0x04;
-    //master spi tx/rx
-    spim_transmit_receive_data( w_data, 5, r_data, 5 );
+      //tx_rx_count++;
+			//set spi tx data[1-4]
+			w_data[1] = 0x01; 
+			w_data[2] = 0x02;
+			w_data[3] = 0x03;
+			w_data[4] = 0x04;
+	    //master spi tx/rx
+			spim_transmit_receive_data( w_data, 5, r_data, 5 );
+
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -294,14 +294,13 @@ void app_init( void )
     svc.msg_handle_func = user_msg_handle_func;
     svc.name = "user service";
     us_svc.id = bx_register( &svc );
-    //master spi初始化
+		//spi master 初始化
     spim_init();
-	  //setup GPIO P22 
     bxd_gpio_open( BX_GPIOA );
     bxd_gpio_set_mode( BX_GPIOA, 22, BX_GPIO_MODE_INPUT );
     bxd_gpio_set_pull( BX_GPIOA, 22, BX_GPIO_PULLUP );
-    bxd_gpio_set_mode( BX_GPIOA, 22, BX_GPIO_MODE_EIT_FALLING ); //set external falling trigger interrupt
-    bxd_gpio_set_intr_callback( BX_GPIOA, gpio_callback ); //set interrupt callback function
+    bxd_gpio_set_mode( BX_GPIOA, 22, BX_GPIO_MODE_EIT_FALLING );
+    bxd_gpio_set_intr_callback( BX_GPIOA, gpio_callback );
 
 		//订阅消息
     bx_subscibe( us_svc.id, BXM_USER_TRANSMIT_DATA, 0, 0 );
@@ -325,11 +324,10 @@ bx_err_t user_msg_handle_func( s32 svc, u32 msg, u32 param0, u32 param1 )
     if( msg_src == us_svc.id ) {
         switch( msg ) {
             case BXM_USER_TRANSMIT_DATA: {
-                
+
             }
             break;
-
-
+						
             case BXM_USER_RECEIVE_DATA_END: {
 
                 for( u8 i = 0; i < 5; i++ ) {
@@ -338,8 +336,6 @@ bx_err_t user_msg_handle_func( s32 svc, u32 msg, u32 param0, u32 param1 )
                 LOG_I( "\n\n" );
 
             }
-
-
             break;
 
             default:

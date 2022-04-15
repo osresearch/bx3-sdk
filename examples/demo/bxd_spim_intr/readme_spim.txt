@@ -1,9 +1,8 @@
-# spi主从搭配【主机例程】使用说明
+# spi主机例程使用说明（中断方式）
 
 ## 1、概述
 
-​		本文檔介紹spi主機功能例程，采用典型的中断方式进行data收發，此例程需與bxd_spis_intr搭配使用，需要準備兩塊開發板，一塊用作主機，另一塊用作從機。
-主要的设计思路为，上电后由从机每500ms发起GPIO22 10ms高电平的下降缘触发给主机，主机在GPIO外部中断函数做主机的spi读写从机，spi主机信号传递到从机，做从机的spi读写主机。
+​		本文檔介紹庫函數方式的spi主機收發功能例程，此例程需與bxd_spis_intr搭配使用，需要準備兩塊開發板，一塊用作主機，另一塊用作從機。
 
 ## 2、工程目录
 
@@ -165,11 +164,7 @@ app.c
 
 		return BX_OK;
 	}
-```	
-	
-  当从机GPIO22外部下降缘触发主机的GPIO22,产生主机的外部中断，在中断回调函数，做主机spi读写从机。
-  
-```c	
+
 	/** ---------------------------------------------------------------------------
 	 * @brief   :
 	 * @note    :
@@ -188,9 +183,7 @@ app.c
 		//master spi tx/rx
 		spim_transmit_receive_data( w_data, 5, r_data, 5 );
 	}
-```
 
-```c
 	/
 	/** ---------------------------------------------------------------------------
 	 * @brief   :
@@ -220,10 +213,7 @@ app.c
 		bx_subscibe( us_svc.id, BXM_USER_TRANSMIT_DATA, 0, 0 );
 		bx_subscibe( us_svc.id, BXM_USER_RECEIVE_DATA_END, 0, 0 );
 	}
-```
-订阅BXM_USER_RECEIVE_DATA_END消息，在消息处理函数处理BXM_USER_RECEIVE_DATA_END消息，打印主机读写数据。
 
-```c
 	/** ---------------------------------------------------------------------------
 	 * @brief   :
 	 * @note    :
@@ -311,11 +301,12 @@ app.c
 
 		//先关闭
 		BX_CLR_BIT( BX_SPIMx->SSIE, SPIM_SSIE_BIT );
-        //When SCPH = 0, data are captured on the first edge of the serial clock.
-		//0: Serial clock toggles in middle of first data bit
+
 		BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_SCPH, SPIM_CTRL_SCPH_T_MIDDLE );//CPHA=0
+		//When SCPH = 0, data are captured on the first edge of the serial clock.
+		//0: Serial clock toggles in middle of first data bit
+		BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_SCPOL, SPIM_CTRL_SCPOL_T_LOW );//CPOL=0
 		//0 – Inactive state of serial clock is low
-		BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_SCPOL, SPIM_CTRL_SCPOL_T_LOW );//CPOL=0		
 		BX_MODIFY_REG( BX_SPIMx->CTRL, SPIM_CTRL_FF, SPIM_CTRL_FF_T_MOTOROLA_SPI );//00-Motorola SPI
 
 		return BX_OK;
@@ -354,7 +345,8 @@ app.c
 			--m_rx_len;
 
 		}
-	
+
+		
 		if(m_rx_len > 0)
 			BX_SPIM0->RXFTL = m_rx_len > SPI_FIFO_DEPTH ? SPI_FIFO_DEPTH / 2 - 1:m_rx_len - 1;
 		else{
@@ -396,7 +388,8 @@ app.c
 				}
 				
 				--m_tx_len;
-			
+
+				
 				if(m_tx_len == 0)
 				{
 					BX_MODIFY_REG(BX_SPIM0->TXFTL, SPIM_TXFTL_VAL,(uint32_t) 0);
@@ -503,14 +496,12 @@ GPIO22输出下降缘触发主机GPIO22外部下降缘中断，在主机例程�
 ### 5.3 演示结果
 LA輸出
 
-![image-2022-03-15-145839](./image/image-2022-03-15-145839.png)
+ ![image-2022-02-17 104753](./image/image-2022-02-17 104753.png)
  
-![image-2022-03-15-150018](./image/image-2022-03-15-150018.png)
+ ![image-2022-03-01 144658](./image/image-2022-03-01 144658.png)
  
-![image-2022-03-15-150059](./image/image-2022-03-15-150059.png)
+ ![image-2022-03-01 145005](./image/image-2022-03-01 145005.png)
 
 J-Link RTT輸出 :訂閱BXM_USER_RECEIVE_DATA_END消息在消息處理函數LOG輸出spi讀寫數據
 
-![image-2022-03-15-151052](./image/image-2022-03-15-151052.png)
-
-
+ ![image-2022-02-17 104954](./image/image-2022-02-17 104954.png)

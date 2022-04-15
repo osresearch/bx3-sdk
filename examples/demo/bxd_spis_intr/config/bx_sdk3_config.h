@@ -49,7 +49,7 @@ extern "C" {
 #endif 
 
 #ifndef BX_USE_WDT
-#define BX_USE_WDT                                      1
+#define BX_USE_WDT                                      0
 #endif
 
 #ifdef __cplusplus

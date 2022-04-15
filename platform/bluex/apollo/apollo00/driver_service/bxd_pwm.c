@@ -193,13 +193,13 @@ bx_err_t bxd_pwm_open( void * hdl )
 -----------------------------------------------------------------------------*/
 bx_err_t bxd_pwm_set_clock_div( u8 div )
 {
-	/* div minimum value is 2 */
-	CHECK_DIV(div);
-	/* PWM tick clock = 32MHz/div */
+    /* div minimum value is 2 */
+    CHECK_DIV( div );
+    /* PWM tick clock = 32MHz/div */
     BX_PER->CLKG1 |= PER_CLKG1_CLR_PWM_DIV;
-    BX_PER->CDP0 = ( uint32_t )(div - 1) << PER_CDP0_PWM_POS;
+    BX_PER->CDP0 = ( uint32_t )( div - 1 ) << PER_CDP0_PWM_POS;
     BX_PER->CLKG1 |= PER_CLKG1_SET_PWM_DIV;
-	pwm_div = div;
+    pwm_div = div;
     return BX_OK;
 }
 /** ---------------------------------------------------------------------------
@@ -282,14 +282,14 @@ bx_err_t bxd_pwm_start( void * hdl, u32 freq, u8 duty )
         }
         is_set_funcio = true;
     } else {
-		high_time = ( ( 320000 / ( pwm_div) ) * duty ) / ( freq );
-        low_time  = ( ( 320000 / ( pwm_div) ) * ( 100 - duty ) ) / ( freq );
+        high_time = ( ( 320000 / ( pwm_div ) ) * duty ) / ( freq );
+        low_time  = ( ( 320000 / ( pwm_div ) ) * ( 100 - duty ) ) / ( freq );
         if( high_time > 0xFFFF || low_time > 0xFFFF ) {
             return BX_ERR_INVAL;
         }
         for( u8 i = 0; i < 5 && is_set_funcio ; i++ ) {
             if( pwm_drv[i].handle == BX_PWMx ) {
-                bxd_iomux_set_pin_type( pwm_drv[i].pin_num,pwm_drv[i].pin_type);
+                bxd_iomux_set_pin_type( pwm_drv[i].pin_num, pwm_drv[i].pin_type );
                 break;
             }
         }
@@ -298,6 +298,66 @@ bx_err_t bxd_pwm_start( void * hdl, u32 freq, u8 duty )
         BX_PWMx->PS = ( ( uint32_t )high_time << 16 ) | low_time;
         BX_PWMx->EN = 1;
         is_set_funcio = false;
+    }
+
+    return BX_OK;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+bx_err_t bxd_pwm_start2( void * hdl, u16 high, u16 low )
+{
+    CHECK_HANDLE( hdl );
+
+    reg_pwm_t * BX_PWMx = ( reg_pwm_t * )hdl;
+    u32 pin_mask ;
+
+    static bool is_set_funcio = false;
+    if( high == 0 && low > 0  ) {
+        for( u8 i = 0; i < 5; i++ ) {
+            if( pwm_drv[i].handle == BX_PWMx ) {
+                BX_PWMx->EN = 0;
+                bxd_iomux_set_pin_type( pwm_drv[i].pin_num, BX_PIN_TYPE_GENERAL_IO );
+
+                BX_PER->CLKG1 |= PER_CLKG1_SET_GPIO;
+                pin_mask =  0x01UL << pwm_drv[i].pin_num;
+                BX_GPIOA->DIR |= ( pin_mask );
+                BX_GPIOA->OD &= ~( 0x01UL << pwm_drv[i].pin_num );
+                break;
+            }
+        }
+        is_set_funcio = true;
+    } else if( high > 0 && low == 0 ) {
+        for( u8 i = 0; i < 5; i++ ) {
+            if( pwm_drv[i].handle == BX_PWMx ) {
+                BX_PWMx->EN = 0;
+                bxd_iomux_set_pin_type( pwm_drv[i].pin_num, BX_PIN_TYPE_GENERAL_IO );
+
+                BX_PER->CLKG1 |= PER_CLKG1_SET_GPIO;
+                pin_mask =  0x01UL << pwm_drv[i].pin_num;
+                BX_GPIOA->DIR |= ( pin_mask );
+                BX_GPIOA->OD |= ( 0x01UL << pwm_drv[i].pin_num );
+                break;
+            }
+        }
+        is_set_funcio = true;
+    } else if( high > 0 && low > 0 ) {
+        for( u8 i = 0; i < 5 && is_set_funcio ; i++ ) {
+            if( pwm_drv[i].handle == BX_PWMx ) {
+                bxd_iomux_set_pin_type( pwm_drv[i].pin_num, pwm_drv[i].pin_type );
+                break;
+            }
+        }
+
+        BX_PWMx->EN = 0;
+        BX_PWMx->PS = ( ( uint32_t )high << 16 ) | low;
+        BX_PWMx->EN = 1;
+        is_set_funcio = false;
+    } else {
+        return BX_ERR_INVAL;
     }
 
     return BX_OK;
