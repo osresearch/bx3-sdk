@@ -23,6 +23,7 @@ extern "C" {
 #endif
 
 /* includes ------------------------------------------------------------------*/
+#include <stdint.h>
 
 /* exported types ------------------------------------------------------------*/
 
@@ -49,6 +50,29 @@ enum bx_iic_addr_bit {
     BX_IIC_ADDR_BIT_MAX,
 };
 
+
+typedef enum
+{
+    IIC_STATE_RESET      = 0x0, /* not yet init */
+    IIC_STATE_READY      = 0x1, /* ready for use */
+    IIC_STATE_WRITE      = 0x2, /* tx going */
+    IIC_STATE_READ       = 0x3, /* rx going */
+    IIC_STATE_TIMEOUT    = 0x4, /* timeout */
+}bxd_iic_state_t;
+
+
+typedef struct
+{
+    uint8_t                         *p_tx_buff;
+    uint32_t                        tx_size;
+    uint8_t                         *p_rx_buff;
+    uint32_t                        rx_size;
+    bxd_iic_state_t                 state;
+    uint8_t                        error_detect;
+
+    void (* tx_cplt_cb)(void *);
+    void (* rx_cplt_cb)(void *);
+}bxd_iic_env_t;
 /* exported variables --------------------------------------------------------*/
 
 /* exported constants --------------------------------------------------------*/

@@ -1,3 +1,4 @@
+
 /**
   ******************************************************************************
   * @file   :   .c
@@ -92,12 +93,65 @@ N_XIP_SECTION periph_err_t flash_program_operation( uint8_t cmd, uint32_t offset
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_program_operation_with_4byte_addr( uint8_t cmd, uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    periph_err_t error;
+    if( ( uint32_t )buffer >= 0x800000 ) {
+        do {
+            uint32_t read_buff_len = length > FLASH_BUFFER_MAX_LEN ? FLASH_BUFFER_MAX_LEN : length;
+            for ( uint32_t i = 0; i < read_buff_len; i++ ) {
+                flash_buff[i] = *( uint8_t * ) buffer;
+                buffer++;
+            }
+            __disable_irq();
+            cache_disable();
+            error = flash_program_operation_start_with_4byte_addr( cmd, offset, read_buff_len, flash_buff );
+            cache_enable();
+            __enable_irq();
+
+            if( error != PERIPH_NO_ERROR ) {
+                return error;
+            }
+            offset += read_buff_len;
+            length -= read_buff_len;
+        } while( length > 0 );
+    } else {
+        __disable_irq();
+        cache_disable();
+        error = flash_program_operation_start_with_4byte_addr( cmd, offset, length, buffer );
+        cache_enable();
+        __enable_irq();
+    }
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 N_XIP_SECTION periph_err_t flash_erase_operation( uint8_t cmd, uint32_t addr, bool whole_chip )
 {
     periph_err_t error;
     __disable_irq();
     cache_disable();
     error = flash_erase_operation_start( cmd, addr, whole_chip );
+    cache_enable();
+    __enable_irq();
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_erase_operation_with_4byte_addr( uint8_t cmd, uint32_t addr, bool whole_chip )
+{
+    periph_err_t error;
+    __disable_irq();
+    cache_disable();
+    error = flash_erase_operation_start_with_4byte_addr( cmd, addr, whole_chip );
     cache_enable();
     __enable_irq();
     return error;
@@ -134,6 +188,23 @@ N_XIP_SECTION periph_err_t flash_multi_read_32bits_operation( uint32_t * data, u
     __enable_irq();
     return error;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_multi_read_32bits_operation_with_4byte_addr( uint32_t * data, uint16_t length, uint32_t addr )
+{
+    periph_err_t error;
+    __disable_irq();
+    cache_disable();
+    error = flash_multi_read_32bits_operation_start_with_4byte_addr( data, length, addr );
+    cache_enable();
+    __enable_irq();
+    return error;
+}
+
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :

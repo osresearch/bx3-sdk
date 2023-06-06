@@ -63,6 +63,7 @@
 #include "bx_sdk3_config.h"
 #include "app_adc_utils.h"
 #include "rf_temp_adjust.h"
+#include "rf_battery_adjust.h"
 
 /* private define ------------------------------------------------------------*/
 #define XIP_REGION_MPU_NUM          7
@@ -168,8 +169,8 @@ void app_rtc_init_wrapper()
 static void sys_setup()
 {
     rc_calib_start();
-    rf_reg_settings_init_mp();
     sysctrl_set_ahb_apb_blemac_clk();
+    rf_reg_settings_init_mp();
     rc_calib_end( true );
 
     generate_random_seed();
@@ -339,9 +340,13 @@ void soc_init()
     modem_init();
 
     app_adc_util_init();
-	#if (defined BX_TEMP_SENSOR) && (BX_TEMP_SENSOR == 1) 
-	init_rf_temp_adjust();
-	#endif
+    #if (defined BX_TEMP_SENSOR) && (BX_TEMP_SENSOR == 1) 
+        handle_read_temp();
+    #endif
+    #if (defined BX_BATTERY_MONITOR) && (BX_BATTERY_MONITOR == 1) 
+        adc_sys_adjust_bat();
+    #endif
+
     modem_dev_calib_in_main();
 
     bxfs_init( app_info.data_base );

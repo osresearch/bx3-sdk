@@ -424,6 +424,34 @@ N_XIP_SECTION periph_err_t app_qspi_flash_program( periph_inst_handle_t hdl, uin
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t app_qspi_flash_program_with_4byte_addr( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t cmd, uint32_t addr, uint8_t * data, uint32_t length )
+{
+    app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
+    uint16_t fifo_depth = QSPI_FIFO_DEPTH;
+    if( periph_lock( &inst->qspi_lock ) == false ) {
+        return PERIPH_BUSY;
+    }
+    ble_reg_ssi_t * reg = inst->reg;
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_SET_QSPI );
+    qspi_sys_stat( inst, QSPI_OP_START );
+    qspi_std_byte_write_dma_config( reg, fifo_depth );
+    reg->DR = cmd;
+    reg->DR = addr >> 24 & 0xff;
+    reg->DR = addr >> 16 & 0xff;
+    reg->DR = addr >> 8 & 0xff;
+    reg->DR = addr & 0xff;
+    qspi_std_byte_write_dma_start( reg, cs_sel_mask, data, length );
+    qspi_sys_stat( inst, QSPI_OP_DONE );
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_CLR_QSPI );
+    periph_unlock( &inst->qspi_lock );
+    return PERIPH_NO_ERROR;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 N_XIP_SECTION periph_err_t app_qspi_std_read( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t * cmd_buf, uint8_t cmd_len, uint8_t * data_buf, uint16_t data_len )
 {
     app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
@@ -541,6 +569,74 @@ N_XIP_SECTION periph_err_t app_qspi_multi_read_32bits( periph_inst_handle_t hdl,
     periph_unlock( &inst->qspi_lock );
     return PERIPH_NO_ERROR;
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t app_qspi_multi_read_32bits_with_4byte_addr( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint32_t * data, uint16_t length, uint32_t addr )
+{
+    app_qspi_inst_t * inst = CONTAINER_OF( hdl, app_qspi_inst_t, inst );
+    if( periph_lock( &inst->qspi_lock ) == false ) {
+        return PERIPH_BUSY;
+    }
+    qspi_sys_stat( inst, QSPI_OP_START );
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_SET_QSPI );
+    ble_reg_ssi_t * reg = inst->reg;
+    reg->SPI_CTRLR0 = FIELD_BUILD( SSI_WAIT_CYCLES, inst->param.multi_read.wait_cycles ) | FIELD_BUILD( SSI_INST_L, Instruction_Length_8_bits ) |
+                      FIELD_BUILD( SSI_ADDR_L, Addr_Width_32_bits ) | FIELD_BUILD( SSI_TRANS_TYPE, inst->param.multi_read.trans_type );
+    reg->CTRLR0 = FIELD_BUILD( SSI_SPI_FRF, inst->param.multi_read.dual_quad ) | FIELD_BUILD( SSI_DFS, DFS_32_32_bits ) | FIELD_BUILD( SSI_TMOD, Receive_Only ) |
+                  FIELD_BUILD( SSI_SCPOL, Inactive_Low ) | FIELD_BUILD( SSI_SCPH, SCLK_Toggle_In_Middle ) | FIELD_BUILD( SSI_FRF, Motorola_SPI );
+    reg->CTRLR1 = length - 1;
+    reg->DMACR = 0;
+    reg->SSIENR = SSI_Enabled;
+    if(inst->param.multi_read.cmd == 0x3B)
+        reg->DR = 0x3c;//Fast Read Dual Output with 4-Byte Address
+    else if(inst->param.multi_read.cmd == 0x6B)
+        reg->DR = 0x6c;//Fast Read Quad Output with 4-Byte Address
+    else
+        reg->DR = 0x0c;////Fast Read with 4-Byte Address
+    reg->DR = addr;
+    uint16_t fifo_depth = QSPI_FIFO_DEPTH;
+    if( length > fifo_depth ) {
+        reg->DMARDLR = 7;
+        reg->DMACR = FIELD_BUILD( SSI_RDMAE, Receive_DMA_Enabled );
+        app_dmac_transfer_param_t dma_param;
+        dma_param.src = ( uint8_t * )&reg->DR_REVERSED;
+        dma_param.dst = ( uint8_t * )data;
+        dma_param.length = length;
+        dma_param.src_tr_width = Transfer_Width_32_bits;
+        dma_param.dst_tr_width = Transfer_Width_32_bits;
+        dma_param.src_msize = Burst_Transaction_Length_8;
+        dma_param.dst_msize = Burst_Transaction_Length_8;
+        dma_param.tt_fc = Peripheral_to_Memory_DMAC_Flow_Controller;
+        dma_param.src_per = dmac_qspi_rx_handshake_enum( 0 );
+        dma_param.dst_per = dmac_qspi_tx_handshake_enum( 0 ),
+        dma_param.int_en = Interrupt_Disabled;
+        uint8_t ch_idx;
+        periph_err_t error = app_dmac_start_wrapper( &dma_param, &ch_idx );
+        BX_ASSERT( error == PERIPH_NO_ERROR );
+        reg->SER = cs_sel_mask;
+        error = app_dmac_transfer_wait_wrapper( ch_idx );
+        BX_ASSERT( error == PERIPH_NO_ERROR );
+    } else {
+        reg->SER = cs_sel_mask;
+        while( FIELD_RD( reg, SR, SSI_TFE ) != Transmit_FIFO_Empty );
+        while( FIELD_RD( reg, SR, SSI_BUSY ) == SSI_Busy );
+        uint8_t i;
+        for( i = 0; i < length; i++ ) {
+            data[i] = reg->DR_REVERSED;
+        }
+    }
+    reg->SSIENR = SSI_Disabled;
+    reg->SER = 0;
+    ble_clk_gate_cpu_g1( BLE_CPU_CLKG_CLR_QSPI );
+    qspi_sys_stat( inst, QSPI_OP_DONE );
+    periph_unlock( &inst->qspi_lock );
+    return PERIPH_NO_ERROR;
+}
+
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :

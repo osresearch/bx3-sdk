@@ -53,10 +53,32 @@ static periph_err_t flash_read_byte( uint32_t offset, uint16_t length, uint8_t *
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-static periph_err_t flash_multi_read_word( uint32_t offset, uint16_t length, uint32_t * buffer )
+static periph_err_t flash_read_byte_with_4byte_addr( uint32_t offset, uint16_t length, uint8_t * buffer )
 {
-    return flash_multi_read_32bits_operation( buffer, length, offset );
+    uint8_t read_cmd[6] = {FLASH_SINGLE_OUTPUT_FAST_READ_WITH_4BYTE_ADDR,  offset >> 24 & 0xff, offset >> 16 & 0xff, offset >> 8 & 0xff, offset & 0xff, 0x00};
+    return flash_read_operation( read_cmd, sizeof( read_cmd ), buffer, length );
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+//static periph_err_t flash_multi_read_word( uint32_t offset, uint16_t length, uint32_t * buffer )
+//{
+//    return flash_multi_read_32bits_operation( buffer, length, offset );
+//}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+static periph_err_t flash_multi_read_word_with_4byte_addr( uint32_t offset, uint16_t length, uint32_t * buffer )
+{
+    return flash_multi_read_32bits_operation_with_4byte_addr( buffer, length, offset );
+}
+
 
 /*========================= end of private function ==========================*/
 
@@ -68,13 +90,13 @@ static periph_err_t flash_multi_read_word( uint32_t offset, uint16_t length, uin
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-periph_err_t flash_multi_read( uint32_t offset, uint32_t length, uint8_t * buffer )
+N_XIP_SECTION periph_err_t flash_multi_read_0_16M( uint32_t offset, uint32_t length, uint8_t * buffer )
 {
     periph_err_t error = PERIPH_NO_ERROR;
     uint8_t head_bytes = ( uint32_t )buffer % sizeof( uint32_t );
     if( head_bytes ) {
         uint32_t head_word;
-        error = flash_multi_read_word( offset, 1, &head_word );
+        error = flash_multi_read_32bits_operation( &head_word, 1,offset );
         if( error != PERIPH_NO_ERROR ) {
             return PERIPH_NO_ERROR;
         }
@@ -88,7 +110,7 @@ periph_err_t flash_multi_read( uint32_t offset, uint32_t length, uint8_t * buffe
     uint32_t length_32bits = length / sizeof( uint32_t );
     while( length_32bits ) {
         uint16_t transfer_size = length_32bits > max_transfer_size ? max_transfer_size : length_32bits;
-        error = flash_multi_read_word( offset, transfer_size, ( uint32_t * )buffer );
+        error = flash_multi_read_32bits_operation(  ( uint32_t * )buffer,transfer_size, offset);
         if( error != PERIPH_NO_ERROR ) {
             return error;
         }
@@ -99,13 +121,72 @@ periph_err_t flash_multi_read( uint32_t offset, uint32_t length, uint8_t * buffe
     uint8_t tail_bytes = length % sizeof( uint32_t );
     if( tail_bytes ) {
         uint32_t tail_word;
-        error = flash_multi_read_word( offset, 1, &tail_word );
+        error = flash_multi_read_32bits_operation(  &tail_word, 1 ,offset);
         if( error != PERIPH_NO_ERROR ) {
             return PERIPH_NO_ERROR;
         }
         memcpy( buffer, &tail_word, tail_bytes );
     }
     return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_multi_read_32_256M( uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    periph_err_t error = PERIPH_NO_ERROR;
+    uint8_t head_bytes = ( uint32_t )buffer % sizeof( uint32_t );
+    if( head_bytes ) {
+        uint32_t head_word;
+        error = flash_multi_read_word_with_4byte_addr( offset, 1, &head_word );
+        if( error != PERIPH_NO_ERROR ) {
+            return PERIPH_NO_ERROR;
+        }
+        uint8_t head_length = length < ( sizeof( uint32_t ) - head_bytes ) ? length : ( sizeof( uint32_t ) - head_bytes );
+        memcpy( buffer, ( uint8_t * )&head_word, head_length );
+        buffer += head_length;
+        offset += head_length;
+        length -= head_length;
+    }
+    uint16_t max_transfer_size = dmac_get_max_block_transfer_size();
+    uint32_t length_32bits = length / sizeof( uint32_t );
+    while( length_32bits ) {
+        uint16_t transfer_size = length_32bits > max_transfer_size ? max_transfer_size : length_32bits;
+        error = flash_multi_read_word_with_4byte_addr( offset, transfer_size, ( uint32_t * )buffer );
+        if( error != PERIPH_NO_ERROR ) {
+            return error;
+        }
+        offset += transfer_size * sizeof( uint32_t );
+        buffer += transfer_size * sizeof( uint32_t );
+        length_32bits -= transfer_size;
+    }
+    uint8_t tail_bytes = length % sizeof( uint32_t );
+    if( tail_bytes ) {
+        uint32_t tail_word;
+        error = flash_multi_read_word_with_4byte_addr( offset, 1, &tail_word );
+        if( error != PERIPH_NO_ERROR ) {
+            return PERIPH_NO_ERROR;
+        }
+        memcpy( buffer, &tail_word, tail_bytes );
+    }
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_multi_read( uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    if(offset+length <= 0xFFFFFF){       
+        return flash_multi_read_0_16M(offset,length,buffer);        
+    }else{
+        return flash_multi_read_32_256M(offset,length,buffer);                 
+    }
 }
 
 /** ---------------------------------------------------------------------------
@@ -134,7 +215,7 @@ periph_err_t flash_program_security_reg( uint8_t reg_num, uint16_t offset, uint1
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-periph_err_t flash_program( uint32_t offset, uint32_t length, uint8_t * buffer )
+periph_err_t flash_program_0_16M( uint32_t offset, uint32_t length, uint8_t * buffer )
 {
     periph_err_t error;
     uint32_t offset_base = offset & ( ~( FLASH_PAGE_SIZE - 1 ) );
@@ -171,6 +252,58 @@ periph_err_t flash_program( uint32_t offset, uint32_t length, uint8_t * buffer )
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+periph_err_t flash_program_16_256M( uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    periph_err_t error;
+    uint32_t offset_base = offset & ( ~( FLASH_PAGE_SIZE - 1 ) );
+    if( offset_base != offset ) {
+        uint32_t tailing_length = offset_base + FLASH_PAGE_SIZE - offset;
+        uint32_t prog_length = length < tailing_length ? length : tailing_length;
+        error = flash_program_operation_with_4byte_addr( FLASH_PAGE_PROGRAM_WITH_4BYTE_ADDR, offset, prog_length, buffer );
+        if( error != PERIPH_NO_ERROR ) {
+            return error;
+        }
+        buffer += prog_length;
+        offset += prog_length;
+        length -= prog_length;
+    }
+    uint16_t cycles = length / FLASH_PAGE_SIZE;
+    uint16_t remainder = length % FLASH_PAGE_SIZE;
+    uint16_t i;
+    for( i = 0; i < cycles; ++i ) {
+        error = flash_program_operation_with_4byte_addr( FLASH_PAGE_PROGRAM_WITH_4BYTE_ADDR, offset, FLASH_PAGE_SIZE, buffer );
+        if( error != PERIPH_NO_ERROR ) {
+            return error;
+        }
+        offset += FLASH_PAGE_SIZE;
+        buffer += FLASH_PAGE_SIZE;
+    }
+    if( remainder ) {
+        error = flash_program_operation_with_4byte_addr( FLASH_PAGE_PROGRAM_WITH_4BYTE_ADDR, offset, remainder, buffer );
+    }
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+periph_err_t flash_program( uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    if(offset+length <= 0xFFFFFF){
+        return flash_program_0_16M(offset,length,buffer);   
+    }else{
+        return flash_program_16_256M(offset,length,buffer);        
+    }   
+}
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 periph_err_t flash_page_program( uint32_t offset, uint16_t length, uint8_t * buffer )
 {
     return flash_program_operation( FLASH_PAGE_PROGRAM, offset, length, buffer );
@@ -181,7 +314,17 @@ periph_err_t flash_page_program( uint32_t offset, uint16_t length, uint8_t * buf
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
-periph_err_t flash_erase( uint32_t offset, erase_t type )
+periph_err_t flash_page_program_with_4byte_addr( uint32_t offset, uint16_t length, uint8_t * buffer )
+{
+    return flash_program_operation_with_4byte_addr( FLASH_PAGE_PROGRAM_WITH_4BYTE_ADDR, offset, length, buffer );
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+periph_err_t flash_erase_0_16m( uint32_t offset, erase_t type )
 {
     uint8_t cmd;
     bool whole_chip;
@@ -209,6 +352,64 @@ periph_err_t flash_erase( uint32_t offset, erase_t type )
     }
     return flash_erase_operation( cmd, offset, whole_chip );
 }
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+periph_err_t flash_erase_16_256m( uint32_t offset, erase_t type )
+{
+    uint8_t cmd;
+    bool whole_chip;
+    periph_err_t error = PERIPH_NO_ERROR;
+    switch( type ) {
+        case Sector_Erase:
+            cmd = FLASH_SECTOR_ERASE_WITH_4BYTE_ADDR;
+            whole_chip = false;
+            break;
+        case Block_32KB_Erase:
+            cmd = FLASH_32KB_BLOCK_ERASE_WITH_4BYTE_ADDR;
+            whole_chip = false;
+            break;
+        case Block_64KB_Erase:
+            cmd = FLASH_64KB_BLOCK_ERASE_WITH_4BYTE_ADDR;
+            whole_chip = false;
+            break;
+        case Chip_Erase:
+            cmd = FLASH_CHIP_ERASE;
+            whole_chip = true;
+            break;
+        default:
+            error = PERIPH_INVALID_OPERATION;
+            break;
+    }
+    if(error == PERIPH_NO_ERROR)
+        error = flash_erase_operation_with_4byte_addr( cmd, offset, whole_chip );
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+periph_err_t flash_erase( uint32_t offset, erase_t type )
+{
+    if(offset % 4096 == 0){
+        if(offset <= 0xFFF000){    //<16MB
+            return flash_erase_0_16m(offset,type);
+                
+        }else{                     //4 Byte Flash address, > 16M
+            return flash_erase_16_256m(offset,type);
+                
+        }
+    }else{
+        
+        return PERIPH_INVALID_PARAM;    
+    }
+}
+
 /** ---------------------------------------------------------------------------
  * @brief   :
  * @note    :
@@ -351,6 +552,31 @@ periph_err_t flash_std_read( uint32_t offset, uint32_t length, uint8_t * buffer 
     }
     if( remaining_bytes ) {
         error = flash_read_byte( offset, remaining_bytes, buffer );
+    }
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+periph_err_t flash_std_read_with_4byte_addr( uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    uint16_t max_transfer_size = dmac_get_max_block_transfer_size();
+    uint32_t cycles = length / max_transfer_size;
+    uint16_t remaining_bytes = length % max_transfer_size;
+    periph_err_t error = PERIPH_NO_ERROR;
+    while( cycles-- ) {
+        error = flash_read_byte_with_4byte_addr( offset, max_transfer_size, buffer );
+        if( error != PERIPH_NO_ERROR ) {
+            return PERIPH_NO_ERROR;
+        }
+        offset += max_transfer_size;
+        buffer += max_transfer_size;
+    }
+    if( remaining_bytes ) {
+        error = flash_read_byte_with_4byte_addr( offset, remaining_bytes, buffer );
     }
     return error;
 }

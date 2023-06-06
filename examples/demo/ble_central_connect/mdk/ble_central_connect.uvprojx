@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>ARMCM0P</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.CMSIS.5.7.0</PackID>
+          <PackID>ARM.CMSIS.5.8.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IROM(0x00000000,0x00040000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -770,11 +770,6 @@
               <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_battery_adjust.c</FilePath>
             </File>
             <File>
-              <FileName>rf_power_exchange.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_power_exchange.c</FilePath>
-            </File>
-            <File>
               <FileName>rf_power_set.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_power_set.c</FilePath>
@@ -932,7 +927,7 @@
         <TargetCommonOption>
           <Device>ARMCM0P</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.CMSIS.5.7.0</PackID>
+          <PackID>ARM.CMSIS.5.8.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x00020000) IROM(0x00000000,0x00040000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ESEL ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1821,11 +1816,6 @@
               <FileName>rf_battery_adjust.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_battery_adjust.c</FilePath>
-            </File>
-            <File>
-              <FileName>rf_power_exchange.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\components\bluex\ble\controller\driver\rf_setting\rf_power_exchange.c</FilePath>
             </File>
             <File>
               <FileName>rf_power_set.c</FileName>

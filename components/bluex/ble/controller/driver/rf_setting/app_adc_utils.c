@@ -474,16 +474,27 @@ void app_adc_util_init( void )
 {
 #ifdef ADC_RO_READ_FORCE_ON
     periph_err_t err;
-    uint8_t manufacturer_id, device_id;
-    flash_read_manufacturer_device_id( &manufacturer_id, &device_id );
+    uint8_t manufacturer_id,device_id,mem_type,capacity;
+    flash_read_manufacturer_device_id( &manufacturer_id, &device_id );	
+    flash_read_jedec_id(&manufacturer_id, &mem_type, &capacity);
 //    bx_logln( "falsh id:%x", manufacturer_id );
     if( MANUFACTURER_ZBIT == manufacturer_id ) { /*ZBIT Serial Flash*/
-        err = ZBIT_flash_read_security_reg( 0, 0, sizeof( uint8_t ), ( uint8_t * )&adc_cp_RO );
-        if( err != PERIPH_NO_ERROR ) {
-            BX_ASSERT( 0 );
+        if(mem_type == 0x32) { /*ZZB25WD40B*/ /*ZZB25WD20B*/
+            err = ZBIT_flash_read_security_reg( 0, 0, sizeof( uint8_t ), ( uint8_t * )&adc_cp_RO );
+            if( err != PERIPH_NO_ERROR ) {
+                BX_ASSERT( 0 );
+            }
         }
+        else {
+            if( flash_read_security_reg( 1, 0, 1, ( uint8_t * )&adc_cp_RO ) != PERIPH_NO_ERROR ) {
+            BX_ASSERT( 0 );
+            }
+        }
+        
     } else if(    (  MANUFACTURER_WINBOND == manufacturer_id ) /*Winbond Serial Flash*/
                   || (  MANUFACTURER_PUYA == manufacturer_id )/*PUYA Serial Flash*/
+                  || (  MANUFACTURER_BOYA == manufacturer_id )/*BOYA Serial Flash*/
+                  || ( MANUFACTURER_XTX == manufacturer_id ) /*XTX Serial Flash*/
              ) {
         if( flash_read_security_reg( 1, 0, 1, ( uint8_t * )&adc_cp_RO ) != PERIPH_NO_ERROR ) {
             BX_ASSERT( 0 );
@@ -491,17 +502,17 @@ void app_adc_util_init( void )
     } else if( MANUFACTURER_XMC == manufacturer_id ) {
         err = XMC_flash_enter_OTP_mode();
         if( err != PERIPH_NO_ERROR ) {
-            bx_logln( "XMC_flash_enter_OTP_mode fail£º%u",err );
+            bx_logln( "XMC_flash_enter_OTP_mode fail%u",err );
         }
         BX_ASSERT(err == PERIPH_NO_ERROR);
         err = flash_multi_read( 0xFFF000, sizeof( uint8_t ), ( uint8_t * )&adc_cp_RO );
         if( err != PERIPH_NO_ERROR ) {
-            bx_logln( "flash_multi_read fail£º%u",err );
+            bx_logln( "flash_multi_read fail%u",err );
         }
         BX_ASSERT(err == PERIPH_NO_ERROR);
         err = XMC_flash_exit_OTP_mode();
         if( err != PERIPH_NO_ERROR ) {
-            bx_logln( "XMC_flash_exit_OTP_mode fail£º%u",err );
+            bx_logln( "XMC_flash_exit_OTP_mode fail%u",err );
             while(1);
         }
         BX_ASSERT(err == PERIPH_NO_ERROR);
@@ -521,11 +532,10 @@ void app_adc_util_init( void )
     adc_cp_RO = 33;
 #endif
 
-	extern void refresh_rf_param_with_ro( uint32_t ro );
-	refresh_rf_param_with_ro( adc_cp_RO );
-	
-//	LOG_I("RO=%d", adc_cp_RO);
+    refresh_rf_param_with_ro(adc_cp_RO);
+    LOG_I("RO=%d", adc_cp_RO);
 }
+
 
 static uint32_t app_adc_battery_volt(uint32_t bat_val)
 {

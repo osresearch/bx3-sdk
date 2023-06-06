@@ -118,9 +118,11 @@ periph_err_t app_qspi_std_write_no_dma(periph_inst_handle_t hdl,uint8_t cs_sel_m
 periph_err_t app_qspi_4wire_write( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t * data, uint32_t length );
 periph_err_t app_qspi_4wire_write_ex( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t cmd, uint32_t addr, uint8_t * data, uint32_t length );
 periph_err_t app_qspi_flash_program(periph_inst_handle_t hdl,uint8_t cs_sel_mask,uint8_t cmd,uint32_t addr,uint8_t *data,uint32_t length);
+periph_err_t app_qspi_flash_program_with_4byte_addr( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint8_t cmd, uint32_t addr, uint8_t * data, uint32_t length );
 
 periph_err_t app_qspi_std_read(periph_inst_handle_t hdl,uint8_t cs_sel_mask,uint8_t *cmd_buf,uint8_t cmd_len,uint8_t *data_buf,uint16_t data_len);
 periph_err_t app_qspi_multi_read_32bits(periph_inst_handle_t hdl,uint8_t cs_sel_mask,uint32_t *data,uint16_t length,qspi_addr_data_t addr);
+periph_err_t app_qspi_multi_read_32bits_with_4byte_addr( periph_inst_handle_t hdl, uint8_t cs_sel_mask, uint32_t * data, uint16_t length, uint32_t addr );
 uint8_t      app_qspi_multi_read_cmd_get(periph_inst_handle_t hdl);
 
 periph_err_t app_qspi_config_for_cache(periph_inst_handle_t hdl,uint8_t cs_sel_mask,uint16_t cache_line_size);

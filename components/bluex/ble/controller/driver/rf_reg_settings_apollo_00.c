@@ -25,7 +25,7 @@
 #include "rf_reg_settings.h"
 #include "compiler_flag.h"
 #include "rf_power_set.h"
-
+#include "arch.h"
 /* private define ------------------------------------------------------------*/
 
 /* private typedef -----------------------------------------------------------*/
@@ -74,10 +74,10 @@ N_XIP_SECTION void reg_set_xtal_current_startup()
 N_XIP_SECTION void reg_pll_enable( uint8_t en )
 {
     hwp_rf_reg->rf_reg_0.pll_pdb = en;
-	if(en == 1)
-	{
-		BX_DELAY_US(60);
-	}
+    if(en == 1)
+    {
+        BX_DELAY_US(60);
+    }
     hwp_rf_reg->rf_reg_0.pll_resb = en;
 }
 /** ---------------------------------------------------------------------------
@@ -116,7 +116,7 @@ void reg_set_xtal_current_below_temp0()
 -----------------------------------------------------------------------------*/
 void reg_set_xtal_current_normal()
 {
-    reg_set_xtal_current( 0, 1, 1, 1 );
+    reg_set_xtal_current( 0, 0, 1, 1 );
 }
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -156,10 +156,22 @@ void reg_wait_pll_stable()
     for( i = 0; i < 5; i++ ) {
         __NOP();
     }
-#if (defined(CFG_ON_CHIP)&&(CFG_ON_CHIP==1))
+    #if (defined(CFG_ON_CHIP)&&(CFG_ON_CHIP==1))
+    bool reset = true;
+    for(uint32_t i = 0; i < 200; i++)
+    {
+        if(reg_pll_lock() == true)
+        {
+            reset = false;
+            break;
+        }
+    }
+    if(reset == true)
+        platform_reset(0);
     while( reg_pll_lock() == false );
-#endif
+    #endif
 }
+
 
 #if (defined BX_BATTERY_MONITOR) && (BX_BATTERY_MONITOR == 1)
 /** ---------------------------------------------------------------------------
@@ -233,7 +245,7 @@ static uint32_t ftsv_calc( uint32_t bat_volt )
 -----------------------------------------------------------------------------*/
 void rf_reg_adjust_bat( uint16_t bat_volt )
 {
-	//LOG_RAW("bat_volt = %d\r\n", bat_volt);
+    //LOG_RAW("bat_volt = %d\r\n", bat_volt);
     if( bat_volt > BYPASS_VOLTAGE ) {
         hwp_rf_reg->rf_reg_4.VDD_3V_1_Tr_enhance = 0;
         hwp_rf_reg->rf_reg_6.VDD_3V_2_Tr_enhance = 0;
@@ -253,8 +265,7 @@ void rf_reg_adjust_bat( uint16_t bat_volt )
 -----------------------------------------------------------------------------*/
 void rf_reg_settings_init_mp(void)
 {
-	rf_power_setting();
-	reg_pad_voltage_init();
+    rf_power_setting();
 }
 
 /*========================= end of exported function =========================*/

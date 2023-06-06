@@ -106,6 +106,28 @@ N_XIP_SECTION periph_err_t flash_program_operation_start( uint8_t cmd, uint32_t 
  * @param   :
  * @retval  :
 -----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_program_operation_start_with_4byte_addr( uint8_t cmd, uint32_t offset, uint32_t length, uint8_t * buffer )
+{
+    periph_err_t error;
+    do {
+        error = flash_write_enable();
+        if( error != PERIPH_NO_ERROR ) {
+            break;
+        }
+        error = app_qspi_flash_program_wrapper_with_4byte_addr( cmd, offset, buffer, length );
+        if( error != PERIPH_NO_ERROR ) {
+            break;
+        }
+        error = flash_operation_wait( NULL );
+    } while( 0 );
+    return error;
+}
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
 N_XIP_SECTION periph_err_t flash_erase_operation_start( uint8_t cmd, uint32_t addr, bool whole_chip )
 {
     periph_err_t error;
@@ -131,7 +153,38 @@ N_XIP_SECTION periph_err_t flash_erase_operation_start( uint8_t cmd, uint32_t ad
     } while ( 0 );
     return error;
 }
-
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_erase_operation_start_with_4byte_addr( uint8_t cmd, uint32_t addr, bool whole_chip )
+{
+    periph_err_t error;
+    do {
+        error = flash_write_enable();
+        if( error != PERIPH_NO_ERROR ) {
+            break;
+        }
+        if( whole_chip ) {
+            error = app_qspi_std_write_wrapper( &cmd, sizeof( cmd ) );
+        } else {
+            uint8_t erase_cmd_addr[5];
+            erase_cmd_addr[0] = cmd;
+            erase_cmd_addr[1] = addr >> 24 & 0xff;
+            erase_cmd_addr[2] = addr >> 16 & 0xff;
+            erase_cmd_addr[3] = addr >> 8 & 0xff;
+            erase_cmd_addr[4] = addr & 0xff;
+            error = app_qspi_std_write_wrapper( erase_cmd_addr, sizeof( erase_cmd_addr ) );
+        }
+        if( error != PERIPH_NO_ERROR ) {
+            break;
+        }
+        error = flash_operation_wait( NULL );
+    } while ( 0 );
+    return error;
+}
 
 /** ---------------------------------------------------------------------------
  * @brief   :
@@ -147,6 +200,18 @@ N_XIP_SECTION periph_err_t flash_multi_read_32bits_operation_start( uint32_t * d
     };
     return app_qspi_multi_read_32bits_wrapper( data, length, qspi_addr_data );
 }
+
+/** ---------------------------------------------------------------------------
+ * @brief   :
+ * @note    :
+ * @param   :
+ * @retval  :
+-----------------------------------------------------------------------------*/
+N_XIP_SECTION periph_err_t flash_multi_read_32bits_operation_start_with_4byte_addr( uint32_t * data, uint16_t length, uint32_t addr )
+{
+    return app_qspi_multi_read_32bits_wrapper_with_4byte_addr( data, length, addr );
+}
+
 
 /** ---------------------------------------------------------------------------
  * @brief   :

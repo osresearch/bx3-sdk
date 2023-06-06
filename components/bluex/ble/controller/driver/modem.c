@@ -217,7 +217,7 @@ void modem_init()
 
     ble_mdm_vco_cnt_spacing_setf(0x4);
 
-    ble_mdm_o_tx_clk_sel_setf(0);
+    ble_mdm_o_tx_clk_sel_setf(1);
 
     ble_mdm_o_agc_rssi_avg_num_setf(RSSI_AVG_NUM - 1); //for set rssi_avg_num 8
 

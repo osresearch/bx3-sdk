@@ -41,7 +41,7 @@ void adc_sys_adjust_bat(void)
 }
 
 void try_to_update_rf_param_with_bat(void)
-{			
+{
     static uint32_t tick_count_last = 0;
     uint32_t tick_count_current = RTC_CURRENTCNT_GET();
     uint32_t tick_temp;
@@ -53,7 +53,7 @@ void try_to_update_rf_param_with_bat(void)
     {
         tick_temp = (portMAX_32_BIT_NUMBER - tick_count_last) + tick_count_current;
     }
-	if( tick_temp >= 0x20000 )	//0x8000 = 1s
+    if( tick_temp >= 0x20000 )	//0x8000 = 1s
     {
         tick_count_last = tick_count_current;
         adc_sys_adjust_bat();
