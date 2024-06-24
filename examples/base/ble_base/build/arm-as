@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+# Attempt to convert ARM assembly into gnu assembly
+# this does not handle every case, just the few that I've seen
+
+import sys
+import re
+
+code = sys.stdin.read()
+
+# Filter out things that aren't supported
+code = re.sub(r"\b(PRESERVE8|ENDP|END)\b", "", code)
+code = re.sub(r"\bFRAME\s+UNWIND\s+(ON|OFF)", "", code)
+code = re.sub(r"\bFRAME\s+PUSH", "PUSH", code)
+code = re.sub(r"\bALIGN", ".align 4", code)
+code = re.sub(r"\bDCD\b", ".word", code)
+
+# convert end-of-line comments
+code = re.sub(r";", "//", code)
+
+# handle some easy conversions
+code = re.sub(r"\bEXPORT\b", ".globl", code)
+code = re.sub(r"\bIMPORT\b", ".extern", code)
+code = re.sub(r"\bTHUMB\b", ".thumb\n.syntax unified\n", code)
+
+# Translate area commands into .section commands
+code = re.sub(r"\bAREA\s*\|([^|]+).*?\n", r".section \1\n", code)
+code = re.sub(r"\b(.*?)\s+PROC\b", r"\1:", code)
+
+print(code)
