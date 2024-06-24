@@ -53,7 +53,8 @@
 #define APP_DIS_SERIAL_NB_STR_LEN       (sizeof(APP_DIS_SERIAL_NB_STR) - 1)
 
 /// Firmware Revision
-#define APP_DIS_FIRM_REV_STR            ("FR-V1.0.0-"##__DATE__)
+//#define APP_DIS_FIRM_REV_STR            ("FR-V1.0.0-"##__DATE__)
+#define APP_DIS_FIRM_REV_STR            ("FR-V1.0.0")
 #define APP_DIS_FIRM_REV_STR_LEN        (sizeof(APP_DIS_FIRM_REV_STR) - 1)
 
 /// System ID Value - LSB -> MSB
@@ -65,7 +66,8 @@
 #define APP_DIS_HARD_REV_STR_LEN        (sizeof(APP_DIS_HARD_REV_STR) - 1)
 
 /// Software Revision String
-#define APP_DIS_SW_REV_STR              ("SDK3-"##__TIME__)
+//#define APP_DIS_SW_REV_STR              ("SDK3-"##__TIME__)
+#define APP_DIS_SW_REV_STR              ("SDK3-TIMELESS")
 #define APP_DIS_SW_REV_STR_LEN          (sizeof(APP_DIS_SW_REV_STR) - 1)
 
 /// IEEE
