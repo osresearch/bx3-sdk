@@ -19,6 +19,8 @@
 
 /* includes ------------------------------------------------------------------*/
 #include "bx_dbg.h"
+#include "apollo_00_reg.h"
+#include "core_cm0plus.h"
 
 #if ( BX_ENABLE_LOG > 0 )
 
