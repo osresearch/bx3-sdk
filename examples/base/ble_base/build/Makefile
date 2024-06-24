@@ -6,10 +6,13 @@ CROSS ?= arm-none-eabi-
 CC = $(CROSS)gcc
 LD = $(CROSS)ld
 
-CPU_FLAGS += -mcpu=cortex-m0plus -mtune=cortex-m0plus
-CFLAGS += -nostdlib
+CPU_FLAGS += -mcpu=cortex-m0plus -mtune=cortex-m0plus -mthumb
+#CFLAGS += -nostdlib
 CFLAGS += $(CPU_FLAGS)
-CFLAGS += -D__DATEx__=\"$(DATE)\" -D__TIMEx__=\"$(TIME)\"
+#CFLAGS += --include ../../../../platform/bluex/apollo/apollo00/apollo_00_reg.h
+#CFLAGS += --include ../../../../platform/cmsis/core_cm0plus.h
+
+ASFLAGS += $(CPU_FLAGS)
 
 INCDIRS = \
 ../../../../include \
@@ -43,7 +46,7 @@ BX_CORE_SRC = \
               ../../../../kernel/bx_kernel_timer.c \
 
 BX_CORE_AS = \
-              ../code/startup_apollo00_ble.s \
+              ../code/startup_apollo00_ble.S \
 
 BX_BLE_SRC = \
               ../../../../components/bluex/ble/controller/ble_stack.c \
@@ -147,11 +150,15 @@ USER_APP_SRC = \
               ../code/bx_apollo00_it.c \
 
 SRCS += $(BX_CORE_SRC)
-#SRCS += $(BX_BLE_SRC)
-#SRCS += $(BX_LOG_SRC)
-#SRCS += $(BX_DRIVERS_SRC)
+SRCS += $(BX_BLE_SRC)
+SRCS += $(BX_LOG_SRC)
+SRCS += $(BX_DRIVERS_SRC)
 SRCS += $(USER_PROFILES_SRC)
 SRCS += $(USER_APP_SRC)
+
+AS_SRCS += $(BX_CORE_AS)
+AS_SRCS += $(BX_BLE_AS)
+AS_SRCS += $(BX_LOG_AS)
 
 # Fake the rvds compiler check
 CFLAGS += -D__ARMCC_VERSION=1
@@ -159,13 +166,13 @@ CFLAGS += -D__ARMCC_VERSION=1
 CFLAGS += -D__weak="__attribute__((__weak__))"
 CFLAGS += $(foreach _,$(INCDIRS),-I$_)
 
-OBJS = syms.o
+OBJS = syms.o lmul.o strlen.o
 
 %.o: %.s
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(ASFLAGS) -c -o $@ $<
 
-link.lds: ../config/user_link.txt
-	tail +2 $< | $(CC) $(CFLAGS) -E  - | grep -v '^#' > $@
+linker.lds: ../../../../linker.lds
+	$(CC) $(CFLAGS) -E  - < $< | grep -v '^#' > $@
 
 syms.s: ../../../../components/bluex/ble/controller/rom_syms_armcc.txt
 	./syms2elf < $< > $@ || $(RM) $@ && exit 1
@@ -175,10 +182,16 @@ $2: $1
 	$(CC) $(CFLAGS) -c -o $$@ $$<
 OBJS+=$2
 endef
+define make-goal-as
+$2: $1
+	./arm-as < $$< > $(basename $2).S
+	$(CC) $(ASFLAGS) -c -o $$@ $(basename $2).S
+OBJS+=$2
+endef
 
 
 $(foreach _,$(SRCS),$(eval $(call make-goal,$_,$(notdir $(basename $_)).o)))
+$(foreach _,$(AS_SRCS),$(eval $(call make-goal-as,$_,$(notdir $(basename $_)).o)))
 
-app.elf: link.lds $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ -T $^
-
+app.elf: linker.lds $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ -T $^ 
