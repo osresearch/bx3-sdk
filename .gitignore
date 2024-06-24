@@ -5,3 +5,9 @@
 
 /tools/bluex/bootloader/*
 !/tools/bluex/bootloader/bootloader.hex
+
+*.o
+.*.swp
+*.a
+*.elf
+*.hex
