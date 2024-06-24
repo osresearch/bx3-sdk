@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+import sys
+import re
+
+print(".text");
+
+for line in sys.stdin.readlines():
+	if re.match(r"^[#;]", line):
+		continue
+
+	group = re.match(r"(0x[0-9a-f]+) (.) ([^\s]+)", line)
+	if not group:
+		print(f"unable to parse '{line}'", file=sys.stderr)
+		sys.exit(-1)
+	addr = group[1]
+	symtype = group[2]
+	name = group[3]
+
+	print(f".global {name};\n.extern {name};\n{name} = {addr}\n")
+#
+##define NSTUB(addr,name) \
+#	.global name; \
+#	.extern name; \
+#	name = addr
+
+sys.exit(0)
