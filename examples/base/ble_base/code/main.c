@@ -43,13 +43,13 @@
 -----------------------------------------------------------------------------*/
 int main( void )
 {
-    //ble_init();
+    ble_init();
     bx_kernel_init();
 
     app_init();
 
     while( 1 ) {
-        //ble_schedule();
+        ble_schedule();
         bx_kernel_schedule();
     }
 }
